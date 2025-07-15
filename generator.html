@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动漫头像生成器 - Anime Anything</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 12px;
+            margin-top: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .slider-value {
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .style-presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .style-preset {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .style-preset:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .style-preset.active {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.2);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .generate-btn .loading {
+            display: none;
+        }
+
+        .generate-btn.loading .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .status-indicator {
+            margin-bottom: 2rem;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .status-pending { background: #ffa726; }
+        .status-running { background: #42a5f5; }
+        .status-succeeded { background: #66bb6a; }
+        .status-failed { background: #ef5350; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .result-images {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .image-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .image-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-label {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .download-btn {
+            margin-top: 1.5rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .image-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .style-presets {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: linear-gradient(45deg, #ef5350, #f44336);
+        }
+
+        .toast.success {
+            background: linear-gradient(45deg, #66bb6a, #4caf50);
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎨 动漫头像生成器</h1>
+            <p>用AI魔法将您的照片转换成精美的动漫风格头像，探索无限创意可能</p>
+        </div>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">点击或拖拽上传图片</div>
+                    <div class="upload-hint">支持 JPG、PNG、WEBP 格式，最大 10MB</div>
+                    <input type="file" id="imageInput" accept="image/*">
+                    <img id="imagePreview" class="image-preview" style="display: none;">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="promptInput">风格描述</label>
+                    <input type="text" id="promptInput" class="form-input" 
+                           placeholder="例如：转换成日式动漫风格，大眼睛，柔和色彩..."
+                           value="转换成精美的日式动漫风格">
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label">预设风格</div>
+                    <div class="style-presets">
+                        <div class="style-preset active" data-style="转换成精美的日式动漫风格">
+                            <div>🌸</div>
+                            <div>日式动漫</div>
+                        </div>
+                        <div class="style-preset" data-style="转换成法国绘本风格">
+                            <div>🎨</div>
+                            <div>法式绘本</div>
+                        </div>
+                        <div class="style-preset" data-style="转换成韩式漫画风格">
+                            <div>💫</div>
+                            <div>韩式漫画</div>
+                        </div>
+                        <div class="style-preset" data-style="转换成可爱的Q版卡通风格">
+                            <div>🎭</div>
+                            <div>Q版卡通</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span class="form-label">生成数量</span>
+                        <span class="slider-value" id="countValue">1</span>
+                    </div>
+                    <input type="range" class="slider" id="countSlider" min="1" max="4" value="1">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span class="form-label">随机种子</span>
+                        <span class="slider-value" id="seedValue">随机</span>
+                    </div>
+                    <input type="range" class="slider" id="seedSlider" min="0" max="2147483647" value="0">
+                </div>
+
+                <button class="generate-btn" id="generateBtn">
+                    <span class="btn-text">✨ 生成动漫头像</span>
+                    <span class="loading">🔄</span>
+                </button>
+            </div>
+
+            <div class="result-panel">
+                <div class="status-indicator" id="statusIndicator">
+                    <div class="status-dot status-pending" id="statusDot"></div>
+                    <span id="statusText">等待上传图片...</span>
+                </div>
+
+                <div class="progress-bar" id="progressBar" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="result-images" id="resultImages">
+                    <div style="opacity: 0.6; padding: 3rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🎭</div>
+                        <div>您的动漫头像将在这里显示</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // API配置
+        const API_KEY = 'sk-a641f6330e92448a8f27049ea6c1eda6';
+        const CREATE_TASK_URL = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis';
+        const QUERY_TASK_URL = 'https://dashscope.aliyuncs.com/api/v1/tasks/';
+
+        // DOM元素
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const promptInput = document.getElementById('promptInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const resultImages = document.getElementById('resultImages');
+        const countSlider = document.getElementById('countSlider');
+        const countValue = document.getElementById('countValue');
+        const seedSlider = document.getElementById('seedSlider');
+        const seedValue = document.getElementById('seedValue');
+
+        let uploadedImage = null;
+        let currentTaskId = null;
+        let pollInterval = null;
+
+        // 初始化
+        init();
+
+        function init() {
+            setupEventListeners();
+            updateSliderValues();
+        }
+
+        function setupEventListeners() {
+            // 上传区域事件
+            uploadArea.addEventListener('click', () => imageInput.click());
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+            
+            // 文件输入事件
+            imageInput.addEventListener('change', handleFileSelect);
+            
+            // 生成按钮事件
+            generateBtn.addEventListener('click', handleGenerate);
+            
+            // 滑动条事件
+            countSlider.addEventListener('input', updateSliderValues);
+            seedSlider.addEventListener('input', updateSliderValues);
+            
+            // 风格预设事件
+            document.querySelectorAll('.style-preset').forEach(preset => {
+                preset.addEventListener('click', () => {
+                    document.querySelectorAll('.style-preset').forEach(p => p.classList.remove('active'));
+                    preset.classList.add('active');
+                    promptInput.value = preset.dataset.style;
+                });
+            });
+        }
+
+        function updateSliderValues() {
+            countValue.textContent = countSlider.value;
+            seedValue.textContent = seedSlider.value == 0 ? '随机' : seedSlider.value;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            // 验证文件类型
+            if (!file.type.startsWith('image/')) {
+                showToast('请选择图片文件', 'error');
+                return;
+            }
+            
+            // 验证文件大小 (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('图片大小不能超过 10MB', 'error');
+                return;
+            }
+            
+            uploadedImage = file;
+            
+            // 显示预览
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                updateStatus('pending', '图片已上传，点击生成按钮开始处理');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function handleGenerate() {
+            if (!uploadedImage) {
+                showToast('请先上传图片', 'error');
+                return;
+            }
+            
+            if (!promptInput.value.trim()) {
+                showToast('请输入风格描述', 'error');
+                return;
+            }
+            
+            try {
+                // 禁用按钮，显示加载状态
+                generateBtn.disabled = true;
+                generateBtn.classList.add('loading');
+                updateStatus('running', '正在上传图片...');
+                
+                // 上传图片到临时存储（这里使用base64，实际项目中建议上传到云存储获取URL）
+                const imageUrl = await uploadImageToTemp(uploadedImage);
+                
+                updateStatus('running', '正在创建生成任务...');
+                
+                // 创建任务
+                const taskId = await createTask(imageUrl);
+                currentTaskId = taskId;
+                
+                updateStatus('running', '任务已创建，正在处理中...');
+                showProgress();
+                
+                // 开始轮询任务状态
+                startPolling(taskId);
+                
+            } catch (error) {
+                console.error('Generation error:', error);
+                showToast('生成失败: ' + error.message, 'error');
+                resetGenerateButton();
+            }
+        }
+
+        async function uploadImageToTemp(file) {
+            // 注意：这里使用base64作为示例，实际项目中应该上传到云存储获取公网URL
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // 实际项目中，这里应该调用上传API获取公网URL
+                    // 这里为了演示，我们使用一个示例URL
+                    resolve('https://example.com/uploaded-image.jpg');
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function createTask(imageUrl) {
+            const response = await fetch(CREATE_TASK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'X-DashScope-Async': 'enable'
+                },
+                body: JSON.stringify({
+                    model: 'wanx2.1-imageedit',
+                    input: {
+                        function: 'stylization_all',
+                        prompt: promptInput.value.trim(),
+                        base_image_url: imageUrl
+                    },
+                    parameters: {
+                        n: parseInt(countSlider.value),
+                        seed: seedSlider.value == 0 ? undefined : parseInt(seedSlider.value),
+                        watermark: false
+                    }
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.code) {
+                throw new Error(data.message || '创建任务失败');
+            }
+            
+            return data.output.task_id;
+        }
+
+        async function queryTaskStatus(taskId) {
+            const response = await fetch(QUERY_TASK_URL + taskId, {
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.code) {
+                throw new Error(data.message || '查询任务失败');
+            }
+            
+            return data.output;
+        }
+
+        function startPolling(taskId) {
+            let progress = 0;
+            
+            pollInterval = setInterval(async () => {
+                try {
+                    const taskData = await queryTaskStatus(taskId);
+                    
+                    // 更新进度
+                    progress = Math.min(progress + Math.random() * 20, 90);
+                    updateProgress(progress);
+                    
+                    switch (taskData.task_status) {
+                        case 'PENDING':
+                            updateStatus('pending', '任务排队中...');
+                            break;
+                            
+                        case 'RUNNING':
+                            updateStatus('running', '正在生成中...');
+                            break;
+                            
+                        case 'SUCCEEDED':
+                            clearInterval(pollInterval);
+                            updateProgress(100);
+                            updateStatus('succeeded', '生成完成！');
+                            displayResults(taskData.results);
+                            resetGenerateButton();
+                            showToast('动漫头像生成成功！', 'success');
+                            break;
+                            
+                        case 'FAILED':
+                            clearInterval(pollInterval);
+                            updateStatus('failed', '生成失败');
+                            resetGenerateButton();
+                            showToast('生成失败，请重试', 'error');
+                            break;
+                            
+                        default:
+                            clearInterval(pollInterval);
+                            updateStatus('failed', '未知状态');
+                            resetGenerateButton();
+                            break;
+                    }
+                } catch (error) {
+                    console.error('Polling error:', error);
+                    clearInterval(pollInterval);
+                    updateStatus('failed', '查询失败: ' + error.message);
+                    resetGenerateButton();
+                }
+            }, 2000);
+        }
+
+        function updateStatus(status, text) {
+            statusDot.className = `status-dot status-${status}`;
+            statusText.textContent = text;
+        }
+
+        function showProgress() {
+            progressBar.style.display = 'block';
+        }
+
+        function updateProgress(percent) {
+            progressFill.style.width = percent + '%';
+        }
+
+        function resetGenerateButton() {
+            generateBtn.disabled = false;
+            generateBtn.classList.remove('loading');
+            progressBar.style.display = 'none';
+        }
+
+        function displayResults(results) {
+            const originalImageSrc = imagePreview.src;
+            
+            resultImages.innerHTML = `
+                <div class="image-comparison">
+                    <div class="image-container">
+                        <img src="${originalImageSrc}" alt="原图">
+                        <div class="image-label">原图</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="${results[0].url}" alt="动漫风格">
+                        <div class="image-label">动漫风格</div>
+                    </div>
+                </div>
+                <a href="${results[0].url}" download="anime-avatar.png" class="download-btn">
+                    📥 下载高清图片
+                </a>
+            `;
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 返回首页按钮
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html> 
