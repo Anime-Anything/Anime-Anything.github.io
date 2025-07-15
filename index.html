@@ -12,6 +12,7 @@
     <!-- 加载动画 -->
     <div id="pageLoader" class="page-loader">
         <div class="loader-content">
+            <div class="loader-ring"></div>
             <div class="loader-text">AI创意加载中...</div>
         </div>
     </div>
@@ -250,16 +251,10 @@
                     <div class="result-section">
                         <div id="loadingDiv" class="loading hidden">
                             <div class="loading-animation">
-                                <!-- 现代旋转环 -->
-                                <div class="modern-spinner">
-                                    <div class="spinner-ring"></div>
-                                    <div class="spinner-center">AI</div>
-                                </div>
-                                <!-- 进度条 -->
-                                <div class="progress-container">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill"></div>
-                                    </div>
+                                <!-- 转换过程的圆环 -->
+                                <div class="convert-spinner">
+                                    <div class="spinner-circle"></div>
+                                    <div class="spinner-inner">AI</div>
                                 </div>
                             </div>
                             <p>正在进行风格迁移，请稍候...</p>
