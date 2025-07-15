@@ -1,349 +1,83 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Anything - 动漫世界</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: #fff;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: #ff6b6b;
-            transform: translateY(-2px);
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-        }
-
-        .hero-content h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: fadeInUp 1s ease;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-content p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            animation: fadeInUp 1s ease 0.2s both;
-            opacity: 0.9;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            color: #fff;
-            text-decoration: none;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            animation: fadeInUp 1s ease 0.4s both;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .features {
-            padding: 5rem 0;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .floating-elements {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .floating-element {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .floating-element:nth-child(1) {
-            width: 60px;
-            height: 60px;
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-element:nth-child(2) {
-            width: 40px;
-            height: 40px;
-            top: 60%;
-            right: 10%;
-            animation-delay: 2s;
-        }
-
-        .floating-element:nth-child(3) {
-            width: 80px;
-            height: 80px;
-            bottom: 20%;
-            left: 20%;
-            animation-delay: 4s;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        footer {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2rem 0;
-            text-align: center;
-            margin-top: 3rem;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>动漫头像生成器 V1.0</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <header>
-        <nav class="container">
-            <div class="logo">Anime Anything</div>
-            <ul class="nav-links">
-                <li><a href="#home">首页</a></li>
-                <li><a href="generator.html">头像生成器</a></li>
-                <li><a href="#features">特色</a></li>
-                <li><a href="#about">关于</a></li>
-                <li><a href="#contact">联系</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="container">
+        <header>
+            <h1>🎨 动漫头像生成器 V1.0</h1>
+            <p>将您的图片转换为精美的动漫风格头像</p>
+        </header>
 
-    <section class="hero" id="home">
-        <div class="floating-elements">
-            <div class="floating-element"></div>
-            <div class="floating-element"></div>
-            <div class="floating-element"></div>
-        </div>
-        <div class="hero-content">
-            <h1>Anime Anything</h1>
-            <p>探索无限的动漫世界，发现您最爱的角色和故事</p>
-            <a href="generator.html" class="cta-button">🎨 体验头像生成器</a>
-        </div>
-    </section>
+        <main>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="imageUrlInput">图片 URL：</label>
+                    <input type="text" id="imageUrlInput" placeholder="请输入公网可访问的图片URL，例如：https://example.com/image.jpg"
+                        class="input-field">
+                    <small class="input-hint">
+                        💡 提示：请确保图片 URL 可以公开访问，支持 HTTPS 链接
+                    </small>
+                </div>
 
-    <section class="features" id="features">
-        <div class="container">
-            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">我们的特色</h2>
-            <p style="text-align: center; opacity: 0.8; margin-bottom: 2rem;">为动漫爱好者打造的完美体验</p>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>AI头像生成</h3>
-                    <p>使用最先进的AI技术，将您的照片转换成精美的动漫风格头像，支持多种风格选择和个性化定制。</p>
+                <div class="input-group">
+                    <label for="promptInput">风格描述：</label>
+                    <input type="text" id="promptInput" value="法国绘本风格" placeholder="输入风格描述，如'法国绘本风格'"
+                        class="input-field">
+                    <small class="input-hint">
+                        💡 例如：日式动漫风格、法国绘本风格、卡通风格等
+                    </small>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🎌</div>
-                    <h3>丰富内容</h3>
-                    <p>汇聚最新最热的动漫资讯、角色介绍和剧情解析，让您随时掌握动漫世界的最新动态。</p>
+
+                <button id="convertButton" class="convert-btn">
+                    <span class="btn-text">🚀 开始转换</span>
+                </button>
+            </div>
+
+            <div class="result-section">
+                <div id="loadingDiv" class="loading hidden">
+                    <div class="loading-spinner"></div>
+                    <p>正在生成动漫风格头像，请稍候...</p>
+                    <small>通常需要 30-60 秒，请耐心等待</small>
                 </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🌟</div>
-                    <h3>社区互动</h3>
-                    <p>与全球动漫爱好者分享您的观点，讨论喜爱的角色，交流动漫心得，建立属于您的动漫圈子。</p>
+
+                <div id="resultDiv" class="result hidden">
+                    <h3>✨ 转换结果</h3>
+                    <div class="image-container">
+                        <img id="resultImage" alt="转换后的动漫风格头像" class="result-image">
+                    </div>
+                    <div class="result-actions">
+                        <button id="downloadButton" class="download-btn">💾 下载图片</button>
+                        <button id="newTaskButton" class="new-task-btn">🎯 重新转换</button>
+                    </div>
+                </div>
+
+                <div id="errorDiv" class="error hidden">
+                    <h3>⚠️ 转换失败</h3>
+                    <p id="errorMessage"></p>
+                    <button id="retryButton" class="retry-btn">🔄 重试</button>
                 </div>
             </div>
-        </div>
-    </section>
+        </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Anime Anything. 版权所有. 用爱发电 ❤️</p>
-        </div>
-    </footer>
+        <footer>
+            <p>
+                <small>
+                    ⚡ 基于阿里云百炼 API |
+                    <a href="https://github.com" target="_blank">GitHub</a> |
+                    V1.0
+                </small>
+            </p>
+        </footer>
+    </div>
 
-    <script>
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-
-        // 头部滚动效果
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(0, 0, 0, 0.8)';
-            } else {
-                header.style.background = 'rgba(255, 255, 255, 0.1)';
-            }
-        });
-
-        // 动画观察器
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.feature-card').forEach(card => {
-            observer.observe(card);
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
-</html> 
+
+</html>
