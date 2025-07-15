@@ -883,6 +883,11 @@ body {
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.5s ease;
+    /* 确保内容居中 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .loading:not(.hidden) {
@@ -896,7 +901,7 @@ body {
     display: inline-block;
     width: 120px;
     height: 120px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .spinner-ring {
@@ -922,9 +927,12 @@ body {
 }
 
 .loading-text {
-    font-size: 1.2rem;
-    color: #666;
-    font-weight: 500;
+    font-size: 1.3rem;
+    color: #333;
+    /* 改为深色，在白色背景上可见 */
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
 }
 
 @keyframes ringRotate {
