@@ -236,7 +236,7 @@
                         <!-- 风格描述 -->
                         <div class="input-group">
                             <label for="promptInput">目标风格：</label>
-                            <input type="text" id="promptInput" value="转换成法国绘本风格" placeholder="输入目标风格，如'转换成法国绘本风格'"
+                            <input type="text" id="promptInput" value="" placeholder="输入目标风格，如'转换成法国绘本风格'"
                                 class="input-field">
                             <small class="input-hint">
                                 💡 例如：转换成日式动漫风格、转换成法国绘本风格、转换成卡通风格等
@@ -251,10 +251,26 @@
                     <div class="result-section">
                         <div id="loadingDiv" class="loading hidden">
                             <div class="loading-animation">
-                                <!-- 转换过程的圆环 -->
-                                <div class="convert-spinner">
-                                    <div class="spinner-circle"></div>
-                                    <div class="spinner-inner">AI</div>
+                                <!-- 交互式UI圆环 -->
+                                <div class="interactive-spinner">
+                                    <!-- 外层光晕 -->
+                                    <div class="spinner-glow"></div>
+                                    <!-- 主要圆环 -->
+                                    <div class="spinner-ring-outer">
+                                        <div class="spinner-ring-inner"></div>
+                                    </div>
+                                    <!-- 中心内容 -->
+                                    <div class="spinner-center">
+                                        <div class="center-icon">🤖</div>
+                                        <div class="center-text">AI</div>
+                                    </div>
+                                    <!-- 进度点 -->
+                                    <div class="progress-dots">
+                                        <div class="dot dot-1"></div>
+                                        <div class="dot dot-2"></div>
+                                        <div class="dot dot-3"></div>
+                                        <div class="dot dot-4"></div>
+                                    </div>
                                 </div>
                             </div>
                             <p>正在进行风格迁移，请稍候...</p>

@@ -615,12 +615,14 @@ async function convertImage(imageUrl, prompt) {
 function setButtonState(isLoading) {
     if (!elements.convertButton) return;
 
-    elements.convertButton.disabled = isLoading;
-
     if (isLoading) {
-        elements.convertButton.textContent = '⏳ 转换中...';
+        // 更新按钮状态为加载中
+        elements.convertButton.disabled = true;
+        elements.convertButton.textContent = '🔄 转换中...';
         elements.convertButton.classList.add('loading');
     } else {
+        // 恢复按钮到初始状态
+        elements.convertButton.disabled = false;
         elements.convertButton.innerHTML = '<span class="btn-text">🚀 开始风格迁移</span>';
         elements.convertButton.classList.remove('loading');
     }

@@ -882,64 +882,6 @@ body {
     box-shadow: var(--shadow-light);
 }
 
-/* 加载动画容器 */
-.loading-animation {
-    margin-bottom: 30px;
-}
-
-/* 转换过程圆环 */
-.convert-spinner {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    margin: 0 auto;
-}
-
-.spinner-circle {
-    width: 100%;
-    height: 100%;
-    border: 4px solid rgba(102, 126, 234, 0.2);
-    border-top: 4px solid var(--primary-purple);
-    border-radius: 50%;
-    animation: convertSpin 1.5s linear infinite;
-}
-
-.spinner-inner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: var(--primary-purple);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-/* 动画定义 */
-@keyframes convertSpin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
-
-    50% {
-        opacity: 0.6;
-        transform: translate(-50%, -50%) scale(1.1);
-    }
-}
-
 .loading p {
     font-size: 1.2rem;
     color: #333;
@@ -1054,133 +996,227 @@ body {
     transform: translateY(-2px);
 }
 
-/* 页脚 */
-.footer {
-    background: #1a1a1a;
-    color: white;
-    padding: 60px 0 20px;
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.footer-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
-    margin-bottom: 40px;
-}
-
-.footer-section h4 {
-    color: white;
-    margin-bottom: 20px;
-    font-size: 1.3rem;
-}
-
-.footer-section p {
-    color: #ccc;
-    margin-bottom: 10px;
-}
-
-.footer-section a {
-    color: var(--primary-purple);
-    text-decoration: none;
-}
-
-.footer-section a:hover {
-    text-decoration: underline;
-}
-
-.footer-bottom {
-    text-align: center;
-    padding-top: 20px;
-    border-top: 1px solid #333;
-    color: #999;
-}
-
 .hidden {
     display: none !important;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .nav-menu {
-        position: fixed;
-        top: 70px;
-        left: -100%;
-        width: 100%;
-        height: calc(100vh - 70px);
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(10px);
-        flex-direction: column;
-        justify-content: flex-start;
-        padding-top: 50px;
-        transition: var(--transition-fast);
+/* 加载动画容器 */
+.loading-animation {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 交互式UI圆环 */
+.interactive-spinner {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 外层光晕效果 */
+.spinner-glow {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* 主要外层圆环 */
+.spinner-ring-outer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid transparent;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--primary-purple), var(--primary-blue), var(--secondary-purple));
+    background-size: 300% 300%;
+    animation: gradientRotate 3s ease-in-out infinite, outerRingSpin 2s linear infinite;
+    padding: 4px;
+}
+
+/* 内层圆环 */
+.spinner-ring-inner {
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top: 3px solid rgba(255, 255, 255, 0.8);
+    border-right: 3px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    animation: innerRingSpin 1.5s linear infinite reverse;
+}
+
+/* 中心内容 */
+.spinner-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.center-icon {
+    font-size: 2rem;
+    margin-bottom: 2px;
+    animation: iconBounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.center-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--primary-purple);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    animation: textGlow 2s ease-in-out infinite;
+}
+
+/* 进度点 */
+.progress-dots {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--primary-purple);
+    border-radius: 50%;
+    opacity: 0.6;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+.dot-1 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: dotPulse 2s ease-in-out infinite 0s;
+}
+
+.dot-2 {
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    animation: dotPulse 2s ease-in-out infinite 0.5s;
+}
+
+.dot-3 {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: dotPulse 2s ease-in-out infinite 1s;
+}
+
+.dot-4 {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    animation: dotPulse 2s ease-in-out infinite 1.5s;
+}
+
+/* 动画定义 */
+@keyframes glowPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
     }
 
-    .nav-menu.active {
-        left: 0;
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes gradientRotate {
+    0% {
+        background-position: 0% 50%;
     }
 
-    .nav-toggle {
-        display: flex;
+    50% {
+        background-position: 100% 50%;
     }
 
-    .hero-content {
-        grid-template-columns: 1fr;
-        gap: 40px;
-        text-align: center;
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes outerRingSpin {
+    0% {
+        transform: rotate(0deg);
     }
 
-    .hero-title {
-        font-size: 2.5rem;
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes innerRingSpin {
+    0% {
+        transform: rotate(0deg);
     }
 
-    .hero-features {
-        justify-content: center;
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes iconBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
     }
 
-    .section-title {
-        font-size: 2rem;
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+@keyframes textGlow {
+
+    0%,
+    100% {
+        opacity: 1;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
 
-    .section-subtitle {
-        font-size: 1.1rem;
+    50% {
+        opacity: 0.8;
+        text-shadow: 0 0 10px rgba(102, 126, 234, 0.6);
+    }
+}
+
+@keyframes dotPulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
     }
 
-    .hero-actions {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .gallery-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-
-    .app-container {
-        padding: 30px 20px;
-    }
-
-    .result-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .download-btn,
-    .new-task-btn {
-        width: 100%;
-        max-width: 200px;
-    }
-
-    .footer-content {
-        grid-template-columns: 1fr;
-        text-align: center;
+    50% {
+        opacity: 1;
+        transform: scale(1.3);
     }
 }
