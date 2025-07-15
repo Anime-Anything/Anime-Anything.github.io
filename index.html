@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动漫头像生成器 V2.0</title>
+    <title>动漫风格迁移工具 V2.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="container">
         <header>
-            <h1>🎨 动漫头像生成器 V2.0</h1>
-            <p>将您的图片转换为精美的动漫风格头像</p>
+            <h1>🎨 动漫风格迁移工具 V2.0</h1>
+            <p>将您的图片转换为不同的动漫绘画风格</p>
         </header>
 
         <main>
@@ -62,30 +62,30 @@
 
                 <!-- 风格描述 -->
                 <div class="input-group">
-                    <label for="promptInput">风格描述：</label>
-                    <input type="text" id="promptInput" value="法国绘本风格" placeholder="输入风格描述，如'法国绘本风格'"
+                    <label for="promptInput">目标风格：</label>
+                    <input type="text" id="promptInput" value="转换成法国绘本风格" placeholder="输入目标风格，如'转换成法国绘本风格'"
                         class="input-field">
                     <small class="input-hint">
-                        💡 例如：日式动漫风格、法国绘本风格、卡通风格等
+                        💡 例如：转换成日式动漫风格、转换成法国绘本风格、转换成卡通风格等
                     </small>
                 </div>
 
                 <button id="convertButton" class="convert-btn">
-                    <span class="btn-text">🚀 开始转换</span>
+                    <span class="btn-text">🚀 开始风格迁移</span>
                 </button>
             </div>
 
             <div class="result-section">
                 <div id="loadingDiv" class="loading hidden">
                     <div class="loading-spinner"></div>
-                    <p>正在生成动漫风格头像，请稍候...</p>
+                    <p>正在进行风格迁移，请稍候...</p>
                     <small>通常需要 30-60 秒，请耐心等待</small>
                 </div>
 
                 <div id="resultDiv" class="result hidden">
-                    <h3>✨ 转换结果</h3>
+                    <h3>✨ 风格迁移结果</h3>
                     <div class="image-container">
-                        <img id="resultImage" alt="转换后的动漫风格头像" class="result-image">
+                        <img id="resultImage" alt="风格迁移后的图片" class="result-image">
                     </div>
                     <div class="result-actions">
                         <button id="downloadButton" class="download-btn">💾 下载图片</button>
@@ -94,7 +94,7 @@
                 </div>
 
                 <div id="errorDiv" class="error hidden">
-                    <h3>⚠️ 转换失败</h3>
+                    <h3>⚠️ 风格迁移失败</h3>
                     <p id="errorMessage"></p>
                     <button id="retryButton" class="retry-btn">🔄 重试</button>
                 </div>

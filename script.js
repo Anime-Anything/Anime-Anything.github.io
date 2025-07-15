@@ -88,7 +88,7 @@ function setButtonState(disabled) {
         elements.convertButton.querySelector('.btn-text').textContent = '⏳ 处理中...';
     } else {
         elements.convertButton.classList.remove('disabled');
-        elements.convertButton.querySelector('.btn-text').textContent = '🚀 开始转换';
+        elements.convertButton.querySelector('.btn-text').textContent = '�� 开始风格迁移';
     }
 }
 
@@ -511,7 +511,7 @@ function validateInputs() {
     const prompt = elements.promptInput.value.trim();
 
     if (!prompt) {
-        throw new Error('请输入风格描述');
+        throw new Error('请输入目标风格');
     }
 
     let imageUrl;
@@ -548,7 +548,7 @@ function validateInputs() {
  * 页面加载完成后初始化
  */
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('动漫头像生成器 V2.0 已加载');
+    console.log('动漫风格迁移工具 V2.0 已加载');
 
     // 检查配置
     if (CONFIG.PROXY_API_URL.includes('your-project-name.vercel.app')) {
@@ -563,5 +563,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // 设置默认输入模式为上传
     switchInputMode('upload');
 
-    console.log('✅ V2.0 初始化完成，支持拖拽上传！');
+    console.log('✅ V2.0 初始化完成，支持风格迁移功能！');
 }); 

@@ -146,89 +146,177 @@ export default async function handler(req, res) {
     // 设置 CORS 头
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    // 处理 OPTIONS 预检请求
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    // 只允许 POST 请求
+    if (req.method !== 'POST') {
+        return res.status(405).json({
+            success: false,
+            error: 'Method not allowed'
+        });
+    }
 
     try {
-        // 处理 OPTIONS 预检请求
-        if (req.method === 'OPTIONS') {
-            return res.status(200).end();
-        }
-
-        // 处理 GET 请求 - 返回 API 说明
-        if (req.method === 'GET') {
-            return res.status(200).json({
-                success: true,
-                message: '动漫头像风格迁移 API',
-                usage: {
-                    method: 'POST',
-                    endpoint: '/api/convert',
-                    body: {
-                        imageUrl: '图片URL地址',
-                        prompt: '风格描述（可选）'
-                    }
-                },
-                example: {
-                    imageUrl: 'https://example.com/photo.jpg',
-                    prompt: '动漫风格，可爱，高质量'
-                }
-            });
-        }
-
-        // 只接受 POST 请求
-        if (req.method !== 'POST') {
-            return res.status(405).json({
-                success: false,
-                error: '仅支持 POST 请求'
-            });
-        }
-
-        // 解析请求体
         const { imageUrl, prompt } = req.body;
 
         // 验证输入参数
         if (!imageUrl || !prompt) {
             return res.status(400).json({
                 success: false,
-                error: '缺少必要参数：imageUrl 和 prompt'
+                error: '缺少必需参数：imageUrl 或 prompt'
             });
         }
 
-        // URL 基本验证
-        try {
-            new URL(imageUrl);
-        } catch {
-            return res.status(400).json({
-                success: false,
-                error: '请提供有效的图片 URL'
+        console.log('收到转换请求:', { imageUrl, prompt });
+
+        const API_KEY = process.env.DASHSCOPE_API_KEY;
+        if (!API_KEY) {
+            throw new Error('DASHSCOPE_API_KEY 环境变量未配置');
+        }
+
+        // 调用阿里云百炼 API - 风格迁移任务
+        const response = await fetch('https://dashscope.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis', {
+            method: 'POST',
+            headers: {
+                'X-DashScope-Async': 'enable',
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: "wanx2.1-imageedit",
+                input: {
+                    function: "description_edit",
+                    prompt: prompt,
+                    base_image_url: imageUrl
+                },
+                parameters: {
+                    n: 1
+                }
+            })
+        });
+
+        const result = await response.json();
+        console.log('API 响应状态:', response.status);
+        console.log('API 响应数据:', result);
+
+        if (!response.ok) {
+            throw new Error(`API 调用失败: ${response.status} - ${result.message || '未知错误'}`);
+        }
+
+        // 检查是否是异步任务
+        if (result.output && result.output.task_id) {
+            console.log('检测到异步任务，开始轮询结果...');
+
+            const taskId = result.output.task_id;
+            const finalResult = await pollTaskResult(taskId, API_KEY);
+
+            if (finalResult.success) {
+                return res.status(200).json({
+                    success: true,
+                    imageUrl: finalResult.imageUrl,
+                    message: '风格迁移完成'
+                });
+            } else {
+                throw new Error(finalResult.error);
+            }
+        }
+
+        // 如果是同步返回结果
+        if (result.output && result.output.results && result.output.results.length > 0) {
+            const imageUrl = result.output.results[0].url;
+            return res.status(200).json({
+                success: true,
+                imageUrl: imageUrl,
+                message: '风格迁移完成'
             });
         }
 
-        console.log(`开始处理图像转换任务，图片URL: ${imageUrl}, 风格提示: ${prompt}`);
-
-        // 创建任务
-        const taskId = await createImageTask(imageUrl, prompt);
-        console.log(`任务创建成功，task_id: ${taskId}`);
-
-        // 轮询任务直到完成
-        const result = await pollTaskUntilComplete(taskId);
-
-        return res.status(200).json(result);
+        // 如果没有预期的结果格式
+        throw new Error('API 返回了意外的响应格式');
 
     } catch (error) {
-        console.error('处理请求时出错:', error);
-        console.error('错误详情:', {
-            message: error.message,
-            stack: error.stack,
-            apiKey: process.env.DASHSCOPE_API_KEY ? '已配置' : '未配置'
-        });
+        console.error('转换过程中发生错误:', error);
 
         return res.status(500).json({
             success: false,
-            error: `服务器错误: ${error.message}`,
-            debug: {
-                hasApiKey: !!process.env.DASHSCOPE_API_KEY,
-                timestamp: new Date().toISOString()
-            }
+            error: error.message || '服务器内部错误'
         });
     }
+}
+
+// 轮询异步任务结果
+async function pollTaskResult(taskId, apiKey, maxAttempts = 20, interval = 3000) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        console.log(`轮询尝试 ${attempt}/${maxAttempts}...`);
+
+        try {
+            const response = await fetch(`https://dashscope.aliyuncs.com/api/v1/tasks/${taskId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+            console.log(`轮询结果 ${attempt}:`, result);
+
+            if (result.output) {
+                // 任务完成
+                if (result.output.task_status === 'SUCCEEDED' &&
+                    result.output.results &&
+                    result.output.results.length > 0) {
+
+                    const imageUrl = result.output.results[0].url;
+                    console.log('✅ 任务成功完成，图片URL:', imageUrl);
+
+                    return {
+                        success: true,
+                        imageUrl: imageUrl
+                    };
+                }
+
+                // 任务失败
+                if (result.output.task_status === 'FAILED') {
+                    return {
+                        success: false,
+                        error: `任务失败: ${result.output.message || '未知错误'}`
+                    };
+                }
+
+                // 任务仍在处理中
+                if (result.output.task_status === 'PENDING' || result.output.task_status === 'RUNNING') {
+                    console.log(`任务状态: ${result.output.task_status}, 继续等待...`);
+                }
+            }
+
+            // 等待下次轮询
+            if (attempt < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, interval));
+            }
+
+        } catch (error) {
+            console.error(`轮询尝试 ${attempt} 失败:`, error);
+
+            if (attempt === maxAttempts) {
+                return {
+                    success: false,
+                    error: `轮询失败: ${error.message}`
+                };
+            }
+
+            // 轮询失败时也要等待
+            await new Promise(resolve => setTimeout(resolve, interval));
+        }
+    }
+
+    return {
+        success: false,
+        error: '任务处理超时，请稍后重试'
+    };
 } 
