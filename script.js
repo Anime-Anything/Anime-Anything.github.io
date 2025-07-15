@@ -616,9 +616,8 @@ function setButtonState(isLoading) {
     if (!elements.convertButton) return;
 
     if (isLoading) {
-        // 更新按钮状态为加载中
+        // 更新按钮状态为加载中 - 只禁用按钮，不改变文字
         elements.convertButton.disabled = true;
-        elements.convertButton.textContent = '转换中...';
         elements.convertButton.classList.add('loading');
     } else {
         // 恢复按钮到初始状态

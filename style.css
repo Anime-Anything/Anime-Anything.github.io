@@ -882,15 +882,56 @@ body {
     box-shadow: none;
 }
 
-.loading p {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 10px;
+/* 新的加载动画 - 机器人+圆环 */
+.loading-spinner-container {
+    position: relative;
+    display: inline-block;
+    width: 120px;
+    height: 120px;
 }
 
-.loading small {
-    color: #666;
-    font-size: 1rem;
+.spinner-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 120px;
+    border: 4px solid rgba(102, 126, 234, 0.2);
+    border-top: 4px solid var(--primary-purple);
+    border-radius: 50%;
+    animation: ringRotate 1.5s linear infinite;
+}
+
+.robot-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    animation: robotPulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes ringRotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes robotPulse {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
 }
 
 .result {
@@ -998,61 +1039,6 @@ body {
 
 .hidden {
     display: none !important;
-}
-
-/* 加载动画容器 */
-.loading-animation {
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* 简化的机器人动画 */
-.simple-spinner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.robot-icon {
-    font-size: 4rem;
-    margin-bottom: 10px;
-    animation: robotBounce 1.5s ease-in-out infinite;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-}
-
-.loading-text {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--primary-purple);
-    animation: textPulse 2s ease-in-out infinite;
-}
-
-/* 简化的动画 */
-@keyframes robotBounce {
-
-    0%,
-    100% {
-        transform: translateY(0) scale(1);
-    }
-
-    50% {
-        transform: translateY(-8px) scale(1.05);
-    }
-}
-
-@keyframes textPulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
 }
 
 /* 页脚 */
