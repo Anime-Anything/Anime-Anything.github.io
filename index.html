@@ -4,28 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动漫头像生成器 V1.0</title>
+    <title>动漫头像生成器 V2.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="container">
         <header>
-            <h1>🎨 动漫头像生成器 V1.0</h1>
+            <h1>🎨 动漫头像生成器 V2.0</h1>
             <p>将您的图片转换为精美的动漫风格头像</p>
         </header>
 
         <main>
             <div class="input-section">
-                <div class="input-group">
-                    <label for="imageUrlInput">图片 URL：</label>
-                    <input type="text" id="imageUrlInput" placeholder="请输入公网可访问的图片URL，例如：https://example.com/image.jpg"
-                        class="input-field">
-                    <small class="input-hint">
-                        💡 提示：请确保图片 URL 可以公开访问，支持 HTTPS 链接
-                    </small>
+                <!-- 图片输入方式选择 -->
+                <div class="input-mode-tabs">
+                    <button id="uploadModeBtn" class="tab-btn active">📁 上传图片</button>
+                    <button id="urlModeBtn" class="tab-btn">🔗 URL链接</button>
                 </div>
 
+                <!-- 图片上传区域 -->
+                <div id="uploadMode" class="input-mode active">
+                    <div id="dropZone" class="drop-zone">
+                        <div class="drop-content">
+                            <div class="upload-icon">📤</div>
+                            <h3>拖拽图片到此处</h3>
+                            <p>或者 <button id="fileSelectBtn" class="file-select-btn">点击选择文件</button></p>
+                            <small>支持 JPG、PNG、WEBP 格式，建议大小 &lt; 5MB</small>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+
+                    <!-- 图片预览 -->
+                    <div id="imagePreview" class="image-preview hidden">
+                        <div class="preview-header">
+                            <h4>📷 图片预览</h4>
+                            <button id="changeImageBtn" class="change-btn">更换图片</button>
+                        </div>
+                        <img id="previewImage" alt="预览图片">
+                        <div class="image-info">
+                            <span id="imageInfo"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- URL输入区域 -->
+                <div id="urlMode" class="input-mode">
+                    <div class="input-group">
+                        <label for="imageUrlInput">图片 URL：</label>
+                        <input type="text" id="imageUrlInput"
+                            placeholder="请输入公网可访问的图片URL，例如：https://example.com/image.jpg" class="input-field">
+                        <small class="input-hint">
+                            💡 提示：请确保图片 URL 可以公开访问，支持 HTTPS 链接
+                        </small>
+                    </div>
+                </div>
+
+                <!-- 风格描述 -->
                 <div class="input-group">
                     <label for="promptInput">风格描述：</label>
                     <input type="text" id="promptInput" value="法国绘本风格" placeholder="输入风格描述，如'法国绘本风格'"
@@ -71,7 +106,7 @@
                 <small>
                     ⚡ 基于阿里云百炼 API |
                     <a href="https://github.com" target="_blank">GitHub</a> |
-                    V1.0
+                    V2.0
                 </small>
             </p>
         </footer>

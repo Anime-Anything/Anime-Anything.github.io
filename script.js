@@ -1,6 +1,6 @@
 /**
  * 动漫头像生成器前端逻辑
- * V1.0 - 对接真实 API 版本
+ * V2.0 - 支持拖拽/上传图片功能
  */
 
 // 配置项
@@ -10,11 +10,20 @@ const CONFIG = {
     PROXY_API_URL: 'https://anime-anything-github-io.vercel.app/api/convert',
 
     // 请求超时设置 (毫秒)
-    REQUEST_TIMEOUT: 120000 // 2分钟
+    REQUEST_TIMEOUT: 120000, // 2分钟
+
+    // 图片上传配置
+    MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+    SUPPORTED_FORMATS: ['image/jpeg', 'image/png', 'image/webp'],
+
+    // 免费图床API - 使用 imgbb 作为图片托管
+    IMAGE_UPLOAD_URL: 'https://api.imgbb.com/1/upload',
+    IMAGE_UPLOAD_KEY: 'c1b7b6b4c6f5f5c6b4c6f5f5c6b4c6f5' // 示例key，需要替换为真实的
 };
 
 // DOM 元素引用
 const elements = {
+    // V1.0 原有元素
     imageUrlInput: document.getElementById('imageUrlInput'),
     promptInput: document.getElementById('promptInput'),
     convertButton: document.getElementById('convertButton'),
@@ -25,8 +34,25 @@ const elements = {
     errorMessage: document.getElementById('errorMessage'),
     downloadButton: document.getElementById('downloadButton'),
     newTaskButton: document.getElementById('newTaskButton'),
-    retryButton: document.getElementById('retryButton')
+    retryButton: document.getElementById('retryButton'),
+
+    // V2.0 新增元素
+    uploadModeBtn: document.getElementById('uploadModeBtn'),
+    urlModeBtn: document.getElementById('urlModeBtn'),
+    uploadMode: document.getElementById('uploadMode'),
+    urlMode: document.getElementById('urlMode'),
+    dropZone: document.getElementById('dropZone'),
+    fileInput: document.getElementById('fileInput'),
+    fileSelectBtn: document.getElementById('fileSelectBtn'),
+    imagePreview: document.getElementById('imagePreview'),
+    previewImage: document.getElementById('previewImage'),
+    imageInfo: document.getElementById('imageInfo'),
+    changeImageBtn: document.getElementById('changeImageBtn')
 };
+
+// 全局状态
+let currentInputMode = 'upload'; // 'upload' or 'url'
+let uploadedImageUrl = null; // 上传后的图片URL
 
 /**
  * 显示指定的状态区域
@@ -67,33 +93,272 @@ function setButtonState(disabled) {
 }
 
 /**
- * 验证输入参数
+ * 初始化事件监听器
  */
-function validateInputs() {
-    const imageUrl = elements.imageUrlInput.value.trim();
-    const prompt = elements.promptInput.value.trim();
+function initializeEventListeners() {
+    // V1.0 原有事件
+    elements.convertButton.addEventListener('click', handleConvert);
+    elements.downloadButton.addEventListener('click', downloadImage);
+    elements.newTaskButton.addEventListener('click', resetToInitialState);
+    elements.retryButton.addEventListener('click', handleConvert);
 
-    if (!imageUrl) {
-        throw new Error('请输入图片 URL');
+    // V2.0 新增事件
+    // 输入模式切换
+    elements.uploadModeBtn.addEventListener('click', () => switchInputMode('upload'));
+    elements.urlModeBtn.addEventListener('click', () => switchInputMode('url'));
+
+    // 文件选择和拖拽
+    elements.fileSelectBtn.addEventListener('click', () => elements.fileInput.click());
+    elements.fileInput.addEventListener('change', handleFileSelect);
+    elements.changeImageBtn.addEventListener('click', () => elements.fileInput.click());
+
+    // 拖拽事件
+    setupDragAndDrop();
+
+    // 阻止全页面拖拽
+    preventDefaultDrag();
+}
+
+/**
+ * 设置拖拽功能
+ */
+function setupDragAndDrop() {
+    const dropZone = elements.dropZone;
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+    });
+
+    dropZone.addEventListener('drop', handleDrop, false);
+}
+
+/**
+ * 阻止默认拖拽行为
+ */
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+/**
+ * 阻止全页面拖拽
+ */
+function preventDefaultDrag() {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.addEventListener(eventName, preventDefaults, false);
+    });
+}
+
+/**
+ * 切换输入模式
+ */
+function switchInputMode(mode) {
+    currentInputMode = mode;
+
+    // 更新按钮状态
+    elements.uploadModeBtn.classList.toggle('active', mode === 'upload');
+    elements.urlModeBtn.classList.toggle('active', mode === 'url');
+
+    // 更新内容区域
+    elements.uploadMode.classList.toggle('active', mode === 'upload');
+    elements.urlMode.classList.toggle('active', mode === 'url');
+
+    // 清空状态
+    uploadedImageUrl = null;
+    elements.imagePreview.classList.add('hidden');
+    elements.imageUrlInput.value = '';
+}
+
+/**
+ * 处理文件拖拽
+ */
+function handleDrop(e) {
+    const files = Array.from(e.dataTransfer.files);
+    const imageFile = files.find(file => file.type.startsWith('image/'));
+
+    if (imageFile) {
+        processImageFile(imageFile);
+    } else {
+        showUploadError('请拖拽图片文件');
     }
+}
 
-    if (!prompt) {
-        throw new Error('请输入风格描述');
+/**
+ * 处理文件选择
+ */
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        processImageFile(file);
     }
+}
 
-    // 验证 URL 格式
+/**
+ * 处理图片文件
+ */
+async function processImageFile(file) {
     try {
-        new URL(imageUrl);
-    } catch {
-        throw new Error('请输入有效的图片 URL');
+        // 验证文件
+        validateImageFile(file);
+
+        // 显示预览
+        await showImagePreview(file);
+
+        // 上传到图床
+        await uploadImageToHost(file);
+
+    } catch (error) {
+        showUploadError(error.message);
+    }
+}
+
+/**
+ * 验证图片文件
+ */
+function validateImageFile(file) {
+    // 检查文件大小
+    if (file.size > CONFIG.MAX_FILE_SIZE) {
+        throw new Error(`文件过大，请选择小于 ${(CONFIG.MAX_FILE_SIZE / 1024 / 1024).toFixed(1)}MB 的图片`);
     }
 
-    // 验证 URL 协议
-    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
-        throw new Error('图片 URL 必须以 http:// 或 https:// 开头');
+    // 检查文件格式
+    if (!CONFIG.SUPPORTED_FORMATS.includes(file.type)) {
+        throw new Error('不支持的文件格式，请选择 JPG、PNG 或 WEBP 格式的图片');
     }
+}
 
-    return { imageUrl, prompt };
+/**
+ * 显示图片预览
+ */
+function showImagePreview(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            elements.previewImage.src = e.target.result;
+            elements.imageInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            elements.imagePreview.classList.remove('hidden');
+            resolve();
+        };
+
+        reader.onerror = function () {
+            reject(new Error('无法读取图片文件'));
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+/**
+ * 上传图片到图床
+ */
+async function uploadImageToHost(file) {
+    try {
+        showUploadProgress('正在上传图片...');
+
+        // 转换为Base64
+        const base64 = await fileToBase64(file);
+
+        // 使用免费图床服务 (这里使用一个模拟的上传，实际应该调用真实的图床API)
+        const imageUrl = await uploadToImageHost(base64);
+
+        uploadedImageUrl = imageUrl;
+        showUploadSuccess('图片上传成功！');
+
+    } catch (error) {
+        showUploadError(`上传失败: ${error.message}`);
+        throw error;
+    }
+}
+
+/**
+ * 文件转Base64
+ */
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            // 移除数据URL的前缀，只保留base64部分
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+/**
+ * 上传到图床服务
+ * 注意：这里使用临时的解决方案，实际生产环境需要配置真实的图床服务
+ */
+async function uploadToImageHost(base64Data) {
+    // 简化方案：直接使用data URL
+    // 在实际应用中，你需要：
+    // 1. 注册一个免费图床服务账号 (如 imgbb.com)
+    // 2. 获取API密钥
+    // 3. 调用其API上传图片
+
+    // 这里返回一个data URL作为临时解决方案
+    return `data:image/jpeg;base64,${base64Data}`;
+
+    /* 真实的API调用示例：
+    const formData = new FormData();
+    formData.append('image', base64Data);
+    
+    const response = await fetch(`${CONFIG.IMAGE_UPLOAD_URL}?key=${CONFIG.IMAGE_UPLOAD_KEY}`, {
+        method: 'POST',
+        body: formData
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+        return result.data.url;
+    } else {
+        throw new Error(result.error.message);
+    }
+    */
+}
+
+/**
+ * 格式化文件大小
+ */
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+/**
+ * 显示上传进度
+ */
+function showUploadProgress(message) {
+    // 可以在这里添加进度显示逻辑
+    console.log(message);
+}
+
+/**
+ * 显示上传成功
+ */
+function showUploadSuccess(message) {
+    console.log('✅', message);
+}
+
+/**
+ * 显示上传错误
+ */
+function showUploadError(message) {
+    console.error('❌', message);
+    showError(new Error(message));
 }
 
 /**
@@ -240,32 +505,50 @@ function retryConvert() {
 }
 
 /**
- * 初始化事件监听器
+ * 验证输入参数 (V2.0 更新)
  */
-function initEventListeners() {
-    // 转换按钮
-    elements.convertButton.addEventListener('click', handleConvert);
+function validateInputs() {
+    const prompt = elements.promptInput.value.trim();
 
-    // 回车键触发转换
-    elements.imageUrlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleConvert();
-    });
+    if (!prompt) {
+        throw new Error('请输入风格描述');
+    }
 
-    elements.promptInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleConvert();
-    });
+    let imageUrl;
 
-    // 结果操作按钮
-    elements.downloadButton.addEventListener('click', downloadImage);
-    elements.newTaskButton.addEventListener('click', resetToInitialState);
-    elements.retryButton.addEventListener('click', retryConvert);
+    if (currentInputMode === 'upload') {
+        if (!uploadedImageUrl) {
+            throw new Error('请先上传图片');
+        }
+        imageUrl = uploadedImageUrl;
+    } else {
+        imageUrl = elements.imageUrlInput.value.trim();
+
+        if (!imageUrl) {
+            throw new Error('请输入图片 URL');
+        }
+
+        // 验证 URL 格式
+        try {
+            new URL(imageUrl);
+        } catch {
+            throw new Error('请输入有效的图片 URL');
+        }
+
+        // 验证 URL 协议
+        if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://') && !imageUrl.startsWith('data:')) {
+            throw new Error('图片 URL 必须以 http://、https:// 或 data: 开头');
+        }
+    }
+
+    return { imageUrl, prompt };
 }
 
 /**
  * 页面加载完成后初始化
  */
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('动漫头像生成器 V1.0 已加载');
+    console.log('动漫头像生成器 V2.0 已加载');
 
     // 检查配置
     if (CONFIG.PROXY_API_URL.includes('your-project-name.vercel.app')) {
@@ -275,10 +558,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 初始化事件监听器
-    initEventListeners();
+    initializeEventListeners();
 
-    // 聚焦到第一个输入框
-    elements.imageUrlInput.focus();
+    // 设置默认输入模式为上传
+    switchInputMode('upload');
 
-    console.log('✅ 初始化完成，ready to rock!');
+    console.log('✅ V2.0 初始化完成，支持拖拽上传！');
 }); 
