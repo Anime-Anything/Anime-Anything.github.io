@@ -876,10 +876,18 @@ body {
 .loading {
     text-align: center;
     padding: 60px 30px;
-    background: transparent;
+    background: white;
     border-radius: 15px;
     margin-bottom: 30px;
-    box-shadow: none;
+    box-shadow: var(--shadow-light);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.loading:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* 新的加载动画 - 机器人+圆环 */
@@ -888,6 +896,7 @@ body {
     display: inline-block;
     width: 120px;
     height: 120px;
+    margin-bottom: 20px;
 }
 
 .spinner-ring {
@@ -910,6 +919,12 @@ body {
     font-size: 3rem;
     animation: robotPulse 2s ease-in-out infinite;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    color: #666;
+    font-weight: 500;
 }
 
 @keyframes ringRotate {
@@ -941,6 +956,14 @@ body {
     padding: 30px;
     box-shadow: var(--shadow-light);
     margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.result:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .result h3 {
@@ -1006,6 +1029,14 @@ body {
     border-radius: 15px;
     padding: 30px;
     margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.error:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .error h3 {

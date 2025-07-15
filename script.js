@@ -372,6 +372,8 @@ async function processImageFile(file) {
         // 上传到图床
         await uploadImageToHost(file);
 
+        // 不再自动转换，让用户手动点击按钮
+
     } catch (error) {
         showUploadError(error.message);
     }
@@ -517,12 +519,12 @@ function clearUploadState() {
  * 初始化转换功能
  */
 function initializeConversion() {
-    // 转换按钮
+    // 转换按钮事件监听
     if (elements.convertButton) {
         elements.convertButton.addEventListener('click', handleConvert);
     }
 
-    // 下载按钮
+    // 下载按钮事件监听
     if (elements.downloadBtn) {
         elements.downloadBtn.addEventListener('click', downloadImage);
     }
@@ -652,14 +654,10 @@ function showState(state) {
 
     if (targetElement) {
         targetElement.classList.remove('hidden');
-        // 添加出现动画
-        targetElement.style.opacity = '0';
-        targetElement.style.transform = 'translateY(20px)';
+        // 平滑滚动到目标区域
         setTimeout(() => {
-            targetElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            targetElement.style.opacity = '1';
-            targetElement.style.transform = 'translateY(0)';
-        }, 100);
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
     }
 }
 
