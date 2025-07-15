@@ -24,7 +24,7 @@ async function createImageTask(imageUrl, prompt) {
     const requestBody = {
         model: "wanx2.1-imageedit",
         input: {
-            function: "description_edit",
+            function: "stylization_all",
             prompt: prompt || "转换为动漫风格",
             base_image_url: imageUrl
         },
@@ -190,7 +190,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 model: "wanx2.1-imageedit",
                 input: {
-                    function: "description_edit",
+                    function: "stylization_all",
                     prompt: prompt,
                     base_image_url: imageUrl
                 },
