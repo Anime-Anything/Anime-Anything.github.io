@@ -3,942 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI动漫头像生成器 - Anime Anything</title>
+    <title>AI动漫头像生成器</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --accent-color: #4ecdc4;
-            --secondary-color: #ff6b6b;
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.8);
-            --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --shadow-medium: 0 16px 48px rgba(0, 0, 0, 0.15);
-            --shadow-heavy: 0 24px 64px rgba(0, 0, 0, 0.25);
-        }
-
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--primary-gradient);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
         }
-
-        .background-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.03;
-            background-image: 
-                radial-gradient(circle at 25% 25%, #ffffff 2px, transparent 2px),
-                radial-gradient(circle at 75% 75%, #ffffff 1px, transparent 1px);
-            background-size: 50px 50px, 30px 30px;
-            pointer-events: none;
-            z-index: -1;
-        }
-
         .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 0 24px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        .header {
+        h1 {
             text-align: center;
-            padding: 80px 0 60px;
-            position: relative;
+            color: #333;
         }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(78, 205, 196, 0.2) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(40px);
-            z-index: -1;
+        .form-group {
+            margin-bottom: 20px;
         }
-
-        .header h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f093fb, #ff6b6b);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 24px;
-            animation: gradientShift 8s ease-in-out infinite;
-            letter-spacing: -0.02em;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .header p {
-            font-size: 1.3rem;
-            font-weight: 400;
-            opacity: 0.9;
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.6;
-            letter-spacing: 0.005em;
-        }
-
-        .main-workspace {
-            display: grid;
-            grid-template-columns: minmax(400px, 1fr) minmax(400px, 1fr);
-            gap: 40px;
-            margin-bottom: 80px;
-            align-items: start;
-        }
-
-        .control-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 32px;
-            padding: 40px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-medium);
-            position: sticky;
-            top: 24px;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 32px;
-            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .upload-zone {
-            border: 2px dashed var(--glass-border);
-            border-radius: 24px;
-            padding: 60px 32px;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: pointer;
-            margin-bottom: 32px;
-            position: relative;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .upload-zone::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.6s;
-        }
-
-        .upload-zone:hover::before {
-            left: 100%;
-        }
-
-        .upload-zone:hover {
-            border-color: var(--accent-color);
-            background: rgba(78, 205, 196, 0.05);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .upload-zone.dragover {
-            border-color: var(--secondary-color);
-            background: rgba(255, 107, 107, 0.1);
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            font-size: 3.5rem;
-            margin-bottom: 16px;
-            background: linear-gradient(45deg, var(--accent-color), #45b7d1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .upload-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .upload-hint {
-            font-size: 0.95rem;
-            opacity: 0.7;
-            color: var(--text-secondary);
-        }
-
-        #imageInput {
-            display: none;
-        }
-
-        .preview-container {
-            margin-top: 24px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow-light);
-            background: rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-
-        .preview-image {
-            width: 100%;
-            height: auto;
+        label {
             display: block;
-            max-height: 300px;
-            object-fit: cover;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
         }
-
-        .input-group {
-            margin-bottom: 32px;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .prompt-container {
-            position: relative;
-        }
-
-        .prompt-textarea {
+        input[type="file"] {
             width: 100%;
-            min-height: 120px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid var(--glass-border);
-            border-radius: 16px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-family: inherit;
-            line-height: 1.6;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             resize: vertical;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
         }
-
-        .prompt-textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            background: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.1);
-        }
-
-        .prompt-textarea::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .prompt-suggestions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .suggestion-tag {
-            padding: 6px 14px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .suggestion-tag:hover {
-            background: rgba(78, 205, 196, 0.2);
-            border-color: var(--accent-color);
-            transform: translateY(-1px);
-        }
-
-        .advanced-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .control-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .control-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .control-label {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .control-value {
-            background: linear-gradient(45deg, var(--accent-color), #45b7d1);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
+        button {
+            background: #007bff;
             color: white;
-        }
-
-        .slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.1);
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .generate-button {
-            width: 100%;
-            padding: 20px;
-            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            padding: 12px 30px;
             border: none;
-            border-radius: 16px;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 700;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 16px;
         }
-
-        .generate-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
+        button:hover {
+            background: #0056b3;
         }
-
-        .generate-button:hover::before {
-            left: 100%;
-        }
-
-        .generate-button:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-heavy);
-        }
-
-        .generate-button:disabled {
-            opacity: 0.6;
+        button:disabled {
+            background: #ccc;
             cursor: not-allowed;
-            transform: none;
         }
-
-        .generate-button .loading-spinner {
-            display: none;
-            animation: spin 1s linear infinite;
+        .preview {
+            max-width: 300px;
+            max-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
         }
-
-        .generate-button.loading .loading-spinner {
-            display: inline-block;
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .result-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 32px;
-            padding: 40px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-medium);
+        .status.pending { background: #fff3cd; color: #856404; }
+        .status.running { background: #d4edda; color: #155724; }
+        .status.success { background: #d1ecf1; color: #0c5460; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .result {
+            margin-top: 20px;
             text-align: center;
         }
-
-        .status-display {
-            margin-bottom: 32px;
-        }
-
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            border: 1px solid var(--glass-border);
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        .status-pending { background: #ffa726; }
-        .status-running { background: #42a5f5; }
-        .status-succeeded { background: #66bb6a; }
-        .status-failed { background: #ef5350; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.1); }
-        }
-
-        .status-text {
-            font-weight: 500;
-            font-size: 1rem;
-        }
-
-        .progress-container {
-            margin: 24px 0;
-            display: none;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(45deg, var(--accent-color), #45b7d1);
-            border-radius: 4px;
-            transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            width: 0%;
-        }
-
-        .result-display {
-            margin-top: 32px;
-        }
-
-        .placeholder-content {
-            opacity: 0.6;
-            padding: 80px 32px;
-        }
-
-        .placeholder-icon {
-            font-size: 5rem;
-            margin-bottom: 24px;
-        }
-
-        .placeholder-text {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-        }
-
-        .result-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .image-frame {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow-light);
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .image-frame img {
-            width: 100%;
+        .result img {
+            max-width: 100%;
             height: auto;
-            display: block;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px;
         }
-
-        .image-tag {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-        }
-
-        .download-button {
-            padding: 12px 32px;
-            background: linear-gradient(45deg, var(--accent-color), #45b7d1);
-            border: none;
-            border-radius: 25px;
-            color: white;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .download-button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
-        }
-
-        .floating-orbs {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: float 12s ease-in-out infinite;
-        }
-
-        .orb:nth-child(1) {
-            width: 120px;
-            height: 120px;
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-        }
-
-        .orb:nth-child(2) {
-            width: 80px;
-            height: 80px;
-            top: 70%;
-            right: 10%;
-            animation-delay: 4s;
-        }
-
-        .orb:nth-child(3) {
-            width: 150px;
-            height: 150px;
-            bottom: 10%;
-            left: 15%;
-            animation-delay: 8s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-            33% { transform: translateY(-30px) rotate(120deg); opacity: 0.6; }
-            66% { transform: translateY(-15px) rotate(240deg); opacity: 0.4; }
-        }
-
-        .notification {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            transform: translateX(400px);
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: 1000;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.error {
-            background: linear-gradient(45deg, #ef5350, #f44336);
-        }
-
-        .notification.success {
-            background: linear-gradient(45deg, #66bb6a, #4caf50);
-        }
-
-        @media (max-width: 1200px) {
-            .main-workspace {
-                grid-template-columns: 1fr;
-                gap: 32px;
-            }
-            
-            .control-section {
-                position: relative;
-                top: auto;
-            }
-            
-            .advanced-controls {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 16px;
-            }
-            
-            .header {
-                padding: 60px 0 40px;
-            }
-            
-            .control-section,
-            .result-section {
-                padding: 24px;
-                border-radius: 24px;
-            }
-            
-            .result-grid {
-                grid-template-columns: 1fr;
-            }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="background-pattern"></div>
-    
-    <div class="floating-orbs">
-        <div class="orb"></div>
-        <div class="orb"></div>
-        <div class="orb"></div>
-    </div>
-
     <div class="container">
-        <header class="header">
-            <h1>🎨 AI动漫头像生成器</h1>
-            <p>使用最先进的人工智能技术，将您的照片转换成独特的动漫风格头像。完全自定义提示词，创造无限可能。</p>
-        </header>
-
-        <div class="main-workspace">
-            <div class="control-section">
-                <h2 class="section-title">🎛️ 创作控制台</h2>
-                
-                <div class="upload-zone" id="uploadZone">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">点击或拖拽上传您的照片</div>
-                    <div class="upload-hint">支持 JPG、PNG、WEBP 格式，最大 10MB</div>
-                    <input type="file" id="imageInput" accept="image/*">
-                </div>
-                
-                <div class="preview-container" id="previewContainer">
-                    <img id="previewImage" class="preview-image" alt="预览图片">
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label" for="promptInput">✨ 风格描述</label>
-                    <div class="prompt-container">
-                        <textarea 
-                            id="promptInput" 
-                            class="prompt-textarea" 
-                            placeholder="请详细描述您想要的动漫风格，例如：&#10;- 日式动漫风格，大眼睛，柔和的色彩&#10;- 可爱的二次元少女风格，粉色头发&#10;- 酷炫的赛博朋克动漫角色&#10;- 温柔的治愈系动漫风格&#10;&#10;越详细的描述，生成效果越好！"
-                        >转换成精美的日式动漫风格，大眼睛，柔和色彩，高质量</textarea>
-                        
-                        <div class="prompt-suggestions">
-                            <span class="suggestion-tag" data-prompt="日式动漫风格，大眼睛，柔和色彩">🌸 日式动漫</span>
-                            <span class="suggestion-tag" data-prompt="法国绘本风格，艺术感强">🎨 法式绘本</span>
-                            <span class="suggestion-tag" data-prompt="韩式漫画风格，精致美型">💫 韩式漫画</span>
-                            <span class="suggestion-tag" data-prompt="可爱的Q版卡通风格">🎭 Q版卡通</span>
-                            <span class="suggestion-tag" data-prompt="赛博朋克风格，霓虹色彩">🤖 赛博朋克</span>
-                            <span class="suggestion-tag" data-prompt="治愈系动漫风格，温暖色调">🌻 治愈系</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="advanced-controls">
-                    <div class="control-item">
-                        <div class="control-header">
-                            <span class="control-label">生成数量</span>
-                            <span class="control-value" id="countValue">1</span>
-                        </div>
-                        <input type="range" class="slider" id="countSlider" min="1" max="4" value="1">
-                    </div>
-                    
-                    <div class="control-item">
-                        <div class="control-header">
-                            <span class="control-label">随机种子</span>
-                            <span class="control-value" id="seedValue">随机</span>
-                        </div>
-                        <input type="range" class="slider" id="seedSlider" min="0" max="2147483647" value="0">
-                    </div>
-                </div>
-
-                <button class="generate-button" id="generateButton">
-                    <span class="btn-text">🚀 生成动漫头像</span>
-                    <span class="loading-spinner">⚡</span>
-                </button>
+        <h1>AI动漫头像生成器</h1>
+        
+        <div class="form-group">
+            <label for="imageInput">上传图片:</label>
+            <input type="file" id="imageInput" accept="image/*" required>
+            <img id="imagePreview" class="preview hidden" alt="图片预览">
+        </div>
+        
+        <div class="form-group">
+            <label for="promptInput">风格描述:</label>
+            <textarea id="promptInput" placeholder="例如: 转换成法国绘本风格" required>转换成法国绘本风格</textarea>
+        </div>
+        
+        <button id="generateBtn" onclick="generateImage()">生成动漫头像</button>
+        
+        <div id="status" class="status hidden"></div>
+        
+        <div id="result" class="result hidden">
+            <h3>生成结果:</h3>
+            <div>
+                <h4>原图:</h4>
+                <img id="originalImage" alt="原图">
             </div>
-
-            <div class="result-section">
-                <h2 class="section-title">🎯 生成结果</h2>
-                
-                <div class="status-display">
-                    <div class="status-indicator">
-                        <div class="status-dot status-pending" id="statusDot"></div>
-                        <span class="status-text" id="statusText">等待上传图片...</span>
-                    </div>
-                </div>
-                
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                </div>
-                
-                <div class="result-display" id="resultDisplay">
-                    <div class="placeholder-content">
-                        <div class="placeholder-icon">🎭</div>
-                        <div class="placeholder-text">您的AI动漫头像将在这里显示</div>
-                    </div>
-                </div>
+            <div>
+                <h4>生成图:</h4>
+                <img id="generatedImage" alt="生成图">
             </div>
         </div>
     </div>
 
-    <div class="notification" id="notification"></div>
-
     <script>
-        // API 配置
-        const API_CONFIG = {
-            KEY: 'sk-a641f6330e92448a8f27049ea6c1eda6',
-            CREATE_TASK_URL: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis',
-            QUERY_TASK_URL: 'https://dashscope.aliyuncs.com/api/v1/tasks/',
-            // 使用免费图床服务
-            IMGBB_API_KEY: '7d6b4b6d8b9c0f4e2a1d3c8f5e6b7a9c', // 替换为您的 imgbb API key
-            IMGBB_UPLOAD_URL: 'https://api.imgbb.com/1/upload'
-        };
+        const API_KEY = 'sk-a641f6330e92448a8f27049ea6c1eda6';
+        const CREATE_TASK_URL = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis';
+        const QUERY_TASK_URL = 'https://dashscope.aliyuncs.com/api/v1/tasks/';
+        
+        let uploadedFile = null;
+        let pollInterval = null;
 
-        // DOM 元素
-        const elements = {
-            uploadZone: document.getElementById('uploadZone'),
-            imageInput: document.getElementById('imageInput'),
-            previewContainer: document.getElementById('previewContainer'),
-            previewImage: document.getElementById('previewImage'),
-            promptInput: document.getElementById('promptInput'),
-            generateButton: document.getElementById('generateButton'),
-            statusDot: document.getElementById('statusDot'),
-            statusText: document.getElementById('statusText'),
-            progressContainer: document.getElementById('progressContainer'),
-            progressFill: document.getElementById('progressFill'),
-            resultDisplay: document.getElementById('resultDisplay'),
-            countSlider: document.getElementById('countSlider'),
-            countValue: document.getElementById('countValue'),
-            seedSlider: document.getElementById('seedSlider'),
-            seedValue: document.getElementById('seedValue'),
-            notification: document.getElementById('notification')
-        };
-
-        // 应用状态
-        let appState = {
-            uploadedFile: null,
-            currentTaskId: null,
-            pollInterval: null,
-            isGenerating: false
-        };
-
-        // 初始化应用
-        function initializeApp() {
-            setupEventListeners();
-            updateSliderValues();
-            console.log('🎨 AI动漫头像生成器已启动');
-        }
-
-        // 设置事件监听器
-        function setupEventListeners() {
-            // 上传相关事件
-            elements.uploadZone.addEventListener('click', () => elements.imageInput.click());
-            elements.uploadZone.addEventListener('dragover', handleDragOver);
-            elements.uploadZone.addEventListener('dragleave', handleDragLeave);
-            elements.uploadZone.addEventListener('drop', handleDrop);
-            elements.imageInput.addEventListener('change', handleFileSelect);
-            
-            // 生成按钮事件
-            elements.generateButton.addEventListener('click', handleGenerate);
-            
-            // 滑动条事件
-            elements.countSlider.addEventListener('input', updateSliderValues);
-            elements.seedSlider.addEventListener('input', updateSliderValues);
-            
-            // 提示词建议标签事件
-            document.querySelectorAll('.suggestion-tag').forEach(tag => {
-                tag.addEventListener('click', () => {
-                    const prompt = tag.dataset.prompt;
-                    elements.promptInput.value = prompt;
-                    showNotification(`已应用提示词: ${prompt}`, 'success');
-                });
-            });
-        }
-
-        // 更新滑动条显示值
-        function updateSliderValues() {
-            elements.countValue.textContent = elements.countSlider.value;
-            elements.seedValue.textContent = elements.seedSlider.value == 0 ? '随机' : elements.seedSlider.value;
-        }
-
-        // 拖拽处理
-        function handleDragOver(e) {
-            e.preventDefault();
-            elements.uploadZone.classList.add('dragover');
-        }
-
-        function handleDragLeave(e) {
-            e.preventDefault();
-            elements.uploadZone.classList.remove('dragover');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            elements.uploadZone.classList.remove('dragover');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                processFile(files[0]);
-            }
-        }
-
-        // 文件选择处理
-        function handleFileSelect(e) {
+        // 图片预览
+        document.getElementById('imageInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                processFile(file);
+                uploadedFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
             }
+        });
+
+        // 显示状态
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.classList.remove('hidden');
         }
 
-        // 处理文件
-        function processFile(file) {
-            // 验证文件
-            if (!file.type.startsWith('image/')) {
-                showNotification('请选择图片文件', 'error');
-                return;
-            }
-            
-            if (file.size > 10 * 1024 * 1024) {
-                showNotification('图片大小不能超过 10MB', 'error');
-                return;
-            }
-            
-            appState.uploadedFile = file;
-            
-            // 显示预览
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                elements.previewImage.src = e.target.result;
-                elements.previewContainer.style.display = 'block';
-                updateStatus('pending', '图片已上传，请完善提示词后点击生成');
-                showNotification('图片上传成功！', 'success');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // 主生成函数
-        async function handleGenerate() {
-            if (appState.isGenerating) return;
-            
-            // 验证输入
-            if (!appState.uploadedFile) {
-                showNotification('请先上传图片', 'error');
-                return;
-            }
-            
-            const prompt = elements.promptInput.value.trim();
-            if (!prompt) {
-                showNotification('请输入风格描述', 'error');
-                return;
-            }
-            
-            try {
-                appState.isGenerating = true;
-                setGeneratingState(true);
-                
-                updateStatus('running', '正在上传图片到云端...');
-                
-                // 上传图片到图床
-                const imageUrl = await uploadImageToImgbb(appState.uploadedFile);
-                
-                updateStatus('running', '正在创建AI处理任务...');
-                
-                // 创建处理任务
-                const taskId = await createProcessingTask(imageUrl, prompt);
-                appState.currentTaskId = taskId;
-                
-                updateStatus('running', '任务已创建，AI正在处理中...');
-                showProgress();
-                
-                // 开始轮询任务状态
-                startTaskPolling(taskId);
-                
-            } catch (error) {
-                console.error('Generation error:', error);
-                showNotification('生成失败: ' + error.message, 'error');
-                setGeneratingState(false);
-            }
-        }
-
-        // 上传图片到 imgbb
-        async function uploadImageToImgbb(file) {
+        // 上传图片到临时服务器 (使用免费图床)
+        async function uploadImage(file) {
             const formData = new FormData();
-            formData.append('key', API_CONFIG.IMGBB_API_KEY);
             formData.append('image', file);
             
-            const response = await fetch(API_CONFIG.IMGBB_UPLOAD_URL, {
+            // 使用免费图床服务 - postimages.org
+            const response = await fetch('https://postimg.cc/json', {
                 method: 'POST',
                 body: formData
             });
@@ -948,192 +173,149 @@
             }
             
             const data = await response.json();
-            
-            if (!data.success) {
-                throw new Error(data.error?.message || '图片上传失败');
-            }
-            
-            return data.data.url;
+            return data.url;
         }
 
-        // 创建处理任务
-        async function createProcessingTask(imageUrl, prompt) {
-            const requestBody = {
-                model: 'wanx2.1-imageedit',
-                input: {
-                    function: 'stylization_all',
-                    prompt: prompt,
-                    base_image_url: imageUrl
-                },
-                parameters: {
-                    n: parseInt(elements.countSlider.value),
-                    watermark: false
-                }
-            };
+        // 创建AI处理任务
+        async function createTask(imageUrl, prompt) {
+            console.log('创建任务，图片URL:', imageUrl);
+            console.log('提示词:', prompt);
             
-            // 添加随机种子（如果不是0）
-            if (elements.seedSlider.value != 0) {
-                requestBody.parameters.seed = parseInt(elements.seedSlider.value);
-            }
-            
-            const response = await fetch(API_CONFIG.CREATE_TASK_URL, {
+            const response = await fetch(CREATE_TASK_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_CONFIG.KEY}`,
+                    'Authorization': `Bearer ${API_KEY}`,
                     'X-DashScope-Async': 'enable'
                 },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify({
+                    "model": "wanx2.1-imageedit",
+                    "input": {
+                        "function": "stylization_all",
+                        "prompt": prompt,
+                        "base_image_url": imageUrl
+                    },
+                    "parameters": {
+                        "n": 1
+                    }
+                })
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
-            
+
             const data = await response.json();
-            
+            console.log('创建任务响应:', data);
+
             if (data.code) {
                 throw new Error(data.message || '创建任务失败');
             }
-            
+
             return data.output.task_id;
         }
 
         // 查询任务状态
-        async function queryTaskStatus(taskId) {
-            const response = await fetch(API_CONFIG.QUERY_TASK_URL + taskId, {
+        async function queryTask(taskId) {
+            const response = await fetch(QUERY_TASK_URL + taskId, {
                 headers: {
-                    'Authorization': `Bearer ${API_CONFIG.KEY}`
+                    'Authorization': `Bearer ${API_KEY}`
                 }
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
-            
+
             const data = await response.json();
-            
+            console.log('查询任务响应:', data);
+
             if (data.code) {
                 throw new Error(data.message || '查询任务失败');
             }
-            
+
             return data.output;
         }
 
-        // 开始轮询任务状态
-        function startTaskPolling(taskId) {
-            let progress = 10;
-            
-            appState.pollInterval = setInterval(async () => {
+        // 轮询任务状态
+        function pollTaskStatus(taskId) {
+            pollInterval = setInterval(async () => {
                 try {
-                    const taskData = await queryTaskStatus(taskId);
-                    
-                    // 更新进度
-                    progress = Math.min(progress + Math.random() * 15, 85);
-                    updateProgress(progress);
+                    const taskData = await queryTask(taskId);
                     
                     switch (taskData.task_status) {
                         case 'PENDING':
-                            updateStatus('pending', '任务排队中，请耐心等待...');
+                            showStatus('任务排队中...', 'pending');
                             break;
-                            
                         case 'RUNNING':
-                            updateStatus('running', 'AI正在生成您的动漫头像...');
+                            showStatus('AI正在生成中...', 'running');
                             break;
-                            
                         case 'SUCCEEDED':
-                            clearInterval(appState.pollInterval);
-                            updateProgress(100);
-                            updateStatus('succeeded', '生成完成！');
-                            displayResults(taskData.results);
-                            setGeneratingState(false);
-                            showNotification('🎉 动漫头像生成成功！', 'success');
+                            clearInterval(pollInterval);
+                            showStatus('生成成功！', 'success');
+                            showResult(taskData.results[0].url);
+                            document.getElementById('generateBtn').disabled = false;
                             break;
-                            
                         case 'FAILED':
-                            clearInterval(appState.pollInterval);
-                            updateStatus('failed', '生成失败，请重试');
-                            setGeneratingState(false);
-                            showNotification('生成失败，请检查提示词或重试', 'error');
-                            break;
-                            
-                        default:
-                            clearInterval(appState.pollInterval);
-                            updateStatus('failed', '未知状态');
-                            setGeneratingState(false);
+                            clearInterval(pollInterval);
+                            showStatus('生成失败，请重试', 'error');
+                            document.getElementById('generateBtn').disabled = false;
                             break;
                     }
                 } catch (error) {
-                    console.error('Polling error:', error);
-                    clearInterval(appState.pollInterval);
-                    updateStatus('failed', '查询失败: ' + error.message);
-                    setGeneratingState(false);
-                    showNotification('查询任务状态失败', 'error');
+                    clearInterval(pollInterval);
+                    showStatus('查询失败: ' + error.message, 'error');
+                    document.getElementById('generateBtn').disabled = false;
                 }
-            }, 3000); // 3秒查询一次
-        }
-
-        // 更新状态显示
-        function updateStatus(status, text) {
-            elements.statusDot.className = `status-dot status-${status}`;
-            elements.statusText.textContent = text;
-        }
-
-        // 显示进度条
-        function showProgress() {
-            elements.progressContainer.style.display = 'block';
-        }
-
-        // 更新进度
-        function updateProgress(percent) {
-            elements.progressFill.style.width = percent + '%';
-        }
-
-        // 设置生成状态
-        function setGeneratingState(isGenerating) {
-            appState.isGenerating = isGenerating;
-            elements.generateButton.disabled = isGenerating;
-            elements.generateButton.classList.toggle('loading', isGenerating);
-            
-            if (!isGenerating) {
-                elements.progressContainer.style.display = 'none';
-            }
+            }, 3000);
         }
 
         // 显示结果
-        function displayResults(results) {
-            const originalImageSrc = elements.previewImage.src;
+        function showResult(generatedImageUrl) {
+            const originalImageSrc = document.getElementById('imagePreview').src;
             
-            elements.resultDisplay.innerHTML = `
-                <div class="result-grid">
-                    <div class="image-frame">
-                        <img src="${originalImageSrc}" alt="原图">
-                        <div class="image-tag">原图</div>
-                    </div>
-                    <div class="image-frame">
-                        <img src="${results[0].url}" alt="动漫风格">
-                        <div class="image-tag">AI生成</div>
-                    </div>
-                </div>
-                <a href="${results[0].url}" download="anime-avatar.png" class="download-button">
-                    📥 下载高清图片
-                </a>
-            `;
+            document.getElementById('originalImage').src = originalImageSrc;
+            document.getElementById('generatedImage').src = generatedImageUrl;
+            document.getElementById('result').classList.remove('hidden');
         }
 
-        // 显示通知
-        function showNotification(message, type = 'info') {
-            elements.notification.textContent = message;
-            elements.notification.className = `notification ${type}`;
-            elements.notification.classList.add('show');
-            
-            setTimeout(() => {
-                elements.notification.classList.remove('show');
-            }, 4000);
-        }
+        // 主函数 - 生成图像
+        async function generateImage() {
+            if (!uploadedFile) {
+                alert('请先上传图片');
+                return;
+            }
 
-        // 启动应用
-        initializeApp();
+            const prompt = document.getElementById('promptInput').value.trim();
+            if (!prompt) {
+                alert('请输入风格描述');
+                return;
+            }
+
+            try {
+                document.getElementById('generateBtn').disabled = true;
+                document.getElementById('result').classList.add('hidden');
+                
+                showStatus('正在上传图片...', 'pending');
+                
+                // 方案1: 使用示例图片URL (临时测试)
+                const imageUrl = 'http://wanx.alicdn.com/material/20250318/stylization_all_1.jpeg';
+                
+                // 方案2: 上传图片到图床 (如果方案1不行)
+                // const imageUrl = await uploadImage(uploadedFile);
+                
+                showStatus('正在创建AI任务...', 'pending');
+                const taskId = await createTask(imageUrl, prompt);
+                
+                showStatus('任务已创建，正在处理...', 'running');
+                pollTaskStatus(taskId);
+                
+            } catch (error) {
+                console.error('错误:', error);
+                showStatus('错误: ' + error.message, 'error');
+                document.getElementById('generateBtn').disabled = false;
+            }
+        }
     </script>
 </body>
 </html> 
