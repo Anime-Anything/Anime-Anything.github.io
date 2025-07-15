@@ -104,7 +104,7 @@ async function handleLogin(event) {
         elements.loginSubmit.disabled = true;
         elements.loginSubmit.textContent = '登录中...';
 
-        const response = await fetch('/api/auth?action=login', {
+        const response = await fetch('https://anime-anything-github-io.vercel.app/api/auth?action=login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -181,7 +181,7 @@ async function handleRegister(event) {
         elements.registerSubmit.disabled = true;
         elements.registerSubmit.textContent = '注册中...';
 
-        const response = await fetch('/api/auth?action=register', {
+        const response = await fetch('https://anime-anything-github-io.vercel.app/api/auth?action=register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -465,7 +465,7 @@ function hideMessage() {
  * 检查用户是否已登录
  */
 function isUserLoggedIn() {
-    const userInfo = localStorage.getItem(USER_KEY);
+    const userInfo = localStorage.getItem('currentUser');
     return !!userInfo;
 }
 
@@ -473,7 +473,7 @@ function isUserLoggedIn() {
  * 获取当前用户信息
  */
 function getCurrentUser() {
-    const userInfo = localStorage.getItem(USER_KEY);
+    const userInfo = localStorage.getItem('currentUser');
     return userInfo ? JSON.parse(userInfo) : null;
 }
 
@@ -481,7 +481,7 @@ function getCurrentUser() {
  * 用户注销
  */
 function logout() {
-    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem('currentUser');
 }
 
 /**

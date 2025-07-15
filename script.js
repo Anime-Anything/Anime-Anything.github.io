@@ -109,7 +109,7 @@ function initializeUserEvents() {
  * 获取当前用户信息
  */
 function getCurrentUser() {
-    const userInfo = localStorage.getItem('anime_user_info');
+    const userInfo = localStorage.getItem('currentUser');
     return userInfo ? JSON.parse(userInfo) : null;
 }
 
@@ -117,7 +117,7 @@ function getCurrentUser() {
  * 用户注销
  */
 function logout() {
-    localStorage.removeItem('anime_user_info');
+    localStorage.removeItem('currentUser');
 }
 
 /**
