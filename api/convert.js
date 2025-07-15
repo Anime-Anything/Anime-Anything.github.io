@@ -22,20 +22,21 @@ async function createImageTask(imageUrl, prompt) {
     }
 
     const requestBody = {
-        model: "wanx-style-repaint-v1",
+        model: "wanx2.1-imageedit",
         input: {
-            base_image_url: imageUrl,
-            style_index: 0,
-            prompt: prompt
+            function: "description_edit",
+            prompt: prompt || "转换为动漫风格",
+            base_image_url: imageUrl
         },
         parameters: {
-            style: "anime"
+            n: 1
         }
     };
 
     const response = await fetch(`${DASHSCOPE_BASE_URL}/services/aigc/image2image/image-synthesis`, {
         method: 'POST',
         headers: {
+            'X-DashScope-Async': 'enable',
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json'
         },
