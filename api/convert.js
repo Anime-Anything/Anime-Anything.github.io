@@ -215,10 +215,19 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('处理请求时出错:', error);
+        console.error('错误详情:', {
+            message: error.message,
+            stack: error.stack,
+            apiKey: process.env.DASHSCOPE_API_KEY ? '已配置' : '未配置'
+        });
 
         return res.status(500).json({
             success: false,
-            error: `服务器错误: ${error.message}`
+            error: `服务器错误: ${error.message}`,
+            debug: {
+                hasApiKey: !!process.env.DASHSCOPE_API_KEY,
+                timestamp: new Date().toISOString()
+            }
         });
     }
 } 
