@@ -5,8 +5,9 @@
 
 // 配置项
 const CONFIG = {
-    // 云函数代理 URL - 请替换为您实际部署的云函数地址
-    PROXY_API_URL: 'https://your-cloud-function-url.com/api/convert',
+    // 云函数代理 URL - 替换为您的 Vercel 部署地址
+    // 格式：https://your-project-name.vercel.app/api/convert
+    PROXY_API_URL: 'https://anime-anything-github-io.vercel.app/api/convert',
 
     // 请求超时设置 (毫秒)
     REQUEST_TIMEOUT: 120000 // 2分钟
@@ -267,8 +268,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('动漫头像生成器 V1.0 已加载');
 
     // 检查配置
-    if (CONFIG.PROXY_API_URL.includes('your-cloud-function-url')) {
-        console.warn('⚠️ 请在 script.js 中配置正确的云函数代理 URL');
+    if (CONFIG.PROXY_API_URL.includes('your-project-name.vercel.app')) {
+        console.warn('⚠️ 请在 script.js 中配置正确的 Vercel 部署地址');
         showError(new Error('系统配置错误：请联系管理员配置代理服务器地址'));
         return;
     }
