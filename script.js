@@ -1,6 +1,6 @@
 /**
- * 动漫头像生成器 V4.0 - 主页逻辑
- * 包含图片上传、风格转换、简单用户管理等功能
+ * 动漫头像生成器 V2.0 - 主页逻辑
+ * 包含图片上传、风格转换等功能
  */
 
 // 配置信息
@@ -12,14 +12,6 @@ const CONFIG = {
 
 // DOM 元素
 const elements = {
-    // 用户状态相关
-    userLoggedOut: document.getElementById('userLoggedOut'),
-    userLoggedIn: document.getElementById('userLoggedIn'),
-    currentUsername: document.getElementById('currentUsername'),
-    loginBtn: document.getElementById('loginBtn'),
-    registerBtn: document.getElementById('registerBtn'),
-    logoutBtn: document.getElementById('logoutBtn'),
-
     // 输入模式切换
     uploadModeBtn: document.getElementById('uploadModeBtn'),
     urlModeBtn: document.getElementById('urlModeBtn'),
@@ -51,74 +43,6 @@ const elements = {
 
 // 全局变量
 let uploadedImageUrl = null;
-
-/**
- * 用户状态管理
- */
-
-/**
- * 更新用户状态显示
- */
-function updateUserStatus() {
-    const user = getCurrentUser();
-
-    if (user) {
-        // 已登录状态
-        elements.userLoggedOut.classList.add('hidden');
-        elements.userLoggedIn.classList.remove('hidden');
-
-        // 显示用户名和VIP状态
-        const vipBadge = user.isVIP ? ' 👑' : '';
-        elements.currentUsername.textContent = user.username + vipBadge;
-    } else {
-        // 未登录状态
-        elements.userLoggedOut.classList.remove('hidden');
-        elements.userLoggedIn.classList.add('hidden');
-    }
-}
-
-/**
- * 初始化用户相关事件
- */
-function initializeUserEvents() {
-    // 登录按钮
-    if (elements.loginBtn) {
-        elements.loginBtn.addEventListener('click', () => {
-            window.location.href = 'auth.html';
-        });
-    }
-
-    // 注册按钮
-    if (elements.registerBtn) {
-        elements.registerBtn.addEventListener('click', () => {
-            window.location.href = 'auth.html#register';
-        });
-    }
-
-    // 退出登录按钮
-    if (elements.logoutBtn) {
-        elements.logoutBtn.addEventListener('click', () => {
-            logout();
-            updateUserStatus();
-            showSuccess('已退出登录');
-        });
-    }
-}
-
-/**
- * 获取当前用户信息
- */
-function getCurrentUser() {
-    const userInfo = localStorage.getItem('currentUser');
-    return userInfo ? JSON.parse(userInfo) : null;
-}
-
-/**
- * 用户注销
- */
-function logout() {
-    localStorage.removeItem('currentUser');
-}
 
 /**
  * 文件上传管理
@@ -521,14 +445,6 @@ function showError(error) {
 }
 
 /**
- * 显示成功消息
- */
-function showSuccess(message) {
-    // 这里可以添加成功消息的显示逻辑
-    console.log('成功:', message);
-}
-
-/**
  * 清除消息
  */
 function clearMessages() {
@@ -582,15 +498,7 @@ function downloadImage() {
  * 页面加载完成后初始化
  */
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('动漫风格迁移工具 V4.0 已加载');
-
-    // 首先检查用户是否已登录
-    const user = getCurrentUser();
-    if (!user) {
-        console.log('用户未登录，跳转到认证页面');
-        window.location.href = 'auth.html';
-        return;
-    }
+    console.log('动漫风格迁移工具 V2.0 已加载');
 
     // 检查配置
     if (CONFIG.PROXY_API_URL.includes('your-project-name.vercel.app')) {
@@ -599,15 +507,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // 初始化用户状态
-    updateUserStatus();
-    initializeUserEvents();
-
     // 初始化事件监听器
     initializeEventListeners();
 
     // 设置默认输入模式为上传
     switchInputMode('upload');
 
-    console.log('✅ V4.0 初始化完成，支持用户系统和VIP功能！');
+    console.log('✅ V2.0 初始化完成！');
 }); 
