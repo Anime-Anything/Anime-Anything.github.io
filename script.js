@@ -618,14 +618,13 @@ function setButtonState(isLoading) {
     if (!elements.convertButton) return;
 
     if (isLoading) {
-        // 更新按钮状态为加载中 - 只禁用按钮，不改变文字
-        elements.convertButton.disabled = true;
-        elements.convertButton.classList.add('loading');
+        // 加载时隐藏按钮，避免视觉冲突
+        elements.convertButton.classList.add('hidden');
     } else {
         // 恢复按钮到初始状态
         elements.convertButton.disabled = false;
         elements.convertButton.innerHTML = '<span class="btn-text">🚀 开始风格迁移</span>';
-        elements.convertButton.classList.remove('loading');
+        elements.convertButton.classList.remove('hidden');
     }
 }
 

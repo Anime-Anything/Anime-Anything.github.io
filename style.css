@@ -865,10 +865,6 @@ body {
     transform: none;
 }
 
-.convert-btn.loading {
-    animation: pulse 2s infinite;
-}
-
 .result-section {
     margin-top: 40px;
 }
