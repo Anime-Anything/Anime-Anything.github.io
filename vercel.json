@@ -1,15 +1,9 @@
 {
     "functions": {
-        "proxy-function.js": {
+        "api/convert.js": {
             "runtime": "nodejs18.x"
         }
     },
-    "rewrites": [
-        {
-            "source": "/api/convert",
-            "destination": "/proxy-function.js"
-        }
-    ],
     "headers": [
         {
             "source": "/api/(.*)",
