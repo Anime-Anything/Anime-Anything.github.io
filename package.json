@@ -1,34 +1,54 @@
 {
-    "name": "anime-avatar-proxy",
-    "version": "1.0.0",
-    "description": "动漫头像风格迁移代理云函数 - 对接阿里云百炼API",
-    "main": "proxy-function.js",
+    "name": "anime-avatar-enterprise",
+    "version": "4.0.0",
+    "description": "企业级动漫头像生成平台 - 支持用户系统、JWT认证、MongoDB数据库",
+    "main": "api/convert.js",
     "scripts": {
-        "start": "node proxy-function.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "node api/convert.js",
+        "dev": "vercel dev",
+        "deploy": "vercel --prod",
+        "test": "jest",
+        "test:watch": "jest --watch"
     },
     "keywords": [
         "anime",
         "avatar",
-        "image",
         "ai",
+        "enterprise",
+        "user-system",
+        "jwt",
+        "mongodb",
+        "authentication",
         "dashscope",
         "serverless"
     ],
-    "author": "动漫头像生成器项目组",
+    "author": "动漫头像生成器企业版项目组",
     "license": "MIT",
     "dependencies": {
-        "node-fetch": "^2.6.7"
+        "mongodb": "^6.3.0",
+        "jsonwebtoken": "^9.0.2",
+        "bcryptjs": "^2.4.3",
+        "uuid": "^9.0.1",
+        "node-fetch": "^2.6.7",
+        "joi": "^17.11.0",
+        "helmet": "^7.1.0",
+        "express-rate-limit": "^7.1.5",
+        "cors": "^2.8.5"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "jest": "^29.7.0",
+        "nodemon": "^3.0.2"
     },
     "engines": {
-        "node": ">=14.0.0"
+        "node": ">=18.0.0"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/your-username/anime-avatar-generator.git"
+        "url": "https://github.com/Anime-Anything/Anime-Anything.github.io.git"
     },
     "bugs": {
-        "url": "https://github.com/your-username/anime-avatar-generator/issues"
+        "url": "https://github.com/Anime-Anything/Anime-Anything.github.io/issues"
     },
-    "homepage": "https://your-username.github.io/anime-avatar-generator"
+    "homepage": "https://anime-anything-github-io.vercel.app"
 }

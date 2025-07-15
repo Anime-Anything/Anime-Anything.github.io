@@ -1,194 +1,176 @@
 /**
- * 动漫头像生成器前端逻辑
- * V2.0 - 支持拖拽/上传图片功能
+ * 动漫头像生成器 V4.0 - 主页逻辑
+ * 包含图片上传、风格转换、简单用户管理等功能
  */
 
-// 配置项
+// 配置信息
 const CONFIG = {
-    // 云函数代理 URL - 替换为您的 Vercel 部署地址
-    // 格式：https://your-project-name.vercel.app/api/convert
     PROXY_API_URL: 'https://anime-anything-github-io.vercel.app/api/convert',
-
-    // 请求超时设置 (毫秒)
-    REQUEST_TIMEOUT: 120000, // 2分钟
-
-    // 图片上传配置
     MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
-    SUPPORTED_FORMATS: ['image/jpeg', 'image/png', 'image/webp'],
-
-    // 免费图床API - 使用 imgbb 作为图片托管
-    IMAGE_UPLOAD_URL: 'https://api.imgbb.com/1/upload',
-    IMAGE_UPLOAD_KEY: 'c1b7b6b4c6f5f5c6b4c6f5f5c6b4c6f5' // 示例key，需要替换为真实的
+    SUPPORTED_FORMATS: ['image/jpeg', 'image/png', 'image/webp']
 };
 
-// DOM 元素引用
+// DOM 元素
 const elements = {
-    // V1.0 原有元素
+    // 用户状态相关
+    userLoggedOut: document.getElementById('userLoggedOut'),
+    userLoggedIn: document.getElementById('userLoggedIn'),
+    currentUsername: document.getElementById('currentUsername'),
+    loginBtn: document.getElementById('loginBtn'),
+    registerBtn: document.getElementById('registerBtn'),
+    logoutBtn: document.getElementById('logoutBtn'),
+
+    // 输入模式切换
+    uploadModeBtn: document.getElementById('uploadModeBtn'),
+    urlModeBtn: document.getElementById('urlModeBtn'),
+    uploadMode: document.getElementById('uploadMode'),
+    urlMode: document.getElementById('urlMode'),
+
+    // 文件上传相关
+    dropZone: document.getElementById('dropZone'),
+    fileInput: document.getElementById('fileInput'),
+    fileSelectBtn: document.getElementById('fileSelectBtn'),
+    changeImageBtn: document.getElementById('changeImageBtn'),
+    imagePreview: document.getElementById('imagePreview'),
+    previewImage: document.getElementById('previewImage'),
+    imageInfo: document.getElementById('imageInfo'),
+
+    // 输入字段
     imageUrlInput: document.getElementById('imageUrlInput'),
     promptInput: document.getElementById('promptInput'),
     convertButton: document.getElementById('convertButton'),
+
+    // 结果显示
     loadingDiv: document.getElementById('loadingDiv'),
     resultDiv: document.getElementById('resultDiv'),
     errorDiv: document.getElementById('errorDiv'),
     resultImage: document.getElementById('resultImage'),
     errorMessage: document.getElementById('errorMessage'),
-    downloadButton: document.getElementById('downloadButton'),
-    newTaskButton: document.getElementById('newTaskButton'),
-    retryButton: document.getElementById('retryButton'),
-
-    // V2.0 新增元素
-    uploadModeBtn: document.getElementById('uploadModeBtn'),
-    urlModeBtn: document.getElementById('urlModeBtn'),
-    uploadMode: document.getElementById('uploadMode'),
-    urlMode: document.getElementById('urlMode'),
-    dropZone: document.getElementById('dropZone'),
-    fileInput: document.getElementById('fileInput'),
-    fileSelectBtn: document.getElementById('fileSelectBtn'),
-    imagePreview: document.getElementById('imagePreview'),
-    previewImage: document.getElementById('previewImage'),
-    imageInfo: document.getElementById('imageInfo'),
-    changeImageBtn: document.getElementById('changeImageBtn')
+    downloadBtn: document.getElementById('downloadBtn')
 };
 
-// 全局状态
-let currentInputMode = 'upload'; // 'upload' or 'url'
-let uploadedImageUrl = null; // 上传后的图片URL
+// 全局变量
+let uploadedImageUrl = null;
 
 /**
- * 显示指定的状态区域
+ * 用户状态管理
  */
-function showState(state) {
-    // 隐藏所有状态区域
-    elements.loadingDiv.classList.add('hidden');
-    elements.resultDiv.classList.add('hidden');
-    elements.errorDiv.classList.add('hidden');
-
-    // 显示指定状态
-    switch (state) {
-        case 'loading':
-            elements.loadingDiv.classList.remove('hidden');
-            break;
-        case 'result':
-            elements.resultDiv.classList.remove('hidden');
-            break;
-        case 'error':
-            elements.errorDiv.classList.remove('hidden');
-            break;
-    }
-}
 
 /**
- * 设置按钮状态
+ * 更新用户状态显示
  */
-function setButtonState(disabled) {
-    elements.convertButton.disabled = disabled;
+function updateUserStatus() {
+    const user = getCurrentUser();
 
-    if (disabled) {
-        elements.convertButton.classList.add('disabled');
-        elements.convertButton.querySelector('.btn-text').textContent = '⏳ 处理中...';
+    if (user) {
+        // 已登录状态
+        elements.userLoggedOut.classList.add('hidden');
+        elements.userLoggedIn.classList.remove('hidden');
+
+        // 显示用户名和VIP状态
+        const vipBadge = user.isVIP ? ' 👑' : '';
+        elements.currentUsername.textContent = user.username + vipBadge;
     } else {
-        elements.convertButton.classList.remove('disabled');
-        elements.convertButton.querySelector('.btn-text').textContent = '�� 开始风格迁移';
+        // 未登录状态
+        elements.userLoggedOut.classList.remove('hidden');
+        elements.userLoggedIn.classList.add('hidden');
     }
 }
+
+/**
+ * 初始化用户相关事件
+ */
+function initializeUserEvents() {
+    // 登录按钮
+    if (elements.loginBtn) {
+        elements.loginBtn.addEventListener('click', () => {
+            window.location.href = 'auth.html';
+        });
+    }
+
+    // 注册按钮
+    if (elements.registerBtn) {
+        elements.registerBtn.addEventListener('click', () => {
+            window.location.href = 'auth.html#register';
+        });
+    }
+
+    // 退出登录按钮
+    if (elements.logoutBtn) {
+        elements.logoutBtn.addEventListener('click', () => {
+            logout();
+            updateUserStatus();
+            showSuccess('已退出登录');
+        });
+    }
+}
+
+/**
+ * 获取当前用户信息
+ */
+function getCurrentUser() {
+    const userInfo = localStorage.getItem('anime_user_info');
+    return userInfo ? JSON.parse(userInfo) : null;
+}
+
+/**
+ * 用户注销
+ */
+function logout() {
+    localStorage.removeItem('anime_user_info');
+}
+
+/**
+ * 文件上传管理
+ */
 
 /**
  * 初始化事件监听器
  */
 function initializeEventListeners() {
-    // V1.0 原有事件
-    elements.convertButton.addEventListener('click', handleConvert);
-    elements.downloadButton.addEventListener('click', downloadImage);
-    elements.newTaskButton.addEventListener('click', resetToInitialState);
-    elements.retryButton.addEventListener('click', handleConvert);
-
-    // V2.0 新增事件
     // 输入模式切换
     elements.uploadModeBtn.addEventListener('click', () => switchInputMode('upload'));
     elements.urlModeBtn.addEventListener('click', () => switchInputMode('url'));
 
-    // 文件选择和拖拽
+    // 文件上传相关事件
     elements.fileSelectBtn.addEventListener('click', () => elements.fileInput.click());
     elements.fileInput.addEventListener('change', handleFileSelect);
-    elements.changeImageBtn.addEventListener('click', () => elements.fileInput.click());
 
     // 拖拽事件
-    setupDragAndDrop();
+    elements.dropZone.addEventListener('dragenter', handleDragEnter);
+    elements.dropZone.addEventListener('dragover', handleDragOver);
+    elements.dropZone.addEventListener('dragleave', handleDragLeave);
+    elements.dropZone.addEventListener('drop', handleDrop);
 
-    // 阻止全页面拖拽
-    preventDefaultDrag();
-}
+    // 更换图片按钮
+    if (elements.changeImageBtn) {
+        elements.changeImageBtn.addEventListener('click', () => elements.fileInput.click());
+    }
 
-/**
- * 设置拖拽功能
- */
-function setupDragAndDrop() {
-    const dropZone = elements.dropZone;
+    // 转换按钮
+    elements.convertButton.addEventListener('click', handleConvert);
 
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-    });
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
-    });
-
-    dropZone.addEventListener('drop', handleDrop, false);
-}
-
-/**
- * 阻止默认拖拽行为
- */
-function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-/**
- * 阻止全页面拖拽
- */
-function preventDefaultDrag() {
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        document.addEventListener(eventName, preventDefaults, false);
-    });
+    // 下载按钮
+    if (elements.downloadBtn) {
+        elements.downloadBtn.addEventListener('click', downloadImage);
+    }
 }
 
 /**
  * 切换输入模式
  */
 function switchInputMode(mode) {
-    currentInputMode = mode;
-
     // 更新按钮状态
     elements.uploadModeBtn.classList.toggle('active', mode === 'upload');
     elements.urlModeBtn.classList.toggle('active', mode === 'url');
 
-    // 更新内容区域
+    // 切换显示的输入区域
     elements.uploadMode.classList.toggle('active', mode === 'upload');
     elements.urlMode.classList.toggle('active', mode === 'url');
 
-    // 清空状态
-    uploadedImageUrl = null;
-    elements.imagePreview.classList.add('hidden');
-    elements.imageUrlInput.value = '';
-}
-
-/**
- * 处理文件拖拽
- */
-function handleDrop(e) {
-    const files = Array.from(e.dataTransfer.files);
-    const imageFile = files.find(file => file.type.startsWith('image/'));
-
-    if (imageFile) {
-        processImageFile(imageFile);
-    } else {
-        showUploadError('请拖拽图片文件');
-    }
+    // 清除之前的状态
+    clearUploadState();
+    clearMessages();
 }
 
 /**
@@ -198,6 +180,39 @@ function handleFileSelect(e) {
     const file = e.target.files[0];
     if (file) {
         processImageFile(file);
+    }
+}
+
+/**
+ * 拖拽事件处理
+ */
+function handleDragEnter(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    elements.dropZone.classList.add('dragover');
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!elements.dropZone.contains(e.relatedTarget)) {
+        elements.dropZone.classList.remove('dragover');
+    }
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    elements.dropZone.classList.remove('dragover');
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        processImageFile(files[0]);
     }
 }
 
@@ -238,19 +253,23 @@ function validateImageFile(file) {
 /**
  * 显示图片预览
  */
-function showImagePreview(file) {
+async function showImagePreview(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
-        reader.onload = function (e) {
+        reader.onload = (e) => {
             elements.previewImage.src = e.target.result;
-            elements.imageInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
             elements.imagePreview.classList.remove('hidden');
+
+            // 显示文件信息
+            const sizeInMB = (file.size / 1024 / 1024).toFixed(2);
+            elements.imageInfo.textContent = `${file.name} (${sizeInMB}MB)`;
+
             resolve();
         };
 
-        reader.onerror = function () {
-            reject(new Error('无法读取图片文件'));
+        reader.onerror = () => {
+            reject(new Error('文件读取失败'));
         };
 
         reader.readAsDataURL(file);
@@ -328,37 +347,73 @@ async function uploadToImageHost(base64Data) {
 }
 
 /**
- * 格式化文件大小
- */
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
-
-/**
- * 显示上传进度
+ * 上传状态显示
  */
 function showUploadProgress(message) {
-    // 可以在这里添加进度显示逻辑
-    console.log(message);
+    console.log('上传进度:', message);
 }
 
-/**
- * 显示上传成功
- */
 function showUploadSuccess(message) {
-    console.log('✅', message);
+    console.log('上传成功:', message);
+}
+
+function showUploadError(message) {
+    console.error('上传错误:', message);
+    showError(new Error(message));
 }
 
 /**
- * 显示上传错误
+ * 清除上传状态
  */
-function showUploadError(message) {
-    console.error('❌', message);
-    showError(new Error(message));
+function clearUploadState() {
+    elements.imagePreview.classList.add('hidden');
+    elements.previewImage.src = '';
+    elements.imageInfo.textContent = '';
+    uploadedImageUrl = null;
+    if (elements.fileInput) {
+        elements.fileInput.value = '';
+    }
+}
+
+/**
+ * 图像转换功能
+ */
+
+/**
+ * 验证输入参数
+ */
+function validateInputs() {
+    let imageUrl = '';
+    let prompt = elements.promptInput.value.trim();
+
+    // 检查图片来源
+    if (elements.uploadMode.classList.contains('active')) {
+        // 上传模式
+        if (!uploadedImageUrl) {
+            throw new Error('请先上传图片');
+        }
+        imageUrl = uploadedImageUrl;
+    } else {
+        // URL模式
+        imageUrl = elements.imageUrlInput.value.trim();
+        if (!imageUrl) {
+            throw new Error('请输入图片URL');
+        }
+
+        // 简单的URL验证
+        try {
+            new URL(imageUrl);
+        } catch {
+            throw new Error('请输入有效的图片URL');
+        }
+    }
+
+    // 检查提示词
+    if (!prompt) {
+        throw new Error('请输入风格描述');
+    }
+
+    return { imageUrl, prompt };
 }
 
 /**
@@ -366,7 +421,7 @@ function showUploadError(message) {
  */
 async function convertImage(imageUrl, prompt) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2分钟超时
 
     try {
         console.log('开始调用代理 API...', { imageUrl, prompt });
@@ -406,38 +461,78 @@ async function convertImage(imageUrl, prompt) {
 }
 
 /**
- * 显示错误信息
+ * 设置按钮状态
  */
-function showError(error) {
-    console.error('转换失败:', error);
+function setButtonState(isLoading) {
+    elements.convertButton.disabled = isLoading;
 
-    let errorText = error.message || '未知错误';
-
-    // 友好化错误信息
-    if (errorText.includes('fetch')) {
-        errorText = '网络连接失败，请检查您的网络连接';
-    } else if (errorText.includes('CORS')) {
-        errorText = '跨域访问被阻止，请联系管理员配置 CORS';
-    } else if (errorText.includes('timeout')) {
-        errorText = '处理超时，请稍后重试';
+    if (isLoading) {
+        elements.convertButton.textContent = '⏳ 转换中...';
+        elements.convertButton.classList.add('loading');
+    } else {
+        elements.convertButton.textContent = '🎨 开始转换';
+        elements.convertButton.classList.remove('loading');
     }
-
-    elements.errorMessage.textContent = errorText;
-    showState('error');
 }
 
 /**
- * 显示成功结果
+ * 显示状态
+ */
+function showState(state) {
+    // 隐藏所有状态
+    elements.loadingDiv.classList.add('hidden');
+    elements.resultDiv.classList.add('hidden');
+    elements.errorDiv.classList.add('hidden');
+
+    // 显示对应状态
+    switch (state) {
+        case 'loading':
+            elements.loadingDiv.classList.remove('hidden');
+            break;
+        case 'result':
+            elements.resultDiv.classList.remove('hidden');
+            break;
+        case 'error':
+            elements.errorDiv.classList.remove('hidden');
+            break;
+    }
+}
+
+/**
+ * 显示结果
  */
 function showResult(imageUrl) {
     elements.resultImage.src = imageUrl;
-    elements.resultImage.onload = () => {
-        showState('result');
-    };
+    showState('result');
 
-    elements.resultImage.onerror = () => {
-        showError(new Error('生成的图片加载失败，请重试'));
-    };
+    // 滚动到结果区域
+    elements.resultDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+/**
+ * 显示错误
+ */
+function showError(error) {
+    elements.errorMessage.textContent = error.message;
+    showState('error');
+
+    // 滚动到错误区域
+    elements.errorDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+/**
+ * 显示成功消息
+ */
+function showSuccess(message) {
+    // 这里可以添加成功消息的显示逻辑
+    console.log('成功:', message);
+}
+
+/**
+ * 清除消息
+ */
+function clearMessages() {
+    showState('none');
 }
 
 /**
@@ -475,80 +570,27 @@ async function handleConvert() {
  */
 function downloadImage() {
     const imageUrl = elements.resultImage.src;
-    if (!imageUrl) return;
-
-    // 创建临时下载链接
     const link = document.createElement('a');
     link.href = imageUrl;
     link.download = `anime-avatar-${Date.now()}.jpg`;
-    link.target = '_blank';
-
-    // 触发下载
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
 
 /**
- * 重新开始转换
- */
-function resetToInitialState() {
-    showState('');
-    elements.imageUrlInput.focus();
-}
-
-/**
- * 重试转换
- */
-function retryConvert() {
-    handleConvert();
-}
-
-/**
- * 验证输入参数 (V2.0 更新)
- */
-function validateInputs() {
-    const prompt = elements.promptInput.value.trim();
-
-    if (!prompt) {
-        throw new Error('请输入目标风格');
-    }
-
-    let imageUrl;
-
-    if (currentInputMode === 'upload') {
-        if (!uploadedImageUrl) {
-            throw new Error('请先上传图片');
-        }
-        imageUrl = uploadedImageUrl;
-    } else {
-        imageUrl = elements.imageUrlInput.value.trim();
-
-        if (!imageUrl) {
-            throw new Error('请输入图片 URL');
-        }
-
-        // 验证 URL 格式
-        try {
-            new URL(imageUrl);
-        } catch {
-            throw new Error('请输入有效的图片 URL');
-        }
-
-        // 验证 URL 协议
-        if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://') && !imageUrl.startsWith('data:')) {
-            throw new Error('图片 URL 必须以 http://、https:// 或 data: 开头');
-        }
-    }
-
-    return { imageUrl, prompt };
-}
-
-/**
  * 页面加载完成后初始化
  */
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('动漫风格迁移工具 V2.0 已加载');
+    console.log('动漫风格迁移工具 V4.0 已加载');
+
+    // 首先检查用户是否已登录
+    const user = getCurrentUser();
+    if (!user) {
+        console.log('用户未登录，跳转到认证页面');
+        window.location.href = 'auth.html';
+        return;
+    }
 
     // 检查配置
     if (CONFIG.PROXY_API_URL.includes('your-project-name.vercel.app')) {
@@ -557,11 +599,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // 初始化用户状态
+    updateUserStatus();
+    initializeUserEvents();
+
     // 初始化事件监听器
     initializeEventListeners();
 
     // 设置默认输入模式为上传
     switchInputMode('upload');
 
-    console.log('✅ V2.0 初始化完成，支持风格迁移功能！');
+    console.log('✅ V4.0 初始化完成，支持用户系统和VIP功能！');
 }); 

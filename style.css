@@ -30,23 +30,123 @@ body {
     backdrop-filter: blur(10px);
 }
 
-/* 头部区域 */
+/* 页面头部 */
 header {
-    background: linear-gradient(135deg, #ff6b6b, #feca57);
-    color: white;
     text-align: center;
-    padding: 40px 20px;
+    margin-bottom: 40px;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    position: relative;
 }
 
 header h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
     font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 header p {
     font-size: 1.1rem;
     opacity: 0.9;
+    margin: 0;
+}
+
+/* 用户状态区域 */
+.user-status {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.welcome-text {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.auth-link-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.auth-link-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.auth-link-btn.login-btn:hover {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.auth-link-btn.register-btn:hover {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.auth-link-btn.logout-btn:hover {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+}
+
+/* 响应式设计 - 用户状态区域 */
+@media (max-width: 768px) {
+    .user-status {
+        position: static;
+        margin-top: 20px;
+        justify-content: center;
+    }
+
+    .auth-link-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-actions {
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .auth-link-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* 主内容区域 */

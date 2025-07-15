@@ -11,8 +11,23 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎨 动漫风格迁移工具 V2.0</h1>
+            <h1>🎨 动漫头像生成器 V2.0</h1>
             <p>将您的图片转换为不同的动漫绘画风格</p>
+
+            <!-- 用户状态区域 -->
+            <div class="user-status">
+                <!-- 未登录状态 -->
+                <div id="userLoggedOut" class="user-actions">
+                    <button id="loginBtn" class="auth-link-btn login-btn">🔑 登录</button>
+                    <button id="registerBtn" class="auth-link-btn register-btn">📝 注册</button>
+                </div>
+
+                <!-- 已登录状态 -->
+                <div id="userLoggedIn" class="user-info hidden">
+                    <span class="welcome-text">👋 欢迎，<span id="currentUsername">用户</span></span>
+                    <button id="logoutBtn" class="auth-link-btn logout-btn">🚪 退出</button>
+                </div>
+            </div>
         </header>
 
         <main>
