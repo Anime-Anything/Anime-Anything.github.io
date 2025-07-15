@@ -15,98 +15,105 @@
             <p>将您的图片转换为不同的动漫绘画风格</p>
         </header>
 
-        <!-- 输入模式选择 -->
-        <div class="input-mode-selector">
-            <button id="uploadModeBtn" class="mode-btn active">📁 上传图片</button>
-            <button id="urlModeBtn" class="mode-btn">🔗 URL链接</button>
-        </div>
+        <main>
+            <div class="input-section">
+                <!-- 图片输入方式选择 -->
+                <div class="input-mode-tabs">
+                    <button id="uploadModeBtn" class="tab-btn active">📁 上传图片</button>
+                    <button id="urlModeBtn" class="tab-btn">🔗 URL链接</button>
+                </div>
 
-        <!-- 上传图片模式 -->
-        <div id="uploadMode" class="input-section active">
-            <div id="dropZone" class="drop-zone">
-                <div class="drop-content">
-                    <div class="drop-icon">📁</div>
-                    <p class="drop-text">将图片拖拽到此处</p>
-                    <p class="drop-sub">或者</p>
-                    <button id="fileSelectBtn" class="file-select-btn">选择文件</button>
-                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                    <div class="file-info">
-                        <small>支持 JPG、PNG、WEBP 格式，文件大小不超过 5MB</small>
+                <!-- 图片上传区域 -->
+                <div id="uploadMode" class="input-mode active">
+                    <div id="dropZone" class="drop-zone">
+                        <div class="drop-content">
+                            <div class="upload-icon">📤</div>
+                            <h3>拖拽图片到此处</h3>
+                            <p>或者 <button id="fileSelectBtn" class="file-select-btn">点击选择文件</button></p>
+                            <small>支持 JPG、PNG、WEBP 格式，建议大小 &lt; 5MB</small>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+
+                    <!-- 图片预览 -->
+                    <div id="imagePreview" class="image-preview hidden">
+                        <div class="preview-header">
+                            <h4>📷 图片预览</h4>
+                            <button id="changeImageBtn" class="change-btn">更换图片</button>
+                        </div>
+                        <div class="preview-content">
+                            <img id="previewImage" alt="预览图片">
+                            <div class="image-info">
+                                <span id="imageInfo"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 图片预览 -->
-            <div id="imagePreview" class="image-preview hidden">
-                <div class="preview-header">
-                    <span>图片预览</span>
-                    <button id="changeImageBtn" class="change-btn">更换图片</button>
+                <!-- URL输入区域 -->
+                <div id="urlMode" class="input-mode">
+                    <div class="input-group">
+                        <label for="imageUrlInput">图片 URL：</label>
+                        <input type="text" id="imageUrlInput"
+                            placeholder="请输入公网可访问的图片URL，例如：https://example.com/image.jpg" class="input-field">
+                        <small class="input-hint">
+                            💡 提示：请确保图片 URL 可以公开访问，支持 HTTPS 链接
+                        </small>
+                    </div>
                 </div>
-                <div class="preview-content">
-                    <img id="previewImage" alt="预览图片">
+
+                <!-- 风格描述 -->
+                <div class="input-group">
+                    <label for="promptInput">目标风格：</label>
+                    <input type="text" id="promptInput" value="转换成法国绘本风格" placeholder="输入目标风格，如'转换成法国绘本风格'"
+                        class="input-field">
+                    <small class="input-hint">
+                        💡 例如：转换成日式动漫风格、转换成法国绘本风格、转换成卡通风格等
+                    </small>
                 </div>
-                <div id="imageInfo" class="image-info"></div>
+
+                <button id="convertButton" class="convert-btn">
+                    <span class="btn-text">🚀 开始风格迁移</span>
+                </button>
             </div>
-        </div>
 
-        <!-- URL链接模式 -->
-        <div id="urlMode" class="input-section">
-            <div class="url-input-container">
-                <label for="imageUrlInput">图片链接</label>
-                <input type="url" id="imageUrlInput" placeholder="请输入图片的网络地址 (https://...)">
-                <small class="input-hint">请确保图片链接可以直接访问</small>
+            <div class="result-section">
+                <div id="loadingDiv" class="loading hidden">
+                    <div class="loading-spinner"></div>
+                    <p>正在进行风格迁移，请稍候...</p>
+                    <small>通常需要 30-60 秒，请耐心等待</small>
+                </div>
+
+                <div id="resultDiv" class="result hidden">
+                    <h3>✨ 风格迁移结果</h3>
+                    <div class="image-container">
+                        <img id="resultImage" alt="风格迁移后的图片" class="result-image">
+                    </div>
+                    <div class="result-actions">
+                        <button id="downloadBtn" class="download-btn">💾 下载图片</button>
+                        <button onclick="location.reload()" class="new-task-btn">🎯 重新转换</button>
+                    </div>
+                </div>
+
+                <div id="errorDiv" class="error hidden">
+                    <h3>⚠️ 风格迁移失败</h3>
+                    <p id="errorMessage"></p>
+                    <button onclick="location.reload()" class="retry-btn">🔄 重试</button>
+                </div>
             </div>
-        </div>
+        </main>
 
-        <!-- 风格描述输入 -->
-        <div class="prompt-section">
-            <label for="promptInput">风格描述</label>
-            <textarea id="promptInput" placeholder="请描述您想要的动漫风格，例如：可爱的二次元风格，大眼睛，粉色头发，甜美表情" rows="3"></textarea>
-            <div class="prompt-examples">
-                <span class="example-label">示例：</span>
-                <span class="example" onclick="setPrompt(this)">可爱二次元风格，大眼睛</span>
-                <span class="example" onclick="setPrompt(this)">酷炫动漫风格，帅气表情</span>
-                <span class="example" onclick="setPrompt(this)">温柔少女风格，柔和色彩</span>
-            </div>
-        </div>
-
-        <!-- 转换按钮 -->
-        <button id="convertButton" class="convert-btn">
-            🎨 开始转换
-        </button>
-
-        <!-- 加载状态 -->
-        <div id="loadingDiv" class="loading-container hidden">
-            <div class="loading-spinner"></div>
-            <p>正在生成您的动漫头像，请稍候...</p>
-            <small>这可能需要几秒钟到几分钟时间</small>
-        </div>
-
-        <!-- 结果显示 -->
-        <div id="resultDiv" class="result-container hidden">
-            <h3>🎉 转换完成！</h3>
-            <div class="result-image-container">
-                <img id="resultImage" alt="转换结果">
-            </div>
-            <div class="result-actions">
-                <button id="downloadBtn" class="download-btn">💾 下载图片</button>
-                <button onclick="location.reload()" class="retry-btn">🔄 重新转换</button>
-            </div>
-        </div>
-
-        <!-- 错误显示 -->
-        <div id="errorDiv" class="error-container hidden">
-            <h3>❌ 转换失败</h3>
-            <p id="errorMessage">出现了一些问题</p>
-            <button onclick="location.reload()" class="retry-btn">🔄 重试</button>
-        </div>
+        <footer>
+            <p>
+                <small>
+                    ⚡ 基于阿里云百炼 API |
+                    <a href="https://github.com" target="_blank">GitHub</a> |
+                    V2.0
+                </small>
+            </p>
+        </footer>
     </div>
 
-    <script>
-        function setPrompt(element) {
-            document.getElementById('promptInput').value = element.textContent;
-        }
-    </script>
     <script src="script.js"></script>
 </body>
 
