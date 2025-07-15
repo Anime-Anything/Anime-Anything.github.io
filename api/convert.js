@@ -8,7 +8,7 @@
 
 // API 配置
 const DASHSCOPE_BASE_URL = 'https://dashscope.aliyuncs.com/api/v1';
-const MAX_POLLING_ATTEMPTS = 20; // 最大轮询次数 (约60秒)
+const MAX_POLLING_ATTEMPTS = 15; // 最大轮询次数 (约45秒，给20秒处理时间留余量)
 const POLLING_INTERVAL = 3000; // 轮询间隔 (3秒)
 
 /**
