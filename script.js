@@ -1,6 +1,6 @@
 /**
- * 动漫头像生成器 V2.0 - 主页逻辑
- * 包含图片上传、风格转换等功能
+ * AI动漫风格迁移工具 - 现代化主页逻辑
+ * 包含页面加载动画、导航、多页面管理和图片转换功能
  */
 
 // 配置信息
@@ -12,6 +12,13 @@ const CONFIG = {
 
 // DOM 元素
 const elements = {
+    // 页面加载和导航
+    pageLoader: document.getElementById('pageLoader'),
+    navbar: document.getElementById('navbar'),
+    navToggle: document.getElementById('navToggle'),
+    navMenu: document.getElementById('navMenu'),
+    navLinks: document.querySelectorAll('.nav-link'),
+
     // 输入模式切换
     uploadModeBtn: document.getElementById('uploadModeBtn'),
     urlModeBtn: document.getElementById('urlModeBtn'),
@@ -43,40 +50,243 @@ const elements = {
 
 // 全局变量
 let uploadedImageUrl = null;
+let currentSection = 'home';
 
 /**
- * 文件上传管理
+ * 页面初始化和加载管理
  */
 
 /**
- * 初始化事件监听器
+ * 页面加载完成处理
  */
-function initializeEventListeners() {
+function handlePageLoad() {
+    // 隐藏加载动画
+    setTimeout(() => {
+        if (elements.pageLoader) {
+            elements.pageLoader.classList.add('loaded');
+        }
+    }, 1000);
+
+    // 检查配置
+    if (CONFIG.PROXY_API_URL.includes('your-project-name.vercel.app')) {
+        console.warn('⚠️ 请在 script.js 中配置正确的 Vercel 部署地址');
+        showError(new Error('系统配置错误：请联系管理员配置代理服务器地址'));
+        return;
+    }
+
+    // 初始化各种功能
+    initializeNavigation();
+    initializeScrollEffects();
+    initializeFileUpload();
+    initializeConversion();
+
+    // 设置默认输入模式为上传
+    switchInputMode('upload');
+
+    console.log('✅ AI动漫风格迁移工具已加载完成！');
+}
+
+/**
+ * 导航功能管理
+ */
+
+/**
+ * 初始化导航功能
+ */
+function initializeNavigation() {
+    // 导航链接点击事件
+    elements.navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const section = link.getAttribute('data-section');
+            showSection(section);
+            updateActiveNavLink(link);
+
+            // 移动端关闭菜单
+            if (elements.navMenu) {
+                elements.navMenu.classList.remove('active');
+            }
+        });
+    });
+
+    // 移动端菜单切换
+    if (elements.navToggle) {
+        elements.navToggle.addEventListener('click', () => {
+            if (elements.navMenu) {
+                elements.navMenu.classList.toggle('active');
+            }
+        });
+    }
+
+    // 点击页面其他地方关闭移动端菜单
+    document.addEventListener('click', (e) => {
+        if (elements.navMenu &&
+            !elements.navMenu.contains(e.target) &&
+            !elements.navToggle.contains(e.target)) {
+            elements.navMenu.classList.remove('active');
+        }
+    });
+}
+
+/**
+ * 显示指定区域
+ */
+function showSection(sectionName) {
+    // 隐藏所有区域
+    const sections = document.querySelectorAll('.main-content section');
+    sections.forEach(section => {
+        section.classList.remove('active-section');
+    });
+
+    // 显示指定区域
+    const targetSection = document.getElementById(sectionName);
+    if (targetSection) {
+        targetSection.classList.add('active-section');
+        currentSection = sectionName;
+
+        // 滚动到顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // 添加进入动画
+        addSectionAnimation(targetSection);
+    }
+}
+
+/**
+ * 更新导航链接活动状态
+ */
+function updateActiveNavLink(activeLink) {
+    elements.navLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+    activeLink.classList.add('active');
+}
+
+/**
+ * 添加区域动画
+ */
+function addSectionAnimation(section) {
+    // 获取区域内的所有可动画元素
+    const animateElements = section.querySelectorAll(
+        '.feature-card, .gallery-item, .app-container, .section-header'
+    );
+
+    // 重置动画
+    animateElements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+
+        // 依次显示元素
+        setTimeout(() => {
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+}
+
+/**
+ * 滚动效果管理
+ */
+
+/**
+ * 初始化滚动效果
+ */
+function initializeScrollEffects() {
+    // 导航栏滚动效果
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+
+        // 导航栏透明度变化
+        if (elements.navbar) {
+            if (currentScrollY > 100) {
+                elements.navbar.classList.add('scrolled');
+            } else {
+                elements.navbar.classList.remove('scrolled');
+            }
+        }
+
+        // 滚动方向检测（可用于隐藏/显示导航栏）
+        if (currentScrollY > lastScrollY && currentScrollY > 200) {
+            // 向下滚动
+            if (elements.navbar) {
+                elements.navbar.style.transform = 'translateY(-100%)';
+            }
+        } else {
+            // 向上滚动
+            if (elements.navbar) {
+                elements.navbar.style.transform = 'translateY(0)';
+            }
+        }
+
+        lastScrollY = currentScrollY;
+    });
+
+    // 滚动进入视野动画
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // 观察所有需要动画的元素
+    const observeElements = document.querySelectorAll(
+        '.feature-card, .gallery-item, .section-header'
+    );
+
+    observeElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        observer.observe(el);
+    });
+}
+
+/**
+ * 文件上传功能
+ */
+
+/**
+ * 初始化文件上传功能
+ */
+function initializeFileUpload() {
     // 输入模式切换
-    elements.uploadModeBtn.addEventListener('click', () => switchInputMode('upload'));
-    elements.urlModeBtn.addEventListener('click', () => switchInputMode('url'));
+    if (elements.uploadModeBtn) {
+        elements.uploadModeBtn.addEventListener('click', () => switchInputMode('upload'));
+    }
+    if (elements.urlModeBtn) {
+        elements.urlModeBtn.addEventListener('click', () => switchInputMode('url'));
+    }
 
     // 文件上传相关事件
-    elements.fileSelectBtn.addEventListener('click', () => elements.fileInput.click());
-    elements.fileInput.addEventListener('change', handleFileSelect);
+    if (elements.fileSelectBtn) {
+        elements.fileSelectBtn.addEventListener('click', () => elements.fileInput?.click());
+    }
+    if (elements.fileInput) {
+        elements.fileInput.addEventListener('change', handleFileSelect);
+    }
 
     // 拖拽事件
-    elements.dropZone.addEventListener('dragenter', handleDragEnter);
-    elements.dropZone.addEventListener('dragover', handleDragOver);
-    elements.dropZone.addEventListener('dragleave', handleDragLeave);
-    elements.dropZone.addEventListener('drop', handleDrop);
+    if (elements.dropZone) {
+        elements.dropZone.addEventListener('dragenter', handleDragEnter);
+        elements.dropZone.addEventListener('dragover', handleDragOver);
+        elements.dropZone.addEventListener('dragleave', handleDragLeave);
+        elements.dropZone.addEventListener('drop', handleDrop);
+    }
 
     // 更换图片按钮
     if (elements.changeImageBtn) {
-        elements.changeImageBtn.addEventListener('click', () => elements.fileInput.click());
-    }
-
-    // 转换按钮
-    elements.convertButton.addEventListener('click', handleConvert);
-
-    // 下载按钮
-    if (elements.downloadBtn) {
-        elements.downloadBtn.addEventListener('click', downloadImage);
+        elements.changeImageBtn.addEventListener('click', () => elements.fileInput?.click());
     }
 }
 
@@ -85,12 +295,16 @@ function initializeEventListeners() {
  */
 function switchInputMode(mode) {
     // 更新按钮状态
-    elements.uploadModeBtn.classList.toggle('active', mode === 'upload');
-    elements.urlModeBtn.classList.toggle('active', mode === 'url');
+    if (elements.uploadModeBtn && elements.urlModeBtn) {
+        elements.uploadModeBtn.classList.toggle('active', mode === 'upload');
+        elements.urlModeBtn.classList.toggle('active', mode === 'url');
+    }
 
     // 切换显示的输入区域
-    elements.uploadMode.classList.toggle('active', mode === 'upload');
-    elements.urlMode.classList.toggle('active', mode === 'url');
+    if (elements.uploadMode && elements.urlMode) {
+        elements.uploadMode.classList.toggle('active', mode === 'upload');
+        elements.urlMode.classList.toggle('active', mode === 'url');
+    }
 
     // 清除之前的状态
     clearUploadState();
@@ -113,7 +327,9 @@ function handleFileSelect(e) {
 function handleDragEnter(e) {
     e.preventDefault();
     e.stopPropagation();
-    elements.dropZone.classList.add('dragover');
+    if (elements.dropZone) {
+        elements.dropZone.classList.add('dragover');
+    }
 }
 
 function handleDragOver(e) {
@@ -124,7 +340,7 @@ function handleDragOver(e) {
 function handleDragLeave(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (!elements.dropZone.contains(e.relatedTarget)) {
+    if (elements.dropZone && !elements.dropZone.contains(e.relatedTarget)) {
         elements.dropZone.classList.remove('dragover');
     }
 }
@@ -132,7 +348,9 @@ function handleDragLeave(e) {
 function handleDrop(e) {
     e.preventDefault();
     e.stopPropagation();
-    elements.dropZone.classList.remove('dragover');
+    if (elements.dropZone) {
+        elements.dropZone.classList.remove('dragover');
+    }
 
     const files = e.dataTransfer.files;
     if (files.length > 0) {
@@ -182,13 +400,23 @@ async function showImagePreview(file) {
         const reader = new FileReader();
 
         reader.onload = (e) => {
-            elements.previewImage.src = e.target.result;
-            elements.imagePreview.classList.remove('hidden');
+            if (elements.previewImage && elements.imagePreview && elements.imageInfo) {
+                elements.previewImage.src = e.target.result;
+                elements.imagePreview.classList.remove('hidden');
 
-            // 显示文件信息
-            const sizeInMB = (file.size / 1024 / 1024).toFixed(2);
-            elements.imageInfo.textContent = `${file.name} (${sizeInMB}MB)`;
+                // 显示文件信息
+                const sizeInMB = (file.size / 1024 / 1024).toFixed(2);
+                elements.imageInfo.textContent = `${file.name} (${sizeInMB}MB)`;
 
+                // 添加预览动画
+                elements.imagePreview.style.opacity = '0';
+                elements.imagePreview.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    elements.imagePreview.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    elements.imagePreview.style.opacity = '1';
+                    elements.imagePreview.style.transform = 'translateY(0)';
+                }, 100);
+            }
             resolve();
         };
 
@@ -240,34 +468,10 @@ function fileToBase64(file) {
 
 /**
  * 上传到图床服务
- * 注意：这里使用临时的解决方案，实际生产环境需要配置真实的图床服务
  */
 async function uploadToImageHost(base64Data) {
     // 简化方案：直接使用data URL
-    // 在实际应用中，你需要：
-    // 1. 注册一个免费图床服务账号 (如 imgbb.com)
-    // 2. 获取API密钥
-    // 3. 调用其API上传图片
-
-    // 这里返回一个data URL作为临时解决方案
     return `data:image/jpeg;base64,${base64Data}`;
-
-    /* 真实的API调用示例：
-    const formData = new FormData();
-    formData.append('image', base64Data);
-    
-    const response = await fetch(`${CONFIG.IMAGE_UPLOAD_URL}?key=${CONFIG.IMAGE_UPLOAD_KEY}`, {
-        method: 'POST',
-        body: formData
-    });
-    
-    const result = await response.json();
-    if (result.success) {
-        return result.data.url;
-    } else {
-        throw new Error(result.error.message);
-    }
-    */
 }
 
 /**
@@ -290,9 +494,15 @@ function showUploadError(message) {
  * 清除上传状态
  */
 function clearUploadState() {
-    elements.imagePreview.classList.add('hidden');
-    elements.previewImage.src = '';
-    elements.imageInfo.textContent = '';
+    if (elements.imagePreview) {
+        elements.imagePreview.classList.add('hidden');
+    }
+    if (elements.previewImage) {
+        elements.previewImage.src = '';
+    }
+    if (elements.imageInfo) {
+        elements.imageInfo.textContent = '';
+    }
     uploadedImageUrl = null;
     if (elements.fileInput) {
         elements.fileInput.value = '';
@@ -304,14 +514,29 @@ function clearUploadState() {
  */
 
 /**
+ * 初始化转换功能
+ */
+function initializeConversion() {
+    // 转换按钮
+    if (elements.convertButton) {
+        elements.convertButton.addEventListener('click', handleConvert);
+    }
+
+    // 下载按钮
+    if (elements.downloadBtn) {
+        elements.downloadBtn.addEventListener('click', downloadImage);
+    }
+}
+
+/**
  * 验证输入参数
  */
 function validateInputs() {
     let imageUrl = '';
-    let prompt = elements.promptInput.value.trim();
+    let prompt = elements.promptInput?.value.trim() || '';
 
     // 检查图片来源
-    if (elements.uploadMode.classList.contains('active')) {
+    if (elements.uploadMode?.classList.contains('active')) {
         // 上传模式
         if (!uploadedImageUrl) {
             throw new Error('请先上传图片');
@@ -319,7 +544,7 @@ function validateInputs() {
         imageUrl = uploadedImageUrl;
     } else {
         // URL模式
-        imageUrl = elements.imageUrlInput.value.trim();
+        imageUrl = elements.imageUrlInput?.value.trim() || '';
         if (!imageUrl) {
             throw new Error('请输入图片URL');
         }
@@ -388,13 +613,15 @@ async function convertImage(imageUrl, prompt) {
  * 设置按钮状态
  */
 function setButtonState(isLoading) {
+    if (!elements.convertButton) return;
+
     elements.convertButton.disabled = isLoading;
 
     if (isLoading) {
         elements.convertButton.textContent = '⏳ 转换中...';
         elements.convertButton.classList.add('loading');
     } else {
-        elements.convertButton.textContent = '🎨 开始转换';
+        elements.convertButton.innerHTML = '<span class="btn-text">🚀 开始风格迁移</span>';
         elements.convertButton.classList.remove('loading');
     }
 }
@@ -404,21 +631,34 @@ function setButtonState(isLoading) {
  */
 function showState(state) {
     // 隐藏所有状态
-    elements.loadingDiv.classList.add('hidden');
-    elements.resultDiv.classList.add('hidden');
-    elements.errorDiv.classList.add('hidden');
+    [elements.loadingDiv, elements.resultDiv, elements.errorDiv].forEach(el => {
+        if (el) el.classList.add('hidden');
+    });
 
     // 显示对应状态
+    let targetElement = null;
     switch (state) {
         case 'loading':
-            elements.loadingDiv.classList.remove('hidden');
+            targetElement = elements.loadingDiv;
             break;
         case 'result':
-            elements.resultDiv.classList.remove('hidden');
+            targetElement = elements.resultDiv;
             break;
         case 'error':
-            elements.errorDiv.classList.remove('hidden');
+            targetElement = elements.errorDiv;
             break;
+    }
+
+    if (targetElement) {
+        targetElement.classList.remove('hidden');
+        // 添加出现动画
+        targetElement.style.opacity = '0';
+        targetElement.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            targetElement.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            targetElement.style.opacity = '1';
+            targetElement.style.transform = 'translateY(0)';
+        }, 100);
     }
 }
 
@@ -426,22 +666,30 @@ function showState(state) {
  * 显示结果
  */
 function showResult(imageUrl) {
-    elements.resultImage.src = imageUrl;
+    if (elements.resultImage) {
+        elements.resultImage.src = imageUrl;
+    }
     showState('result');
 
     // 滚动到结果区域
-    elements.resultDiv.scrollIntoView({ behavior: 'smooth' });
+    if (elements.resultDiv) {
+        elements.resultDiv.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 /**
  * 显示错误
  */
 function showError(error) {
-    elements.errorMessage.textContent = error.message;
+    if (elements.errorMessage) {
+        elements.errorMessage.textContent = error.message;
+    }
     showState('error');
 
     // 滚动到错误区域
-    elements.errorDiv.scrollIntoView({ behavior: 'smooth' });
+    if (elements.errorDiv) {
+        elements.errorDiv.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 /**
@@ -485,6 +733,8 @@ async function handleConvert() {
  * 下载图片
  */
 function downloadImage() {
+    if (!elements.resultImage?.src) return;
+
     const imageUrl = elements.resultImage.src;
     const link = document.createElement('a');
     link.href = imageUrl;
@@ -495,23 +745,23 @@ function downloadImage() {
 }
 
 /**
+ * 全局函数 - 供HTML调用
+ */
+window.showSection = showSection;
+
+/**
  * 页面加载完成后初始化
  */
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('动漫风格迁移工具 V2.0 已加载');
+    console.log('AI动漫风格迁移工具开始加载...');
+    handlePageLoad();
+});
 
-    // 检查配置
-    if (CONFIG.PROXY_API_URL.includes('your-project-name.vercel.app')) {
-        console.warn('⚠️ 请在 script.js 中配置正确的 Vercel 部署地址');
-        showError(new Error('系统配置错误：请联系管理员配置代理服务器地址'));
-        return;
-    }
-
-    // 初始化事件监听器
-    initializeEventListeners();
-
-    // 设置默认输入模式为上传
-    switchInputMode('upload');
-
-    console.log('✅ V2.0 初始化完成！');
+// 页面完全加载后隐藏加载动画
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        if (elements.pageLoader) {
+            elements.pageLoader.classList.add('loaded');
+        }
+    }, 500);
 }); 

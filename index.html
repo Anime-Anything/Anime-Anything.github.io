@@ -4,115 +4,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动漫风格迁移工具 V2.0</title>
+    <title>AI动漫风格迁移工具 - 让创意无限绽放</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1>🎨 动漫头像生成器 V2.0</h1>
-            <p>将您的图片转换为不同的动漫绘画风格</p>
-        </header>
+    <!-- 加载动画 -->
+    <div id="pageLoader" class="page-loader">
+        <div class="loader-content">
+            <div class="loader-ring"></div>
+            <div class="loader-text">AI创意加载中...</div>
+        </div>
+    </div>
 
-        <main>
-            <div class="input-section">
-                <!-- 图片输入方式选择 -->
-                <div class="input-mode-tabs">
-                    <button id="uploadModeBtn" class="tab-btn active">📁 上传图片</button>
-                    <button id="urlModeBtn" class="tab-btn">🔗 URL链接</button>
-                </div>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🎨</span>
+                <span class="logo-text">AI动漫工坊</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active" data-section="home">首页</a>
+                <a href="#features" class="nav-link" data-section="features">功能</a>
+                <a href="#gallery" class="nav-link" data-section="gallery">画廊</a>
+                <a href="#app" class="nav-link" data-section="app">立即体验</a>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
-                <!-- 图片上传区域 -->
-                <div id="uploadMode" class="input-mode active">
-                    <div id="dropZone" class="drop-zone">
-                        <div class="drop-content">
-                            <div class="upload-icon">📤</div>
-                            <h3>拖拽图片到此处</h3>
-                            <p>或者 <button id="fileSelectBtn" class="file-select-btn">点击选择文件</button></p>
-                            <small>支持 JPG、PNG、WEBP 格式，建议大小 &lt; 5MB</small>
-                        </div>
-                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                    </div>
-
-                    <!-- 图片预览 -->
-                    <div id="imagePreview" class="image-preview hidden">
-                        <div class="preview-header">
-                            <h4>📷 图片预览</h4>
-                            <button id="changeImageBtn" class="change-btn">更换图片</button>
-                        </div>
-                        <div class="preview-content">
-                            <img id="previewImage" alt="预览图片">
-                            <div class="image-info">
-                                <span id="imageInfo"></span>
+    <!-- 主页面内容 -->
+    <main class="main-content">
+        <!-- 首页区域 -->
+        <section id="home" class="hero-section active-section">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            <span class="title-gradient">AI动漫风格迁移</span>
+                            <br>让创意无限绽放
+                        </h1>
+                        <p class="hero-subtitle">
+                            基于阿里云百炼AI技术，一键将您的图片转换为各种精美的动漫绘画风格
+                        </p>
+                        <div class="hero-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">⚡</span>
+                                <span>秒级转换</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🎯</span>
+                                <span>高质量输出</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🎨</span>
+                                <span>多种风格</span>
                             </div>
                         </div>
+                        <div class="hero-actions">
+                            <button class="btn-primary" onclick="showSection('app')">
+                                <span>立即开始创作</span>
+                                <span class="btn-icon">→</span>
+                            </button>
+                            <button class="btn-secondary" onclick="showSection('features')">
+                                <span>了解更多</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
-
-                <!-- URL输入区域 -->
-                <div id="urlMode" class="input-mode">
-                    <div class="input-group">
-                        <label for="imageUrlInput">图片 URL：</label>
-                        <input type="text" id="imageUrlInput"
-                            placeholder="请输入公网可访问的图片URL，例如：https://example.com/image.jpg" class="input-field">
-                        <small class="input-hint">
-                            💡 提示：请确保图片 URL 可以公开访问，支持 HTTPS 链接
-                        </small>
+                    <div class="hero-visual">
+                        <div class="visual-container">
+                            <div class="floating-card card-1">
+                                <div class="card-image"></div>
+                                <div class="card-style">原图</div>
+                            </div>
+                            <div class="floating-card card-2">
+                                <div class="card-image anime"></div>
+                                <div class="card-style">动漫风格</div>
+                            </div>
+                            <div class="floating-card card-3">
+                                <div class="card-image painting"></div>
+                                <div class="card-style">绘画风格</div>
+                            </div>
+                            <div class="magic-wand">✨</div>
+                        </div>
                     </div>
-                </div>
-
-                <!-- 风格描述 -->
-                <div class="input-group">
-                    <label for="promptInput">目标风格：</label>
-                    <input type="text" id="promptInput" value="转换成法国绘本风格" placeholder="输入目标风格，如'转换成法国绘本风格'"
-                        class="input-field">
-                    <small class="input-hint">
-                        💡 例如：转换成日式动漫风格、转换成法国绘本风格、转换成卡通风格等
-                    </small>
-                </div>
-
-                <button id="convertButton" class="convert-btn">
-                    <span class="btn-text">🚀 开始风格迁移</span>
-                </button>
-            </div>
-
-            <div class="result-section">
-                <div id="loadingDiv" class="loading hidden">
-                    <div class="loading-spinner"></div>
-                    <p>正在进行风格迁移，请稍候...</p>
-                    <small>通常需要 30-60 秒，请耐心等待</small>
-                </div>
-
-                <div id="resultDiv" class="result hidden">
-                    <h3>✨ 风格迁移结果</h3>
-                    <div class="image-container">
-                        <img id="resultImage" alt="风格迁移后的图片" class="result-image">
-                    </div>
-                    <div class="result-actions">
-                        <button id="downloadBtn" class="download-btn">💾 下载图片</button>
-                        <button onclick="location.reload()" class="new-task-btn">🎯 重新转换</button>
-                    </div>
-                </div>
-
-                <div id="errorDiv" class="error hidden">
-                    <h3>⚠️ 风格迁移失败</h3>
-                    <p id="errorMessage"></p>
-                    <button onclick="location.reload()" class="retry-btn">🔄 重试</button>
                 </div>
             </div>
-        </main>
+            <!-- 滚动提示 -->
+            <div class="scroll-indicator">
+                <div class="scroll-text">探索更多功能</div>
+                <div class="scroll-arrow"></div>
+            </div>
+        </section>
 
-        <footer>
-            <p>
-                <small>
-                    ⚡ 基于阿里云百炼 API |
-                    <a href="https://github.com" target="_blank">GitHub</a> |
-                    V2.0
-                </small>
-            </p>
-        </footer>
-    </div>
+        <!-- 功能介绍区域 -->
+        <section id="features" class="features-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">强大功能特色</h2>
+                    <p class="section-subtitle">AI技术驱动，让每一次创作都成为艺术品</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-bg">
+                            <span class="feature-emoji">🖼️</span>
+                        </div>
+                        <h3>多种输入方式</h3>
+                        <p>支持拖拽上传、URL链接等多种图片输入方式，操作简单便捷</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon-bg">
+                            <span class="feature-emoji">🎨</span>
+                        </div>
+                        <h3>丰富风格选择</h3>
+                        <p>日式动漫、法国绘本、卡通风格等多种艺术风格任您选择</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon-bg">
+                            <span class="feature-emoji">⚡</span>
+                        </div>
+                        <h3>快速处理</h3>
+                        <p>基于先进AI算法，通常30-60秒即可完成高质量的风格转换</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon-bg">
+                            <span class="feature-emoji">📱</span>
+                        </div>
+                        <h3>响应式设计</h3>
+                        <p>完美适配各种设备，随时随地享受AI创作的乐趣</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 作品画廊区域 -->
+        <section id="gallery" class="gallery-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">精选作品画廊</h2>
+                    <p class="section-subtitle">欣赏AI风格迁移的神奇效果</p>
+                </div>
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <div class="gallery-image demo-before"></div>
+                        <div class="gallery-overlay">
+                            <div class="gallery-label">原图</div>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="gallery-image demo-after-1"></div>
+                        <div class="gallery-overlay">
+                            <div class="gallery-label">日式动漫风格</div>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="gallery-image demo-after-2"></div>
+                        <div class="gallery-overlay">
+                            <div class="gallery-label">法国绘本风格</div>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="gallery-image demo-after-3"></div>
+                        <div class="gallery-overlay">
+                            <div class="gallery-label">水彩画风格</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能应用区域 -->
+        <section id="app" class="app-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">开始您的AI创作之旅</h2>
+                    <p class="section-subtitle">上传图片，选择风格，见证AI魔法</p>
+                </div>
+                <!-- 这里将包含原有的功能界面 -->
+                <div class="app-container">
+                    <div class="input-section">
+                        <!-- 图片输入方式选择 -->
+                        <div class="input-mode-tabs">
+                            <button id="uploadModeBtn" class="tab-btn active">📁 上传图片</button>
+                            <button id="urlModeBtn" class="tab-btn">🔗 URL链接</button>
+                        </div>
+
+                        <!-- 图片上传区域 -->
+                        <div id="uploadMode" class="input-mode active">
+                            <div id="dropZone" class="drop-zone">
+                                <div class="drop-content">
+                                    <div class="upload-icon">📤</div>
+                                    <h3>拖拽图片到此处</h3>
+                                    <p>或者 <button id="fileSelectBtn" class="file-select-btn">点击选择文件</button></p>
+                                    <small>支持 JPG、PNG、WEBP 格式，建议大小 &lt; 5MB</small>
+                                </div>
+                                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                            </div>
+
+                            <!-- 图片预览 -->
+                            <div id="imagePreview" class="image-preview hidden">
+                                <div class="preview-header">
+                                    <h4>📷 图片预览</h4>
+                                    <button id="changeImageBtn" class="change-btn">更换图片</button>
+                                </div>
+                                <div class="preview-content">
+                                    <img id="previewImage" alt="预览图片">
+                                    <div class="image-info">
+                                        <span id="imageInfo"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- URL输入区域 -->
+                        <div id="urlMode" class="input-mode">
+                            <div class="input-group">
+                                <label for="imageUrlInput">图片 URL：</label>
+                                <input type="text" id="imageUrlInput"
+                                    placeholder="请输入公网可访问的图片URL，例如：https://example.com/image.jpg" class="input-field">
+                                <small class="input-hint">
+                                    💡 提示：请确保图片 URL 可以公开访问，支持 HTTPS 链接
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- 风格描述 -->
+                        <div class="input-group">
+                            <label for="promptInput">目标风格：</label>
+                            <input type="text" id="promptInput" value="转换成法国绘本风格" placeholder="输入目标风格，如'转换成法国绘本风格'"
+                                class="input-field">
+                            <small class="input-hint">
+                                💡 例如：转换成日式动漫风格、转换成法国绘本风格、转换成卡通风格等
+                            </small>
+                        </div>
+
+                        <button id="convertButton" class="convert-btn">
+                            <span class="btn-text">🚀 开始风格迁移</span>
+                        </button>
+                    </div>
+
+                    <div class="result-section">
+                        <div id="loadingDiv" class="loading hidden">
+                            <div class="loading-spinner"></div>
+                            <p>正在进行风格迁移，请稍候...</p>
+                            <small>通常需要 30-60 秒，请耐心等待</small>
+                        </div>
+
+                        <div id="resultDiv" class="result hidden">
+                            <h3>✨ 风格迁移结果</h3>
+                            <div class="image-container">
+                                <img id="resultImage" alt="风格迁移后的图片" class="result-image">
+                            </div>
+                            <div class="result-actions">
+                                <button id="downloadBtn" class="download-btn">💾 下载图片</button>
+                                <button onclick="location.reload()" class="new-task-btn">🎯 重新转换</button>
+                            </div>
+                        </div>
+
+                        <div id="errorDiv" class="error hidden">
+                            <h3>⚠️ 风格迁移失败</h3>
+                            <p id="errorMessage"></p>
+                            <button onclick="location.reload()" class="retry-btn">🔄 重试</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>AI动漫工坊</h4>
+                    <p>让每一张图片都成为艺术品</p>
+                </div>
+                <div class="footer-section">
+                    <h4>技术支持</h4>
+                    <p>阿里云百炼 API</p>
+                    <p>现代化Web技术</p>
+                </div>
+                <div class="footer-section">
+                    <h4>版本信息</h4>
+                    <p>V2.0 Enhanced</p>
+                    <p>
+                        <a href="https://github.com" target="_blank">GitHub</a>
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AI动漫工坊. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
