@@ -153,6 +153,26 @@ export default async function handler(req, res) {
             return res.status(200).end();
         }
 
+        // 处理 GET 请求 - 返回 API 说明
+        if (req.method === 'GET') {
+            return res.status(200).json({
+                success: true,
+                message: '动漫头像风格迁移 API',
+                usage: {
+                    method: 'POST',
+                    endpoint: '/api/convert',
+                    body: {
+                        imageUrl: '图片URL地址',
+                        prompt: '风格描述（可选）'
+                    }
+                },
+                example: {
+                    imageUrl: 'https://example.com/photo.jpg',
+                    prompt: '动漫风格，可爱，高质量'
+                }
+            });
+        }
+
         // 只接受 POST 请求
         if (req.method !== 'POST') {
             return res.status(405).json({
