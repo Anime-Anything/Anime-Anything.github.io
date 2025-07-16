@@ -1218,105 +1218,23 @@ body {
     overflow: hidden;
     background: #000;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .gallery-container {
     perspective: 2000px;
     width: 300px;
     height: 400px;
-    position: relative;
+    position: absolute;
     left: 50%;
-    top: 50%;
+    top: 45%; /* 稍微向上一点，为标题留出空间 */
     transform: translate(-50%, -50%);
 }
 
-.gallery-ring {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    cursor: grab;
-    transition: cursor 0.3s ease;
-}
-
-.gallery-ring:active {
-    cursor: grabbing;
-}
-
-.gallery-img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    border-radius: 15px;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    overflow: hidden;
-    top: 0;
-    left: 0;
-}
-
-.gallery-img::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-    border-radius: 18px;
-}
-
-.gallery-img:hover::before {
-    opacity: 1;
-}
-
-.gallery-img:hover {
-    box-shadow: 0 25px 50px rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateZ(20px);
-}
-
-/* 添加光晕效果 */
-.gallery-container::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    animation: pulse 4s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { 
-        transform: translate(-50%, -50%) scale(1); 
-        opacity: 0.5;
-    }
-    50% { 
-        transform: translate(-50%, -50%) scale(1.1); 
-        opacity: 0.8;
-    }
-}
-
-/* 增强画廊信息样式 */
+/* 画廊信息 - 位于容器下方 */
 .gallery-info {
     position: absolute;
-    bottom: 60px;
     left: 50%;
+    top: 65%; /* 在画廊下方 */
     transform: translateX(-50%);
     text-align: center;
     color: white;
@@ -1395,5 +1313,84 @@ body {
     /* 移动端减少光晕效果以提升性能 */
     .gallery-container::before {
         display: none;
+    }
+}
+
+.gallery-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    cursor: grab;
+    transition: cursor 0.3s ease;
+}
+
+.gallery-ring:active {
+    cursor: grabbing;
+}
+
+.gallery-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 15px;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    overflow: hidden;
+    top: 0;
+    left: 0;
+}
+
+.gallery-img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: 18px;
+}
+
+.gallery-img:hover::before {
+    opacity: 1;
+}
+
+.gallery-img:hover {
+    box-shadow: 0 25px 50px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateZ(20px);
+}
+
+/* 添加光晕效果 */
+.gallery-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 0.5;
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.1); 
+        opacity: 0.8;
     }
 }

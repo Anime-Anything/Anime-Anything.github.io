@@ -789,11 +789,12 @@ function initGallery() {
         })
         .set('.gallery-img', {
             rotateY: (i) => {
-                console.log(`设置图片 ${i}: rotateY = ${i * GALLERY_CONFIG.rotationStep}度`);
-                return i * GALLERY_CONFIG.rotationStep;
+                const rotation = i * -36; // 直接使用-36度，完全对应原始设计
+                console.log(`设置图片 ${i}: rotateY = ${rotation}度`);
+                return rotation;
             },
-            transformOrigin: (i) => GALLERY_CONFIG.transformOrigin,
-            z: (i) => GALLERY_CONFIG.zDepth,
+            transformOrigin: GALLERY_CONFIG.transformOrigin, // 所有图片使用相同的transformOrigin
+            z: GALLERY_CONFIG.zDepth,
             backgroundImage: (i) => {
                 const imageUrl = 'url(' + GALLERY_CONFIG.images[i] + ')';
                 console.log(`设置图片 ${i}: ${imageUrl}`);
@@ -918,14 +919,14 @@ function dragEnd() {
     }, 3000); // 3秒后恢复自动旋转
 }
 
-// 计算背景位置实现视差效果（参考原始设计）
+// 计算背景位置实现视差效果（完全参考原始设计）
 function getBgPos(i) {
     const ring = document.querySelector('.gallery-ring');
-    if (!ring) return 'center center';
+    if (!ring) return '0px 0px';
     
     const currentRotation = gsap.getProperty(ring, 'rotationY') || 0;
-    // 使用原始设计的视差计算公式，注意rotationStep是负值
-    const offset = gsap.utils.wrap(0, 360, currentRotation - 180 + i * GALLERY_CONFIG.rotationStep) / 360 * 500;
+    // 完全复制原始设计的计算公式：rotationY - 180 - i * 36
+    const offset = gsap.utils.wrap(0, 360, currentRotation - 180 - i * 36) / 360 * 500;
     return (100 - offset) + 'px 0px';
 }
 
