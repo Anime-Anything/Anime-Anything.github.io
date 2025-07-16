@@ -1479,19 +1479,19 @@ body {
     z-index: 2;
 }
 
-/* 3D轨道环绕特色展示 - 惊艳艺术设计 */
-.features-orbit-container {
+/* DNA螺旋结构特色展示 - 超大醒目设计 */
+.dna-container {
     padding: 120px 0;
     position: relative;
     overflow: hidden;
 }
 
-.orbit-title {
+.dna-title {
     text-align: center;
     margin-bottom: 80px;
 }
 
-.orbit-title h3 {
+.dna-title h3 {
     font-size: 2.5rem;
     font-weight: 300;
     color: white;
@@ -1499,263 +1499,362 @@ body {
     letter-spacing: 2px;
 }
 
-.orbit-title p {
+.dna-title p {
     font-size: 1.1rem;
     color: rgba(255, 255, 255, 0.7);
     font-weight: 300;
 }
 
-/* 3D轨道舞台 */
-.orbit-stage {
+/* DNA螺旋舞台 - 超大尺寸 */
+.dna-helix-stage {
     position: relative;
     width: 100%;
-    height: 600px;
-    perspective: 1500px;
+    height: 800px; /* 超大高度，用户一定看得见 */
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 中心AI核心 */
-.orbit-center {
+/* DNA螺旋骨架 */
+.dna-backbone {
     position: absolute;
-    width: 120px;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* 螺旋链条 */
+.helix-strand {
+    position: absolute;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+        rgba(255,255,255,0.1) 0%,
+        rgba(255,255,255,0.3) 25%,
+        rgba(255,255,255,0.4) 50%,
+        rgba(255,255,255,0.3) 75%,
+        rgba(255,255,255,0.1) 100%
+    );
+    border-radius: 2px;
+    animation: helixGlow 4s ease-in-out infinite;
+}
+
+.strand-left {
+    left: 25%;
+    clip-path: polygon(
+        0% 0%, 100% 0%, 
+        100% 20%, 80% 25%, 
+        60% 30%, 40% 45%, 
+        20% 55%, 0% 60%, 
+        0% 80%, 20% 75%, 
+        40% 70%, 60% 55%, 
+        80% 45%, 100% 40%, 
+        100% 100%, 0% 100%
+    );
+}
+
+.strand-right {
+    right: 25%;
+    clip-path: polygon(
+        0% 0%, 100% 0%, 
+        100% 40%, 80% 45%, 
+        60% 55%, 40% 70%, 
+        20% 75%, 0% 80%, 
+        0% 60%, 20% 55%, 
+        40% 45%, 60% 30%, 
+        80% 25%, 100% 20%, 
+        100% 100%, 0% 100%
+    );
+    animation-delay: 2s;
+}
+
+/* DNA连接桥 */
+.dna-bridge {
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0.2), 
+        rgba(255,255,255,0.5), 
+        rgba(255,255,255,0.2)
+    );
+    width: 50%;
+    left: 25%;
+    transform-origin: center;
+    animation: bridgePulse 6s ease-in-out infinite;
+}
+
+.bridge-1 {
+    top: 15%;
+    animation-delay: 0s;
+}
+
+.bridge-2 {
+    top: 35%;
+    animation-delay: 1.5s;
+}
+
+.bridge-3 {
+    top: 65%;
+    animation-delay: 3s;
+}
+
+.bridge-4 {
+    top: 85%;
+    animation-delay: 4.5s;
+}
+
+/* 核心优势节点 - 超大尺寸 */
+.advantage-nodes {
+    position: relative;
+    width: 100%;
+    height: 100%;
     z-index: 10;
-    transform-style: preserve-3d;
 }
 
-.center-glow {
+.advantage-node {
     position: absolute;
-    width: 200px;
+    width: 280px; /* 超大尺寸，用户绝对看得见 */
     height: 200px;
-    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 40%, transparent 80%);
-    border-radius: 50%;
-    animation: centerPulse 4s ease-in-out infinite;
-    filter: blur(20px);
-}
-
-.center-text {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: white;
-    text-shadow: 0 0 20px rgba(255,255,255,0.5);
-    z-index: 2;
-    letter-spacing: 3px;
-}
-
-/* 中心环状装饰 */
-.center-rings {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
-.ring {
-    position: absolute;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
     transform: translate(-50%, -50%);
-    animation: ringRotate linear infinite;
 }
 
-.ring-1 {
-    width: 60px;
-    height: 60px;
-    animation-duration: 8s;
-    border-color: rgba(255,255,255,0.2);
+/* 节点位置分布 */
+.node-1[data-position="left-top"] {
+    left: 20%;
+    top: 20%;
 }
 
-.ring-2 {
-    width: 90px;
-    height: 90px;
-    animation-duration: 12s;
-    animation-direction: reverse;
+.node-2[data-position="right-top"] {
+    right: 20%;
+    top: 30%;
 }
 
-.ring-3 {
-    width: 120px;
-    height: 120px;
-    animation-duration: 16s;
+.node-3[data-position="left-bottom"] {
+    left: 20%;
+    bottom: 30%;
 }
 
-/* 轨道系统 */
-.orbit-system {
-    position: absolute;
+.node-4[data-position="right-bottom"] {
+    right: 20%;
+    bottom: 20%;
+}
+
+/* 节点内容 */
+.node-content {
     width: 100%;
     height: 100%;
-    animation: orbitRotation 60s linear infinite;
-    transform-style: preserve-3d;
-}
-
-/* 轨道项目 */
-.orbit-item {
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    left: 50%;
-    top: 50%;
-    transform-origin: 50% 50%;
-    transform-style: preserve-3d;
-}
-
-.orbit-item[data-orbit="0"] {
-    transform: translate(-50%, -50%) rotateY(0deg) translateZ(280px);
-}
-
-.orbit-item[data-orbit="1"] {
-    transform: translate(-50%, -50%) rotateY(90deg) translateZ(280px);
-}
-
-.orbit-item[data-orbit="2"] {
-    transform: translate(-50%, -50%) rotateY(180deg) translateZ(280px);
-}
-
-.orbit-item[data-orbit="3"] {
-    transform: translate(-50%, -50%) rotateY(270deg) translateZ(280px);
-}
-
-/* 轨道卡片 */
-.orbit-card {
-    width: 100%;
-    height: 160px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 20px;
-    padding: 20px;
-    transform-style: preserve-3d;
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(20px);
-    cursor: pointer;
-}
-
-.orbit-card:hover {
-    transform: translateZ(30px) scale(1.05);
-    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
-    border-color: rgba(255,255,255,0.3);
-    box-shadow: 0 20px 60px rgba(255,255,255,0.1);
-}
-
-/* 卡片光晕 */
-.card-glow {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.6s ease;
-    pointer-events: none;
-}
-
-.orbit-card:hover .card-glow {
-    opacity: 1;
-}
-
-/* 卡片内容 */
-.card-content {
+    background: linear-gradient(135deg, 
+        rgba(255,255,255,0.15) 0%, 
+        rgba(255,255,255,0.05) 100%
+    );
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 24px;
+    padding: 30px;
     text-align: center;
-    position: relative;
-    z-index: 2;
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative;
+    backdrop-filter: blur(20px);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    overflow: hidden;
 }
 
-.card-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-    filter: drop-shadow(0 4px 8px rgba(255,255,255,0.2));
+.node-content:hover {
+    transform: translateY(-15px) scale(1.05);
+    background: linear-gradient(135deg, 
+        rgba(255,255,255,0.25) 0%, 
+        rgba(255,255,255,0.1) 100%
+    );
+    border-color: rgba(255,255,255,0.4);
+    box-shadow: 0 25px 60px rgba(255,255,255,0.15);
 }
 
-.card-content h4 {
-    font-size: 1.3rem;
+/* 节点图标 */
+.node-icon {
+    font-size: 3.5rem; /* 超大图标 */
+    margin-bottom: 20px;
+    filter: drop-shadow(0 8px 16px rgba(255,255,255,0.3));
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+/* 节点标题 */
+.node-content h4 {
+    font-size: 1.8rem; /* 超大标题 */
     font-weight: 600;
     color: white;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     letter-spacing: 1px;
 }
 
-.card-content p {
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.8);
+/* 节点描述 */
+.node-content p {
+    font-size: 1.1rem; /* 更大的描述文字 */
+    color: rgba(255,255,255,0.9);
     font-weight: 300;
-    line-height: 1.4;
+    line-height: 1.6;
 }
 
-/* 卡片轨迹 */
-.card-trail {
+/* 节点脉冲效果 */
+.node-pulse {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
-    transition: width 0.6s ease;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 28px;
+    animation: nodePulse 3s ease-in-out infinite;
+    pointer-events: none;
 }
 
-.orbit-card:hover .card-trail {
-    width: 100%;
-}
-
-/* 粒子系统 */
-.particle-system {
+/* DNA粒子效果 */
+.dna-particles {
     position: absolute;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    overflow: hidden;
+    z-index: 5;
 }
 
 /* 动画定义 */
-@keyframes centerPulse {
+@keyframes helixGlow {
     0%, 100% {
-        transform: scale(1);
-        opacity: 0.8;
+        opacity: 0.6;
+        box-shadow: 0 0 10px rgba(255,255,255,0.2);
     }
     50% {
-        transform: scale(1.1);
         opacity: 1;
+        box-shadow: 0 0 20px rgba(255,255,255,0.4);
     }
 }
 
-@keyframes ringRotate {
-    from {
-        transform: translate(-50%, -50%) rotate(0deg);
+@keyframes bridgePulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scaleX(1);
     }
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-
-@keyframes orbitRotation {
-    from {
-        transform: rotateY(0deg);
-    }
-    to {
-        transform: rotateY(360deg);
+    50% {
+        opacity: 0.8;
+        transform: scaleX(1.1);
     }
 }
 
-/* 暂停动画交互 */
-.orbit-stage:hover .orbit-system {
-    animation-play-state: paused;
+@keyframes iconFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
-.orbit-stage:hover .center-rings .ring {
-    animation-play-state: paused;
+@keyframes nodePulse {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
+}
+
+/* 进入动画 */
+.advantage-node {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) translateY(40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.advantage-node.animate-in {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) translateY(0px);
 }
 
 /* 响应式设计 */
+@media (max-width: 1024px) {
+    .dna-helix-stage {
+        height: 700px;
+    }
+    
+    .advantage-node {
+        width: 240px;
+        height: 180px;
+    }
+    
+    .node-content {
+        padding: 25px;
+    }
+    
+    .node-icon {
+        font-size: 3rem;
+    }
+    
+    .node-content h4 {
+        font-size: 1.6rem;
+    }
+    
+    .node-content p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dna-helix-stage {
+        height: 900px; /* 移动端更高，垂直布局 */
+    }
+    
+    .advantage-node {
+        width: 280px;
+        height: 160px;
+        position: relative !important;
+        margin: 40px auto;
+        left: 0 !important;
+        right: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        transform: translate(0, 0) !important;
+    }
+    
+    .advantage-nodes {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        padding: 60px 20px;
+    }
+    
+    .node-content {
+        padding: 20px;
+    }
+    
+    .node-icon {
+        font-size: 2.5rem;
+    }
+    
+    .node-content h4 {
+        font-size: 1.4rem;
+    }
+    
+    .node-content p {
+        font-size: 0.95rem;
+    }
+    
+    .dna-title h3 {
+        font-size: 2rem;
+    }
+    
+    /* 移动端隐藏螺旋背景，专注内容 */
+    .dna-backbone {
+        opacity: 0.3;
+    }
+}
+
+/* 主要功能区域响应式设计 */
 @media (max-width: 1024px) {
     .main-features {
         grid-template-columns: 1fr;
@@ -1769,41 +1868,6 @@ body {
     
     .feature-number {
         font-size: 4rem;
-    }
-    
-    .orbit-stage {
-        height: 500px;
-        perspective: 1200px;
-    }
-    
-    .orbit-item[data-orbit="0"] {
-        transform: translate(-50%, -50%) rotateY(0deg) translateZ(220px);
-    }
-    
-    .orbit-item[data-orbit="1"] {
-        transform: translate(-50%, -50%) rotateY(90deg) translateZ(220px);
-    }
-    
-    .orbit-item[data-orbit="2"] {
-        transform: translate(-50%, -50%) rotateY(180deg) translateZ(220px);
-    }
-    
-    .orbit-item[data-orbit="3"] {
-        transform: translate(-50%, -50%) rotateY(270deg) translateZ(220px);
-    }
-    
-    .orbit-card {
-        width: 180px;
-        height: 140px;
-        padding: 16px;
-    }
-    
-    .card-content h4 {
-        font-size: 1.1rem;
-    }
-    
-    .card-content p {
-        font-size: 0.8rem;
     }
 }
 
@@ -1827,45 +1891,5 @@ body {
     
     .feature-main p {
         font-size: 1.1rem;
-    }
-    
-    .orbit-stage {
-        height: 400px;
-        perspective: 800px;
-    }
-    
-    .orbit-item {
-        width: 150px;
-        height: 150px;
-    }
-    
-    .orbit-item[data-orbit="0"] {
-        transform: translate(-50%, -50%) rotateY(0deg) translateZ(180px);
-    }
-    
-    .orbit-item[data-orbit="1"] {
-        transform: translate(-50%, -50%) rotateY(90deg) translateZ(180px);
-    }
-    
-    .orbit-item[data-orbit="2"] {
-        transform: translate(-50%, -50%) rotateY(180deg) translateZ(180px);
-    }
-    
-    .orbit-item[data-orbit="3"] {
-        transform: translate(-50%, -50%) rotateY(270deg) translateZ(180px);
-    }
-    
-    .orbit-card {
-        width: 140px;
-        height: 120px;
-        padding: 12px;
-    }
-    
-    .center-text {
-        font-size: 2rem;
-    }
-    
-    .orbit-title h3 {
-        font-size: 2rem;
     }
 }

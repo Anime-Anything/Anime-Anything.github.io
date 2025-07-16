@@ -107,7 +107,7 @@ function handlePageLoad() {
     initializeConversion();
     initScrollAnimations(); // 初始化流线型滚动效果
     enhanceHighlightInteractions(); // 增强特色卡片交互
-    init3DOrbitSystem(); // 初始化3D轨道系统和粒子效果
+    initDNAHelixSystem(); // 初始化DNA螺旋系统和粒子效果
 
     // 设置默认输入模式为上传
     switchInputMode('upload');
@@ -992,75 +992,84 @@ function addBreathingAnimation() {
 }
 
 /**
- * 3D轨道系统和粒子效果
+ * DNA螺旋系统和粒子效果
  */
-function init3DOrbitSystem() {
-    const orbitStage = document.getElementById('orbitStage');
-    const particleSystem = document.getElementById('particleSystem');
+function initDNAHelixSystem() {
+    const dnaStage = document.getElementById('dnaStage');
+    const dnaParticles = document.getElementById('dnaParticles');
     
-    if (!orbitStage || !particleSystem) return;
+    if (!dnaStage || !dnaParticles) return;
 
-    // 创建粒子效果
-    createParticles(particleSystem);
+    // 创建DNA粒子效果
+    createDNAParticles(dnaParticles);
     
-    // 添加轨道交互
-    setupOrbitInteractions(orbitStage);
+    // 设置节点动画观察器
+    setupDNAObserver(dnaStage);
     
-    // 启动轨道动画观察器
-    setupOrbitObserver(orbitStage);
+    // 增强节点交互
+    enhanceDNANodes();
 }
 
 /**
- * 创建粒子系统
+ * 创建DNA粒子系统
  */
-function createParticles(container) {
-    const particleCount = 50;
+function createDNAParticles(container) {
+    const particleCount = 30;
     
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
-        particle.className = 'particle';
+        particle.className = 'dna-particle';
         
-        // 随机位置
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        const size = Math.random() * 3 + 1;
-        const opacity = Math.random() * 0.5 + 0.1;
-        const duration = Math.random() * 20 + 10;
+        // 随机属性
+        const startX = Math.random() * 100;
+        const startY = 100 + Math.random() * 20; // 从底部开始
+        const endX = Math.random() * 100;
+        const endY = -20; // 到顶部结束
+        const size = Math.random() * 2 + 1;
+        const opacity = Math.random() * 0.6 + 0.2;
+        const duration = Math.random() * 15 + 10;
+        const delay = Math.random() * 5;
         
         particle.style.cssText = `
             position: absolute;
-            left: ${x}%;
-            top: ${y}%;
+            left: ${startX}%;
+            top: ${startY}%;
             width: ${size}px;
             height: ${size}px;
             background: rgba(255,255,255,${opacity});
             border-radius: 50%;
             pointer-events: none;
-            animation: particleFloat ${duration}s linear infinite;
-            animation-delay: ${Math.random() * 10}s;
+            animation: dnaParticleMove ${duration}s linear infinite;
+            animation-delay: ${delay}s;
         `;
+        
+        // 动态设置动画终点
+        particle.style.setProperty('--end-x', endX + '%');
+        particle.style.setProperty('--end-y', endY + '%');
         
         container.appendChild(particle);
     }
     
-    // 添加粒子动画CSS
-    if (!document.getElementById('particle-styles')) {
+    // 添加DNA粒子动画CSS
+    if (!document.getElementById('dna-particle-styles')) {
         const style = document.createElement('style');
-        style.id = 'particle-styles';
+        style.id = 'dna-particle-styles';
         style.textContent = `
-            @keyframes particleFloat {
+            @keyframes dnaParticleMove {
                 0% {
-                    transform: translateY(100vh) rotate(0deg);
+                    transform: translateY(0) scale(0.5);
                     opacity: 0;
                 }
                 10% {
                     opacity: 1;
+                    transform: translateY(-50px) scale(1);
                 }
                 90% {
                     opacity: 1;
+                    transform: translateY(-600px) scale(1);
                 }
                 100% {
-                    transform: translateY(-100px) rotate(360deg);
+                    transform: translateY(-700px) scale(0.5);
                     opacity: 0;
                 }
             }
@@ -1070,117 +1079,161 @@ function createParticles(container) {
 }
 
 /**
- * 设置轨道交互
+ * 设置DNA观察器
  */
-function setupOrbitInteractions(orbitStage) {
-    let isMouseDown = false;
-    let mouseX = 0;
-    let currentRotation = 0;
-    
-    orbitStage.addEventListener('mousedown', (e) => {
-        isMouseDown = true;
-        mouseX = e.clientX;
-        orbitStage.style.cursor = 'grabbing';
-    });
-    
-    document.addEventListener('mousemove', (e) => {
-        if (!isMouseDown) return;
-        
-        const deltaX = e.clientX - mouseX;
-        currentRotation += deltaX * 0.5;
-        
-        const orbitSystem = orbitStage.querySelector('.orbit-system');
-        if (orbitSystem) {
-            orbitSystem.style.transform = `rotateY(${currentRotation}deg)`;
-        }
-        
-        mouseX = e.clientX;
-    });
-    
-    document.addEventListener('mouseup', () => {
-        isMouseDown = false;
-        orbitStage.style.cursor = 'grab';
-    });
-    
-    // 鼠标离开时恢复自动旋转
-    orbitStage.addEventListener('mouseleave', () => {
-        isMouseDown = false;
-        orbitStage.style.cursor = 'default';
-        
-        const orbitSystem = orbitStage.querySelector('.orbit-system');
-        if (orbitSystem) {
-            orbitSystem.style.transform = '';
-        }
-    });
-}
-
-/**
- * 设置轨道观察器
- */
-function setupOrbitObserver(orbitStage) {
+function setupDNAObserver(dnaStage) {
     const observerOptions = {
-        threshold: 0.3,
+        threshold: 0.2,
         rootMargin: '0px 0px -100px 0px'
     };
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // 启动轨道动画
-                const orbitCards = entry.target.querySelectorAll('.orbit-card');
-                orbitCards.forEach((card, index) => {
+                // 启动节点动画
+                const nodes = entry.target.querySelectorAll('.advantage-node');
+                nodes.forEach((node, index) => {
                     setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform += ' scale(1)';
-                    }, index * 200);
+                        node.classList.add('animate-in');
+                    }, index * 300); // 300ms延迟，让效果更明显
                 });
                 
-                // 启动中心脉冲
-                const centerGlow = entry.target.querySelector('.center-glow');
-                if (centerGlow) {
-                    centerGlow.style.animationPlayState = 'running';
-                }
+                // 启动螺旋动画
+                const helixStrands = entry.target.querySelectorAll('.helix-strand');
+                helixStrands.forEach(strand => {
+                    strand.style.animationPlayState = 'running';
+                });
             }
         });
     }, observerOptions);
     
-    observer.observe(orbitStage);
+    observer.observe(dnaStage);
 }
 
 /**
- * 增强轨道卡片效果
+ * 增强DNA节点效果
  */
-function enhanceOrbitCards() {
-    const orbitCards = document.querySelectorAll('.orbit-card');
+function enhanceDNANodes() {
+    const nodes = document.querySelectorAll('.advantage-node');
     
-    orbitCards.forEach((card, index) => {
-        // 初始状态
-        card.style.opacity = '0';
-        card.style.transform += ' scale(0.8)';
+    nodes.forEach((node, index) => {
+        const nodeContent = node.querySelector('.node-content');
         
-        // 悬停时的联动效果
-        card.addEventListener('mouseenter', () => {
-            orbitCards.forEach((otherCard, otherIndex) => {
+        // 鼠标进入时的连锁反应
+        nodeContent.addEventListener('mouseenter', () => {
+            // 当前节点特效
+            nodeContent.style.transform = 'translateY(-15px) scale(1.05) rotateX(5deg)';
+            
+            // 其他节点的联动
+            nodes.forEach((otherNode, otherIndex) => {
                 if (otherIndex !== index) {
-                    otherCard.style.opacity = '0.6';
-                    otherCard.style.transform += ' scale(0.95)';
-                } else {
-                    // 当前卡片放大并添加特殊效果
-                    card.style.transform += ' rotateX(10deg)';
+                    const otherContent = otherNode.querySelector('.node-content');
+                    const distance = Math.abs(otherIndex - index);
+                    const intensity = 1 - (distance * 0.15);
+                    
+                    otherContent.style.opacity = intensity;
+                    otherContent.style.filter = `blur(${distance}px)`;
                 }
             });
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            orbitCards.forEach((otherCard, otherIndex) => {
-                otherCard.style.opacity = '';
-                const currentTransform = otherCard.style.transform;
-                otherCard.style.transform = currentTransform
-                    .replace(/scale\([^)]*\)/g, '')
-                    .replace(/rotateX\([^)]*\)/g, '');
+            
+            // 激活连接桥动画
+            const bridges = document.querySelectorAll('.dna-bridge');
+            bridges.forEach(bridge => {
+                bridge.style.animationDuration = '2s';
+                bridge.style.opacity = '1';
             });
         });
+        
+        // 鼠标离开恢复
+        nodeContent.addEventListener('mouseleave', () => {
+            nodeContent.style.transform = '';
+            
+            // 恢复其他节点
+            nodes.forEach(otherNode => {
+                const otherContent = otherNode.querySelector('.node-content');
+                otherContent.style.opacity = '';
+                otherContent.style.filter = '';
+            });
+            
+            // 恢复连接桥
+            const bridges = document.querySelectorAll('.dna-bridge');
+            bridges.forEach(bridge => {
+                bridge.style.animationDuration = '6s';
+                bridge.style.opacity = '';
+            });
+        });
+        
+        // 点击时的脉冲效果
+        nodeContent.addEventListener('click', () => {
+            const pulse = node.querySelector('.node-pulse');
+            if (pulse) {
+                pulse.style.animation = 'none';
+                pulse.offsetHeight; // 触发重排
+                pulse.style.animation = 'nodePulse 0.8s ease-out';
+            }
+            
+            // 创建涟漪效果
+            createRippleEffect(nodeContent, event);
+        });
     });
+}
+
+/**
+ * 创建涟漪效果
+ */
+function createRippleEffect(element, event) {
+    const ripple = document.createElement('div');
+    const rect = element.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+    
+    ripple.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transform: translate(${x}px, ${y}px) scale(0);
+        animation: ripple 0.6s ease-out;
+        pointer-events: none;
+        z-index: 1000;
+    `;
+    
+    element.appendChild(ripple);
+    
+    // 添加涟漪动画
+    if (!document.getElementById('ripple-styles')) {
+        const style = document.createElement('style');
+        style.id = 'ripple-styles';
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: translate(${x}px, ${y}px) scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // 动画结束后移除元素
+    setTimeout(() => {
+        if (ripple.parentNode) {
+            ripple.parentNode.removeChild(ripple);
+        }
+    }, 600);
+}
+
+// 更新旧的函数名称
+function init3DOrbitSystem() {
+    // 重定向到新的DNA系统
+    initDNAHelixSystem();
+}
+
+function enhanceOrbitCards() {
+    // 重定向到新的DNA节点系统
+    enhanceDNANodes();
 }
 
 // 更新旧的滚动动画函数名称和功能
@@ -1240,7 +1293,7 @@ document.addEventListener('DOMContentLoaded', () => {
             animateGalleryEntrance();
             initScrollAnimations(); // 初始化流线型滚动效果
             enhanceHighlightInteractions(); // 增强特色卡片交互
-            init3DOrbitSystem(); // 初始化3D轨道系统和粒子效果
+            initDNAHelixSystem(); // 初始化DNA螺旋系统和粒子效果
         }, 1000); // 页面加载动画后初始化画廊
     } else {
         console.error('GSAP库未加载，3D画廊无法初始化');
