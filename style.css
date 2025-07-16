@@ -1479,13 +1479,43 @@ body {
     z-index: 2;
 }
 
-/* 特色优势样式 */
+/* 特色优势样式 - 流线型设计 */
 .feature-highlights {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 40px;
     padding-top: 60px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 流线型连接线背景 */
+.feature-highlights::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.1) 20%, 
+        rgba(255,255,255,0.3) 50%, 
+        rgba(255,255,255,0.1) 80%, 
+        transparent 100%);
+    animation: flowLine 8s ease-in-out infinite;
+}
+
+@keyframes flowLine {
+    0%, 100% {
+        transform: translateX(-50%);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateX(0%);
+        opacity: 1;
+    }
 }
 
 .highlight-item {
@@ -1493,23 +1523,73 @@ body {
     align-items: flex-start;
     gap: 20px;
     padding: 30px;
-    border-radius: 8px;
+    border-radius: 12px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(60px) scale(0.8);
 }
 
+/* 流线型装饰线 */
+.highlight-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: all 0.8s ease;
+}
+
+.highlight-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: all 0.8s ease;
+    transition-delay: 0.2s;
+}
+
+/* 滚动进入动画 */
+.highlight-item.animate-in {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.highlight-item.animate-in::before {
+    left: 0;
+}
+
+.highlight-item.animate-in::after {
+    right: 0;
+}
+
+/* 悬停效果增强 */
 .highlight-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+}
+
+.highlight-item:hover .highlight-icon {
+    transform: scale(1.2) rotate(5deg);
 }
 
 .highlight-icon {
     font-size: 2rem;
     line-height: 1;
     flex-shrink: 0;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 4px 8px rgba(255,255,255,0.1));
 }
 
 .highlight-content h4 {
@@ -1517,6 +1597,7 @@ body {
     font-weight: 500;
     margin-bottom: 8px;
     color: white;
+    transition: color 0.3s ease;
 }
 
 .highlight-content p {
@@ -1524,6 +1605,45 @@ body {
     color: rgba(255, 255, 255, 0.7);
     font-weight: 300;
     line-height: 1.5;
+    transition: color 0.3s ease;
+}
+
+.highlight-item:hover .highlight-content h4 {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.highlight-item:hover .highlight-content p {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* 添加延迟动画类 */
+.highlight-item[data-index="0"] {
+    transition-delay: 0.1s;
+}
+
+.highlight-item[data-index="1"] {
+    transition-delay: 0.2s;
+}
+
+.highlight-item[data-index="2"] {
+    transition-delay: 0.3s;
+}
+
+.highlight-item[data-index="3"] {
+    transition-delay: 0.4s;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .feature-highlights {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .highlight-item {
+        padding: 20px;
+        transform: translateY(40px) scale(0.9);
+    }
 }
 
 /* 响应式设计 */
@@ -1557,6 +1677,7 @@ body {
         margin-bottom: 60px;
     }
     
+    /* 响应式调整 */
     .feature-highlights {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -1564,6 +1685,7 @@ body {
     
     .highlight-item {
         padding: 20px;
+        transform: translateY(40px) scale(0.9);
     }
     
     .feature-main h3 {
