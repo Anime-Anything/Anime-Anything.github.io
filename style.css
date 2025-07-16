@@ -1254,15 +1254,61 @@ body {
     backface-visibility: hidden;
     box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    overflow: hidden;
+    position: relative;
+}
+
+.gallery-img::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: 18px;
+}
+
+.gallery-img:hover::before {
+    opacity: 1;
 }
 
 .gallery-img:hover {
     box-shadow: 0 25px 50px rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.4);
+    transform: translateZ(20px);
 }
 
-/* 画廊信息 */
+/* 添加光晕效果 */
+.gallery-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 0.5;
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.1); 
+        opacity: 0.8;
+    }
+}
+
+/* 增强画廊信息样式 */
 .gallery-info {
     position: absolute;
     bottom: 60px;
@@ -1272,6 +1318,7 @@ body {
     color: white;
     z-index: 10;
     pointer-events: none;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
 }
 
 .gallery-info h1 {
@@ -1282,8 +1329,19 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
     letter-spacing: 2px;
+    position: relative;
+}
+
+.gallery-info h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    transform: translateX(-50%);
 }
 
 .gallery-info p {
@@ -1291,6 +1349,7 @@ body {
     opacity: 0.8;
     font-weight: 300;
     letter-spacing: 1px;
+    margin-top: 15px;
 }
 
 /* 响应式调整 */
@@ -1311,5 +1370,34 @@ body {
     
     .gallery-info p {
         font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .gallery-container {
+        width: 300px;
+        height: 400px;
+    }
+    
+    .gallery-img {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .gallery-info {
+        bottom: 40px;
+    }
+    
+    .gallery-info h1 {
+        font-size: 2rem;
+    }
+    
+    .gallery-info p {
+        font-size: 1rem;
+    }
+    
+    /* 移动端减少光晕效果以提升性能 */
+    .gallery-container::before {
+        display: none;
     }
 }

@@ -9,16 +9,21 @@ const GALLERY_CONFIG = {
         'images/000.jpg',
         'images/001.jpg',
         'images/002.jpg',
-        'images/003.jpg'
+        'images/003.jpg',
+        'images/004.png',
+        'images/005.png',
+        'images/006.png',
+        'images/007.png'
     ],
-    rotationStep: 90, // 每张图片90度间隔 (360/4 = 90)
+    rotationStep: 45, // 每张图片45度间隔 (360/8 = 45)
     radius: 500 // 3D圆形半径
 };
 
 // 画廊状态
 let galleryState = {
     xPos: 0,
-    isDragging: false
+    isDragging: false,
+    autoRotation: null // 存储自动旋转动画
 };
 
 // 配置信息
@@ -771,7 +776,7 @@ function initGallery() {
     
     if (!galleryRing || galleryImages.length === 0) return;
     
-    console.log('初始化3D画廊...');
+    console.log('初始化3D画廊...', GALLERY_CONFIG.images.length, '张图片');
 
     // 使用GSAP设置初始状态和图片
     gsap.timeline()
@@ -784,31 +789,52 @@ function initGallery() {
             transformOrigin: '50% 50% ' + GALLERY_CONFIG.radius + 'px',
             z: -GALLERY_CONFIG.radius,
             backgroundImage: (i) => 'url(' + GALLERY_CONFIG.images[i] + ')',
-            backgroundPosition: (i) => getBgPos(i),
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundRepeat: 'no-repeat',
             backfaceVisibility: 'hidden'
         })
         .from('.gallery-img', {
-            duration: 1.5,
-            y: 200,
+            duration: 2,
+            y: 300,
             opacity: 0,
-            stagger: 0.2,
-            ease: 'expo'
+            rotationX: 90,
+            stagger: 0.15,
+            ease: 'back.out(1.7)'
         })
         .add(() => {
-            // 添加悬停效果
-            galleryImages.forEach(img => {
+            // 添加增强的悬停效果
+            galleryImages.forEach((img, index) => {
                 img.addEventListener('mouseenter', (e) => {
                     let current = e.currentTarget;
+                    
+                    // 突出当前图片
+                    gsap.to(current, { 
+                        scale: 1.1, 
+                        z: -GALLERY_CONFIG.radius + 50,
+                        boxShadow: '0 30px 60px rgba(255, 255, 255, 0.3)',
+                        duration: 0.5,
+                        ease: 'power3.out'
+                    });
+                    
+                    // 其他图片变暗和缩小
                     gsap.to('.gallery-img', { 
-                        opacity: (i, t) => (t === current) ? 1 : 0.5, 
-                        ease: 'power3' 
+                        opacity: (i, t) => (t === current) ? 1 : 0.4, 
+                        scale: (i, t) => (t === current) ? 1.1 : 0.95,
+                        ease: 'power3.out',
+                        duration: 0.5
                     });
                 });
 
                 img.addEventListener('mouseleave', () => {
+                    // 恢复所有图片状态
                     gsap.to('.gallery-img', { 
                         opacity: 1, 
-                        ease: 'power2.inOut' 
+                        scale: 1,
+                        z: -GALLERY_CONFIG.radius,
+                        boxShadow: '0 20px 40px rgba(255, 255, 255, 0.1)',
+                        ease: 'power3.out',
+                        duration: 0.5
                     });
                 });
             });
@@ -833,7 +859,14 @@ function dragStart(e) {
     
     if (e.touches) e.clientX = e.touches[0].clientX;
     galleryState.xPos = Math.round(e.clientX);
+    galleryState.isDragging = true;
+    
     gsap.set('.gallery-ring', { cursor: 'grabbing' });
+    
+    // 停止自动旋转
+    if (galleryState.autoRotation) {
+        galleryState.autoRotation.pause();
+    }
     
     document.addEventListener('mousemove', drag);
     document.addEventListener('touchmove', drag);
@@ -846,11 +879,16 @@ function drag(e) {
     const ring = document.querySelector('.gallery-ring');
     if (!ring) return;
     
+    const deltaX = Math.round(e.clientX) - galleryState.xPos;
+    
     gsap.to('.gallery-ring', {
-        rotationY: '-=' + ((Math.round(e.clientX) - galleryState.xPos) % 360),
+        rotationY: '+=' + (deltaX * 0.5),
+        duration: 0.1,
+        ease: 'none',
         onUpdate: () => { 
+            // 更新背景位置的视差效果
             gsap.set('.gallery-img', { 
-                backgroundPosition: (i) => getBgPos(i) 
+                backgroundPosition: (i) => getBgPos(i)
             });
         }
     });
@@ -860,19 +898,30 @@ function drag(e) {
 
 // 结束拖拽
 function dragEnd() {
+    galleryState.isDragging = false;
     document.removeEventListener('mousemove', drag);
     document.removeEventListener('touchmove', drag);
     gsap.set('.gallery-ring', { cursor: 'grab' });
+    
+    // 延迟恢复自动旋转
+    setTimeout(() => {
+        if (galleryState.autoRotation && !galleryState.isDragging) {
+            galleryState.autoRotation.resume();
+        }
+    }, 3000); // 3秒后恢复自动旋转
 }
 
-// 计算背景位置实现视差效果
+// 计算背景位置实现视差效果（修复分裂问题）
 function getBgPos(i) {
     const ring = document.querySelector('.gallery-ring');
-    if (!ring) return '0px 0px';
+    if (!ring) return 'center center';
     
     const currentRotation = gsap.getProperty(ring, 'rotationY') || 0;
-    const offset = gsap.utils.wrap(0, 360, currentRotation - 180 - i * GALLERY_CONFIG.rotationStep) / 360 * 500;
-    return (100 - offset) + 'px 0px';
+    // 简化背景位置计算，避免图像分裂
+    const normalizedRotation = (currentRotation + i * GALLERY_CONFIG.rotationStep) % 360;
+    const parallaxOffset = Math.sin((normalizedRotation * Math.PI) / 180) * 20; // 减小视差效果
+    
+    return `${50 + parallaxOffset}% center`;
 }
 
 // 画廊入场动画
@@ -889,11 +938,46 @@ function animateGalleryEntrance() {
                 opacity: 1, 
                 y: 0, 
                 duration: 1.5, 
-                delay: 1.8,
+                delay: 2.5,
                 ease: 'power3.out' 
             }
         );
     }
+    
+    // 启动微妙的自动旋转（可选）
+    setTimeout(() => {
+        addBreathingAnimation();
+    }, 4000);
+}
+
+// 添加微妙的呼吸动画和自动旋转
+function addBreathingAnimation() {
+    // 非常缓慢的自动旋转
+    galleryState.autoRotation = gsap.to('.gallery-ring', {
+        duration: 120, // 2分钟一圈
+        rotationY: '+=360',
+        ease: 'none',
+        repeat: -1
+    });
+    
+    // 微妙的上下浮动
+    gsap.to('.gallery-container', {
+        duration: 8,
+        y: '+=15',
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: -1
+    });
+    
+    // 光晕脉冲同步
+    gsap.to('.gallery-container::before', {
+        duration: 6,
+        opacity: 0.3,
+        scale: 1.1,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: -1
+    });
 }
 
 /**
