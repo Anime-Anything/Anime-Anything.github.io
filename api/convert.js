@@ -1,20 +1,22 @@
 /**
  * Vercel API 路由 - 动漫头像风格迁移代理
- * 
+ *
  * 重要安全提醒：
  * 1. 在 Vercel 项目设置中配置环境变量 DASHSCOPE_API_KEY = sk-a641f6330e92448a8f27049ea6c1eda6
  * 2. 绝对不要在代码中硬编码 API Key
  */
 
+import fetch from 'node-fetch';
+
 // API 配置
 const DASHSCOPE_BASE_URL = 'https://dashscope.aliyuncs.com/api/v1';
-const MAX_POLLING_ATTEMPTS = 15; // 最大轮询次数 (约45秒，给20秒处理时间留余量)
+const MAX_POLLING_ATTEMPTS = 40; // 最大轮询次数 (约2分钟，适合多图片生成)
 const POLLING_INTERVAL = 3000; // 轮询间隔 (3秒)
 
 /**
  * 创建图像转换任务
  */
-async function createImageTask(imageUrl, prompt) {
+async function createImageTask(imageUrl, prompt, functionType, outputNum) {
     const apiKey = process.env.DASHSCOPE_API_KEY;
 
     if (!apiKey) {
@@ -24,12 +26,12 @@ async function createImageTask(imageUrl, prompt) {
     const requestBody = {
         model: "wanx2.1-imageedit",
         input: {
-            function: "stylization_all",
+            function: functionType || "stylization_all",
             prompt: prompt || "转换为动漫风格",
             base_image_url: imageUrl
         },
         parameters: {
-            n: 1
+            n: outputNum || 1
         }
     };
 
@@ -162,7 +164,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { imageUrl, prompt } = req.body;
+        const { imageUrl, prompt, functionType, outputNum } = req.body;
 
         // 验证输入参数
         if (!imageUrl || !prompt) {
@@ -172,7 +174,11 @@ export default async function handler(req, res) {
             });
         }
 
-        console.log('收到转换请求:', { imageUrl, prompt });
+        // 设置默认值
+        const finalFunctionType = functionType || 'stylization_all';
+        const finalOutputNum = outputNum || 1;
+
+        console.log('收到转换请求:', { imageUrl, prompt, functionType: finalFunctionType, outputNum: finalOutputNum });
 
         const API_KEY = process.env.DASHSCOPE_API_KEY;
         if (!API_KEY) {
@@ -190,12 +196,12 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 model: "wanx2.1-imageedit",
                 input: {
-                    function: "stylization_all",
+                    function: finalFunctionType,
                     prompt: prompt,
                     base_image_url: imageUrl
                 },
                 parameters: {
-                    n: 1
+                    n: finalOutputNum
                 }
             })
         });
@@ -218,7 +224,8 @@ export default async function handler(req, res) {
             if (finalResult.success) {
                 return res.status(200).json({
                     success: true,
-                    imageUrl: finalResult.imageUrl,
+                    imageUrls: finalResult.imageUrls || [finalResult.imageUrl],
+                    imageUrl: finalResult.imageUrl, // 保持向后兼容
                     message: '风格迁移完成'
                 });
             } else {
@@ -228,10 +235,11 @@ export default async function handler(req, res) {
 
         // 如果是同步返回结果
         if (result.output && result.output.results && result.output.results.length > 0) {
-            const imageUrl = result.output.results[0].url;
+            const imageUrls = result.output.results.map(item => item.url);
             return res.status(200).json({
                 success: true,
-                imageUrl: imageUrl,
+                imageUrls: imageUrls,
+                imageUrl: imageUrls[0], // 保持向后兼容
                 message: '风格迁移完成'
             });
         }
@@ -250,7 +258,7 @@ export default async function handler(req, res) {
 }
 
 // 轮询异步任务结果
-async function pollTaskResult(taskId, apiKey, maxAttempts = 20, interval = 3000) {
+async function pollTaskResult(taskId, apiKey, maxAttempts = 40, interval = 3000) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         console.log(`轮询尝试 ${attempt}/${maxAttempts}...`);
 
@@ -272,12 +280,14 @@ async function pollTaskResult(taskId, apiKey, maxAttempts = 20, interval = 3000)
                     result.output.results &&
                     result.output.results.length > 0) {
 
-                    const imageUrl = result.output.results[0].url;
-                    console.log('✅ 任务成功完成，图片URL:', imageUrl);
+                    // 返回所有生成的图片URL
+                    const imageUrls = result.output.results.map(item => item.url);
+                    console.log('✅ 任务成功完成，图片URLs:', imageUrls);
 
                     return {
                         success: true,
-                        imageUrl: imageUrl
+                        imageUrls: imageUrls,
+                        imageUrl: imageUrls[0] // 保持向后兼容
                     };
                 }
 

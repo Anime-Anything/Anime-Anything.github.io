@@ -242,6 +242,43 @@
                                 💡 例如：转换成日式动漫风格、转换成法国绘本风格、转换成卡通风格等
                             </small>
                         </div>
+                    <!--FLAG-->>
+                        <!-- 功能选择区域 -->
+                        <div class="input-group">
+                            <label>风格化类型：</label>
+                            <div class="function-options">
+                                <label class="radio-option">
+                                    <input type="radio" name="functionType" value="stylization_all" checked>
+                                    <span class="radio-custom"></span>
+                                    <div class="option-content">
+                                        <span class="option-title">全局风格化</span>
+                                        <small class="option-desc">整体转换为动漫风格</small>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="functionType" value="stylization_local">
+                                    <span class="radio-custom"></span>
+                                    <div class="option-content">
+                                        <span class="option-title">局部风格化</span>
+                                        <small class="option-desc">保留部分原图特征</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 生成数量选择 -->
+                        <div class="input-group">
+                            <label for="outputNum">生成数量：</label>
+                            <select id="outputNum" class="input-field">
+                                <option value="1" selected>1张图片</option>
+                                <option value="2">2张图片</option>
+                                <option value="3">3张图片</option>
+                                <option value="4">4张图片</option>
+                            </select>
+                            <small class="input-hint">
+                                💡 生成多张图片可以获得更多风格选择
+                            </small>
+                        </div>
 
                         <button id="convertButton" class="convert-btn">
                             <span class="btn-text">🚀 开始风格迁移</span>
@@ -259,12 +296,40 @@
 
                         <div id="resultDiv" class="result hidden">
                             <h3>✨ 风格迁移结果</h3>
-                            <div class="image-container">
-                                <img id="resultImage" alt="风格迁移后的图片" class="result-image">
+
+                            <!-- 多图片轮播容器 -->
+                            <div class="carousel-container">
+                                <!-- 图片计数器 -->
+                                <div class="image-counter">
+                                    <span id="currentImageIndex">1</span> / <span id="totalImages">1</span>
+                                </div>
+
+                                <!-- 轮播图片区域 -->
+                                <div class="carousel-wrapper">
+                                    <button class="carousel-btn carousel-btn-prev" id="prevBtn">
+                                        <span>‹</span>
+                                    </button>
+
+                                    <div class="carousel-track-container">
+                                        <div class="carousel-track" id="carouselTrack">
+                                            <!-- 图片将动态插入到这里 -->
+                                        </div>
+                                    </div>
+
+                                    <button class="carousel-btn carousel-btn-next" id="nextBtn">
+                                        <span>›</span>
+                                    </button>
+                                </div>
+
+                                <!-- 指示器 -->
+                                <div class="carousel-indicators" id="carouselIndicators">
+                                    <!-- 指示器将动态生成 -->
+                                </div>
                             </div>
+
                             <div class="result-actions">
-                                <button id="downloadBtn" class="download-btn">💾 下载图片</button>
-                                <button onclick="location.reload()" class="new-task-btn">🎯 重新转换</button>
+                                <button id="downloadBtn" class="download-btn">💾 下载当前图片</button>
+                                <button id="reconvertBtn" class="new-task-btn">🎯 重新转换当前图片</button>
                             </div>
                         </div>
 

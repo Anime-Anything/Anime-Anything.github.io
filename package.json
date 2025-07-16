@@ -3,8 +3,9 @@
     "version": "4.0.0",
     "description": "企业级动漫头像生成平台 - 支持用户系统、JWT认证、MongoDB数据库",
     "main": "api/convert.js",
+    "type": "module",
     "scripts": {
-        "start": "node api/convert.js",
+        "start": "node server.js",
         "dev": "vercel dev",
         "deploy": "vercel --prod",
         "test": "jest",
@@ -25,15 +26,17 @@
     "author": "动漫头像生成器企业版项目组",
     "license": "MIT",
     "dependencies": {
-        "mongodb": "^6.3.0",
-        "jsonwebtoken": "^9.0.2",
         "bcryptjs": "^2.4.3",
-        "uuid": "^9.0.1",
-        "node-fetch": "^2.6.7",
-        "joi": "^17.11.0",
-        "helmet": "^7.1.0",
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.0",
+        "express": "^5.1.0",
         "express-rate-limit": "^7.1.5",
-        "cors": "^2.8.5"
+        "helmet": "^7.1.0",
+        "joi": "^17.11.0",
+        "jsonwebtoken": "^9.0.2",
+        "mongodb": "^6.3.0",
+        "node-fetch": "^2.6.7",
+        "uuid": "^9.0.1"
     },
     "devDependencies": {
         "@types/node": "^20.10.0",

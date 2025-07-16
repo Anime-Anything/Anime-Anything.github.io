@@ -5,7 +5,7 @@
 
 // 配置信息
 const CONFIG = {
-    PROXY_API_URL: 'https://anime-anything-github-io.vercel.app/api/convert',
+    PROXY_API_URL: 'http://localhost:3000/api/convert',
     MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
     SUPPORTED_FORMATS: ['image/jpeg', 'image/png', 'image/webp']
 };
@@ -37,6 +37,8 @@ const elements = {
     // 输入字段
     imageUrlInput: document.getElementById('imageUrlInput'),
     promptInput: document.getElementById('promptInput'),
+    functionTypeInputs: document.querySelectorAll('input[name="functionType"]'),
+    outputNumSelect: document.getElementById('outputNum'),
     convertButton: document.getElementById('convertButton'),
 
     // 结果显示
@@ -45,12 +47,23 @@ const elements = {
     errorDiv: document.getElementById('errorDiv'),
     resultImage: document.getElementById('resultImage'),
     errorMessage: document.getElementById('errorMessage'),
-    downloadBtn: document.getElementById('downloadBtn')
+    downloadBtn: document.getElementById('downloadBtn'),
+    reconvertBtn: document.getElementById('reconvertBtn'),
+
+    // 轮播相关元素
+    carouselTrack: document.getElementById('carouselTrack'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    carouselIndicators: document.getElementById('carouselIndicators'),
+    currentImageIndex: document.getElementById('currentImageIndex'),
+    totalImages: document.getElementById('totalImages')
 };
 
 // 全局变量
 let uploadedImageUrl = null;
 let currentSection = 'home';
+let currentImageUrls = []; // 存储当前生成的所有图片URL
+let currentImageIndex = 0; // 当前显示的图片索引
 
 /**
  * 页面初始化和加载管理
@@ -363,20 +376,110 @@ function handleDrop(e) {
  */
 async function processImageFile(file) {
     try {
-        // 验证文件
+        // 检查文件的尺寸
         validateImageFile(file);
 
+        // 调整图片尺寸以符合 API 要求
+        const resizedFile = await resizeImageForAPI(file);
+
         // 显示预览
-        await showImagePreview(file);
+        await showImagePreview(resizedFile);
 
         // 上传到图床
-        await uploadImageToHost(file);
+        await uploadImageToHost(resizedFile);
 
         // 不再自动转换，让用户手动点击按钮
 
     } catch (error) {
         showUploadError(error.message);
     }
+}
+
+/**
+ * 调整图片尺寸以符合 API 要求 (宽度和高度都需要在 512-4096px 之间)
+ */
+async function resizeImageForAPI(file) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        img.onload = function() {
+            let { width, height } = img;
+
+            // 检查是否需要调整尺寸
+            if (width >= 512 && width <= 4096 && height >= 512 && height <= 4096) {
+                // 尺寸符合要求，直接返回原文件
+                console.log(`图片尺寸符合要求: ${width}x${height}`);
+                resolve(file);
+                return;
+            }
+
+            // 计算缩放比例，确保宽度和高度都在有效范围内
+            let scaleWidth = 1;
+            let scaleHeight = 1;
+
+            // 计算宽度缩放比例
+            if (width < 512) {
+                scaleWidth = 512 / width;
+            } else if (width > 4096) {
+                scaleWidth = 4096 / width;
+            }
+
+            // 计算高度缩放比例
+            if (height < 512) {
+                scaleHeight = 512 / height;
+            } else if (height > 4096) {
+                scaleHeight = 4096 / height;
+            }
+
+            // 选择较大的缩放比例，确保两个维度都符合要求
+            const scale = Math.max(scaleWidth, scaleHeight);
+
+            // 计算新尺寸
+            let newWidth = Math.round(width * scale);
+            let newHeight = Math.round(height * scale);
+
+            // 如果缩放后仍然超出范围，进行二次调整
+            if (newWidth > 4096) {
+                const adjustScale = 4096 / newWidth;
+                newWidth = 4096;
+                newHeight = Math.round(newHeight * adjustScale);
+            }
+            if (newHeight > 4096) {
+                const adjustScale = 4096 / newHeight;
+                newHeight = 4096;
+                newWidth = Math.round(newWidth * adjustScale);
+            }
+
+            // 设置画布尺寸
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            // 绘制调整后的图片
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+            // 转换为 Blob，使用更高的压缩率减少文件大小
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    // 创建新的 File 对象
+                    const resizedFile = new File([blob], file.name, {
+                        type: file.type,
+                        lastModified: Date.now()
+                    });
+                    console.log(`✅ 图片尺寸已调整: ${width}x${height} → ${newWidth}x${newHeight}`);
+                    console.log(`📦 文件大小: ${(file.size / 1024 / 1024).toFixed(2)}MB → ${(blob.size / 1024 / 1024).toFixed(2)}MB`);
+                    console.log(`🎯 缩放比例: ${scale.toFixed(3)}`);
+                    resolve(resizedFile);
+                } else {
+                    reject(new Error('图片处理失败'));
+                }
+            }, file.type, 0.7); // 降低质量到 0.7 以减少文件大小
+        };
+
+        img.onerror = () => reject(new Error('图片加载失败'));
+        img.src = URL.createObjectURL(file);
+    });
 }
 
 /**
@@ -528,6 +631,11 @@ function initializeConversion() {
     if (elements.downloadBtn) {
         elements.downloadBtn.addEventListener('click', downloadImage);
     }
+
+    // 重新转换按钮事件监听
+    if (elements.reconvertBtn) {
+        elements.reconvertBtn.addEventListener('click', reconvertCurrentImage);
+    }
 }
 
 /**
@@ -568,14 +676,14 @@ function validateInputs() {
 }
 
 /**
- * 调用代理 API 进行图像转换
+ * 调用代理 API 进行图像转换FLAG
  */
-async function convertImage(imageUrl, prompt) {
+async function convertImage(imageUrl, prompt, functionType, outputNum) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2分钟超时
+    const timeoutId = setTimeout(() => controller.abort(), 180000); // 3分钟超时，适合多图片生成
 
     try {
-        console.log('开始调用代理 API...', { imageUrl, prompt });
+        console.log('开始调用代理 API...', { imageUrl, prompt, functionType, outputNum });
 
         const response = await fetch(CONFIG.PROXY_API_URL, {
             method: 'POST',
@@ -584,7 +692,9 @@ async function convertImage(imageUrl, prompt) {
             },
             body: JSON.stringify({
                 imageUrl: imageUrl,
-                prompt: prompt
+                prompt: prompt,
+                functionType: functionType,
+                outputNum: outputNum
             }),
             signal: controller.signal
         });
@@ -661,18 +771,162 @@ function showState(state) {
 }
 
 /**
- * 显示结果
+ * 显示结果 - 支持多图片轮播
  */
-function showResult(imageUrl) {
-    if (elements.resultImage) {
-        elements.resultImage.src = imageUrl;
+function showResult(imageUrls) {
+    // 确保imageUrls是数组
+    if (typeof imageUrls === 'string') {
+        imageUrls = [imageUrls];
     }
+
+    currentImageUrls = imageUrls;
+    currentImageIndex = 0;
+
+    // 初始化轮播图
+    initCarousel();
+
     showState('result');
 
     // 滚动到结果区域
     if (elements.resultDiv) {
         elements.resultDiv.scrollIntoView({ behavior: 'smooth' });
     }
+}
+
+/**
+ * 初始化轮播图
+ */
+function initCarousel() {
+    if (!currentImageUrls || currentImageUrls.length === 0) return;
+
+    // 清空轮播轨道
+    if (elements.carouselTrack) {
+        elements.carouselTrack.innerHTML = '';
+    }
+
+    // 创建图片幻灯片
+    currentImageUrls.forEach((url, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        slide.innerHTML = `<img src="${url}" alt="生成的图片 ${index + 1}" loading="lazy">`;
+        elements.carouselTrack.appendChild(slide);
+    });
+
+    // 更新计数器
+    updateImageCounter();
+
+    // 创建指示器
+    createIndicators();
+
+    // 更新按钮状态
+    updateCarouselButtons();
+
+    // 显示第一张图片
+    showSlide(0);
+
+    // 绑定事件监听器
+    bindCarouselEvents();
+}
+
+/**
+ * 更新图片计数器
+ */
+function updateImageCounter() {
+    if (elements.currentImageIndex) {
+        elements.currentImageIndex.textContent = currentImageIndex + 1;
+    }
+    if (elements.totalImages) {
+        elements.totalImages.textContent = currentImageUrls.length;
+    }
+}
+
+/**
+ * 创建指示器
+ */
+function createIndicators() {
+    if (!elements.carouselIndicators) return;
+
+    elements.carouselIndicators.innerHTML = '';
+
+    if (currentImageUrls.length <= 1) {
+        elements.carouselIndicators.classList.add('hidden');
+        return;
+    }
+
+    elements.carouselIndicators.classList.remove('hidden');
+
+    currentImageUrls.forEach((_, index) => {
+        const indicator = document.createElement('button');
+        indicator.className = 'carousel-indicator';
+        if (index === 0) indicator.classList.add('active');
+        indicator.addEventListener('click', () => showSlide(index));
+        elements.carouselIndicators.appendChild(indicator);
+    });
+}
+
+/**
+ * 更新轮播按钮状态
+ */
+function updateCarouselButtons() {
+    if (currentImageUrls.length <= 1) {
+        elements.prevBtn?.classList.add('hidden');
+        elements.nextBtn?.classList.add('hidden');
+    } else {
+        elements.prevBtn?.classList.remove('hidden');
+        elements.nextBtn?.classList.remove('hidden');
+    }
+}
+
+/**
+ * 显示指定索引的幻灯片
+ */
+function showSlide(index) {
+    if (!elements.carouselTrack || !currentImageUrls.length) return;
+
+    // 确保索引在有效范围内
+    index = Math.max(0, Math.min(index, currentImageUrls.length - 1));
+    currentImageIndex = index;
+
+    // 移动轮播轨道
+    const translateX = -index * 100;
+    elements.carouselTrack.style.transform = `translateX(${translateX}%)`;
+
+    // 更新指示器
+    const indicators = elements.carouselIndicators?.querySelectorAll('.carousel-indicator');
+    indicators?.forEach((indicator, i) => {
+        indicator.classList.toggle('active', i === index);
+    });
+
+    // 更新计数器
+    updateImageCounter();
+}
+
+/**
+ * 绑定轮播事件监听器
+ */
+function bindCarouselEvents() {
+    // 上一张按钮
+    elements.prevBtn?.addEventListener('click', () => {
+        showSlide(currentImageIndex - 1);
+    });
+
+    // 下一张按钮
+    elements.nextBtn?.addEventListener('click', () => {
+        showSlide(currentImageIndex + 1);
+    });
+
+    // 键盘导航
+    document.addEventListener('keydown', (e) => {
+        if (elements.resultDiv && !elements.resultDiv.classList.contains('hidden')) {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                showSlide(currentImageIndex - 1);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                showSlide(currentImageIndex + 1);
+            }
+        }
+    });
 }
 
 /**
@@ -705,16 +959,22 @@ async function handleConvert() {
         // 验证输入
         const { imageUrl, prompt } = validateInputs();
 
+        // 获取功能类型和生成数量
+        const selectedFunctionType = document.querySelector('input[name="functionType"]:checked').value;
+        const outputNum = parseInt(elements.outputNumSelect.value);
+
         // 更新UI状态
         setButtonState(true);
         showState('loading');
 
         // 调用API
-        const result = await convertImage(imageUrl, prompt);
+        const result = await convertImage(imageUrl, prompt, selectedFunctionType, outputNum);
 
         // 处理结果
         if (result.success) {
-            showResult(result.imageUrl);
+            // 优先使用imageUrls，如果不存在则使用imageUrl
+            const imageUrls = result.imageUrls || [result.imageUrl];
+            showResult(imageUrls);
         } else {
             throw new Error(result.error || '转换失败');
         }
@@ -728,18 +988,29 @@ async function handleConvert() {
 }
 
 /**
- * 下载图片
+ * 下载当前显示的图片
  */
 function downloadImage() {
-    if (!elements.resultImage?.src) return;
+    if (!currentImageUrls.length || currentImageIndex < 0 || currentImageIndex >= currentImageUrls.length) {
+        console.error('没有可下载的图片');
+        return;
+    }
 
-    const imageUrl = elements.resultImage.src;
+    const imageUrl = currentImageUrls[currentImageIndex];
     const link = document.createElement('a');
     link.href = imageUrl;
-    link.download = `anime-avatar-${Date.now()}.jpg`;
+    link.download = `anime-avatar-${currentImageIndex + 1}-${Date.now()}.jpg`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+/**
+ * 重新转换当前图片
+ */
+function reconvertCurrentImage() {
+    // 重新开始转换流程
+    location.reload();
 }
 
 /**
