@@ -3,6 +3,25 @@
  * 包含页面加载动画、导航、多页面管理和图片转换功能
  */
 
+// 3D画廊配置
+const GALLERY_CONFIG = {
+    images: [
+        'images/000.jpg',
+        'images/001.jpg',
+        'images/002.jpg',
+        'images/003.jpg'
+    ],
+    rotationStep: 90, // 每张图片90度间隔
+    radius: 400 // 3D圆形半径
+};
+
+// 画廊状态
+let galleryState = {
+    xPos: 0,
+    isDragging: false,
+    currentRotation: 0
+};
+
 // 配置信息
 const CONFIG = {
     PROXY_API_URL: 'https://anime-anything-github-io.vercel.app/api/convert',
@@ -743,6 +762,162 @@ function downloadImage() {
 }
 
 /**
+ * 3D画廊功能
+ */
+
+// 初始化3D画廊
+function initGallery() {
+    const galleryRing = document.querySelector('.gallery-ring');
+    const galleryImages = document.querySelectorAll('.gallery-img');
+    
+    if (!galleryRing || galleryImages.length === 0) return;
+
+    // 设置每个图片的3D位置和背景图片
+    galleryImages.forEach((img, index) => {
+        const rotationY = index * GALLERY_CONFIG.rotationStep;
+        
+        // 设置3D变换
+        img.style.transform = `
+            rotateY(${rotationY}deg) 
+            translateZ(${GALLERY_CONFIG.radius}px)
+        `;
+        
+        // 设置背景图片
+        if (GALLERY_CONFIG.images[index]) {
+            img.style.backgroundImage = `url(${GALLERY_CONFIG.images[index]})`;
+        }
+        
+        // 添加悬停效果
+        img.addEventListener('mouseenter', () => {
+            galleryImages.forEach((otherImg, otherIndex) => {
+                if (otherIndex !== index) {
+                    otherImg.style.opacity = '0.5';
+                }
+            });
+        });
+        
+        img.addEventListener('mouseleave', () => {
+            galleryImages.forEach((otherImg) => {
+                otherImg.style.opacity = '1';
+            });
+        });
+    });
+
+    // 设置初始旋转
+    galleryRing.style.transform = 'rotateY(180deg)';
+    
+    // 添加拖拽事件
+    setupGalleryDragEvents(galleryRing);
+}
+
+// 设置画廊拖拽事件
+function setupGalleryDragEvents(galleryRing) {
+    // 鼠标事件
+    document.addEventListener('mousedown', (e) => galleryDragStart(e, galleryRing));
+    document.addEventListener('mousemove', (e) => galleryDrag(e, galleryRing));
+    document.addEventListener('mouseup', galleryDragEnd);
+    
+    // 触摸事件
+    document.addEventListener('touchstart', (e) => galleryDragStart(e, galleryRing));
+    document.addEventListener('touchmove', (e) => galleryDrag(e, galleryRing));
+    document.addEventListener('touchend', galleryDragEnd);
+}
+
+// 开始拖拽
+function galleryDragStart(e, galleryRing) {
+    // 检查是否点击在画廊区域
+    if (!e.target.closest('.gallery-container')) return;
+    
+    e.preventDefault();
+    galleryState.isDragging = true;
+    
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    galleryState.xPos = Math.round(clientX);
+    
+    galleryRing.style.cursor = 'grabbing';
+}
+
+// 拖拽中
+function galleryDrag(e, galleryRing) {
+    if (!galleryState.isDragging) return;
+    
+    e.preventDefault();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const deltaX = Math.round(clientX) - galleryState.xPos;
+    
+    // 更新旋转角度
+    galleryState.currentRotation -= deltaX * 0.5; // 调整旋转速度
+    
+    // 应用旋转
+    galleryRing.style.transform = `rotateY(${galleryState.currentRotation}deg)`;
+    
+    // 更新背景位置以创建视差效果
+    updateGalleryParallax();
+    
+    galleryState.xPos = Math.round(clientX);
+}
+
+// 结束拖拽
+function galleryDragEnd() {
+    if (!galleryState.isDragging) return;
+    
+    galleryState.isDragging = false;
+    const galleryRing = document.querySelector('.gallery-ring');
+    if (galleryRing) {
+        galleryRing.style.cursor = 'grab';
+    }
+}
+
+// 更新视差效果
+function updateGalleryParallax() {
+    const galleryImages = document.querySelectorAll('.gallery-img');
+    
+    galleryImages.forEach((img, index) => {
+        const baseRotation = index * GALLERY_CONFIG.rotationStep;
+        const currentAngle = (galleryState.currentRotation - baseRotation) % 360;
+        const normalizedAngle = ((currentAngle + 360) % 360);
+        
+        // 计算视差偏移
+        const parallaxOffset = (normalizedAngle / 360) * 100;
+        img.style.backgroundPosition = `${parallaxOffset}% center`;
+    });
+}
+
+// 画廊动画入场效果
+function animateGalleryEntrance() {
+    const galleryImages = document.querySelectorAll('.gallery-img');
+    const galleryTitle = document.querySelector('.gallery-title');
+    
+    // 图片依次出现
+    galleryImages.forEach((img, index) => {
+        setTimeout(() => {
+            img.style.opacity = '0';
+            img.style.transform += ' translateY(100px)';
+            
+            setTimeout(() => {
+                img.style.transition = 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                img.style.opacity = '1';
+                img.style.transform = img.style.transform.replace('translateY(100px)', 'translateY(0px)');
+            }, 100);
+        }, index * 200);
+    });
+    
+    // 标题淡入
+    if (galleryTitle) {
+        setTimeout(() => {
+            galleryTitle.style.opacity = '0';
+            galleryTitle.style.transform = 'translateX(-50%) translateY(50px)';
+            galleryTitle.style.transition = 'all 1s ease';
+            
+            setTimeout(() => {
+                galleryTitle.style.opacity = '1';
+                galleryTitle.style.transform = 'translateX(-50%) translateY(0px)';
+            }, 100);
+        }, 800);
+    }
+}
+
+/**
  * 全局函数 - 供HTML调用
  */
 window.showSection = showSection;
@@ -753,6 +928,12 @@ window.showSection = showSection;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('AI动漫风格迁移工具开始加载...');
     handlePageLoad();
+    
+    // 初始化3D画廊
+    setTimeout(() => {
+        initGallery();
+        animateGalleryEntrance();
+    }, 1000); // 页面加载动画后初始化画廊
 });
 
 // 页面完全加载后隐藏加载动画
