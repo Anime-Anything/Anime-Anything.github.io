@@ -108,14 +108,14 @@ body {
     width: 100%;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* 改为黑色半透明边框 */
     z-index: 1000;
     transition: var(--transition-fast);
 }
 
 .navbar.scrolled {
     background: rgba(255, 255, 255, 0.98);
-    box-shadow: var(--shadow-light);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 改为黑色阴影 */
 }
 
 .nav-container {
@@ -133,13 +133,20 @@ body {
     align-items: center;
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-purple);
+    color: #000; /* 改为黑色 */
     text-decoration: none;
 }
 
 .logo-icon {
     margin-right: 10px;
     font-size: 1.8rem;
+}
+
+/* 新增：logo图片样式 */
+.logo-image {
+    height: 40px; /* 调整logo高度 */
+    width: auto;
+    margin-right: 10px;
 }
 
 .nav-menu {
@@ -149,7 +156,7 @@ body {
 }
 
 .nav-link {
-    color: #666;
+    color: #333; /* 改为深灰黑色 */
     text-decoration: none;
     font-weight: 500;
     padding: 10px 15px;
@@ -160,8 +167,8 @@ body {
 
 .nav-link:hover,
 .nav-link.active {
-    color: var(--primary-purple);
-    background: rgba(102, 126, 234, 0.1);
+    color: #000; /* 改为纯黑色 */
+    background: rgba(0, 0, 0, 0.1); /* 改为黑色半透明背景 */
 }
 
 .nav-toggle {
@@ -176,7 +183,7 @@ body {
 .nav-toggle span {
     width: 100%;
     height: 2px;
-    background: var(--primary-purple);
+    background: #000; /* 改为黑色 */
     transition: var(--transition-fast);
 }
 
