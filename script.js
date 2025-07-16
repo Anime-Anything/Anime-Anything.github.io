@@ -784,7 +784,7 @@ function initGallery() {
     // 使用GSAP设置初始状态和图片
     gsap.timeline()
         .set('.gallery-ring', { 
-            rotationY: 180, // 恢复原始设计的初始角度
+            rotationY: 180, // 完全匹配原始设计的初始角度
             cursor: 'grab' 
         })
         .set('.gallery-img', {
@@ -800,8 +800,8 @@ function initGallery() {
                 console.log(`设置图片 ${i}: ${imageUrl}`);
                 return imageUrl;
             },
-            backgroundSize: 'cover',
-            backgroundPosition: (i) => getBgPos(i),
+            // 移除 backgroundSize: 'cover' 完全匹配原始设计
+            backgroundPosition: (i) => getBgPos(i), // 使用动态计算的位置
             backgroundRepeat: 'no-repeat',
             backfaceVisibility: 'hidden'
         })
