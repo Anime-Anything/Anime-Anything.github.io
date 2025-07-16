@@ -16,7 +16,7 @@ const GALLERY_CONFIG = {
         'images/007.png'
     ],
     rotationStep: 45, // 每张图片45度间隔 (360/8 = 45)
-    radius: 500 // 3D圆形半径
+    radius: 350 // 减小3D圆形半径，让更多图片可见
 };
 
 // 画廊状态
@@ -781,7 +781,7 @@ function initGallery() {
     // 使用GSAP设置初始状态和图片
     gsap.timeline()
         .set('.gallery-ring', { 
-            rotationY: 180, 
+            rotationY: 22.5, // 调整初始角度，让更多图片可见
             cursor: 'grab' 
         })
         .set('.gallery-img', {
@@ -811,7 +811,7 @@ function initGallery() {
                     // 突出当前图片
                     gsap.to(current, { 
                         scale: 1.1, 
-                        z: -GALLERY_CONFIG.radius + 50,
+                        z: -GALLERY_CONFIG.radius + 80,
                         boxShadow: '0 30px 60px rgba(255, 255, 255, 0.3)',
                         duration: 0.5,
                         ease: 'power3.out'

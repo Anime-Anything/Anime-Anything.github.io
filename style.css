@@ -1224,9 +1224,9 @@ body {
 }
 
 .gallery-container {
-    perspective: 2000px;
-    width: 400px;
-    height: 500px;
+    perspective: 1200px;
+    width: 500px;
+    height: 600px;
     position: relative;
 }
 
@@ -1245,8 +1245,8 @@ body {
 
 .gallery-img {
     position: absolute;
-    width: 320px;
-    height: 320px;
+    width: 280px;
+    height: 280px;
     background-size: cover;
     background-position: center;
     border-radius: 20px;
@@ -1355,13 +1355,13 @@ body {
 /* 响应式调整 */
 @media (max-width: 1200px) {
     .gallery-container {
-        width: 350px;
-        height: 450px;
+        width: 450px;
+        height: 550px;
     }
     
     .gallery-img {
-        width: 280px;
-        height: 280px;
+        width: 250px;
+        height: 250px;
     }
     
     .gallery-info h1 {
@@ -1375,13 +1375,14 @@ body {
 
 @media (max-width: 768px) {
     .gallery-container {
-        width: 300px;
-        height: 400px;
+        width: 380px;
+        height: 480px;
+        perspective: 1000px;
     }
     
     .gallery-img {
-        width: 240px;
-        height: 240px;
+        width: 200px;
+        height: 200px;
     }
     
     .gallery-info {
