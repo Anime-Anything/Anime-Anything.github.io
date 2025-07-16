@@ -1479,171 +1479,280 @@ body {
     z-index: 2;
 }
 
-/* 特色优势样式 - 流线型设计 */
-.feature-highlights {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
-    padding-top: 60px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+/* 3D轨道环绕特色展示 - 惊艳艺术设计 */
+.features-orbit-container {
+    padding: 120px 0;
     position: relative;
     overflow: hidden;
 }
 
-/* 流线型连接线背景 */
-.feature-highlights::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 200%;
-    height: 2px;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(255,255,255,0.1) 20%, 
-        rgba(255,255,255,0.3) 50%, 
-        rgba(255,255,255,0.1) 80%, 
-        transparent 100%);
-    animation: flowLine 8s ease-in-out infinite;
+.orbit-title {
+    text-align: center;
+    margin-bottom: 80px;
 }
 
-@keyframes flowLine {
+.orbit-title h3 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: white;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+}
+
+.orbit-title p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 300;
+}
+
+/* 3D轨道舞台 */
+.orbit-stage {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    perspective: 1500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 中心AI核心 */
+.orbit-center {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transform-style: preserve-3d;
+}
+
+.center-glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 40%, transparent 80%);
+    border-radius: 50%;
+    animation: centerPulse 4s ease-in-out infinite;
+    filter: blur(20px);
+}
+
+.center-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    z-index: 2;
+    letter-spacing: 3px;
+}
+
+/* 中心环状装饰 */
+.center-rings {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.ring {
+    position: absolute;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: ringRotate linear infinite;
+}
+
+.ring-1 {
+    width: 60px;
+    height: 60px;
+    animation-duration: 8s;
+    border-color: rgba(255,255,255,0.2);
+}
+
+.ring-2 {
+    width: 90px;
+    height: 90px;
+    animation-duration: 12s;
+    animation-direction: reverse;
+}
+
+.ring-3 {
+    width: 120px;
+    height: 120px;
+    animation-duration: 16s;
+}
+
+/* 轨道系统 */
+.orbit-system {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: orbitRotation 60s linear infinite;
+    transform-style: preserve-3d;
+}
+
+/* 轨道项目 */
+.orbit-item {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    left: 50%;
+    top: 50%;
+    transform-origin: 50% 50%;
+    transform-style: preserve-3d;
+}
+
+.orbit-item[data-orbit="0"] {
+    transform: translate(-50%, -50%) rotateY(0deg) translateZ(280px);
+}
+
+.orbit-item[data-orbit="1"] {
+    transform: translate(-50%, -50%) rotateY(90deg) translateZ(280px);
+}
+
+.orbit-item[data-orbit="2"] {
+    transform: translate(-50%, -50%) rotateY(180deg) translateZ(280px);
+}
+
+.orbit-item[data-orbit="3"] {
+    transform: translate(-50%, -50%) rotateY(270deg) translateZ(280px);
+}
+
+/* 轨道卡片 */
+.orbit-card {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 20px;
+    transform-style: preserve-3d;
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    cursor: pointer;
+}
+
+.orbit-card:hover {
+    transform: translateZ(30px) scale(1.05);
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
+    border-color: rgba(255,255,255,0.3);
+    box-shadow: 0 20px 60px rgba(255,255,255,0.1);
+}
+
+/* 卡片光晕 */
+.card-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+}
+
+.orbit-card:hover .card-glow {
+    opacity: 1;
+}
+
+/* 卡片内容 */
+.card-content {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 8px rgba(255,255,255,0.2));
+}
+
+.card-content h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.card-content p {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 300;
+    line-height: 1.4;
+}
+
+/* 卡片轨迹 */
+.card-trail {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+    transition: width 0.6s ease;
+}
+
+.orbit-card:hover .card-trail {
+    width: 100%;
+}
+
+/* 粒子系统 */
+.particle-system {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* 动画定义 */
+@keyframes centerPulse {
     0%, 100% {
-        transform: translateX(-50%);
-        opacity: 0.3;
+        transform: scale(1);
+        opacity: 0.8;
     }
     50% {
-        transform: translateX(0%);
+        transform: scale(1.1);
         opacity: 1;
     }
 }
 
-.highlight-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 30px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(60px) scale(0.8);
-}
-
-/* 流线型装饰线 */
-.highlight-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    transition: all 0.8s ease;
-}
-
-.highlight-item::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: -100%;
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: all 0.8s ease;
-    transition-delay: 0.2s;
-}
-
-/* 滚动进入动画 */
-.highlight-item.animate-in {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-
-.highlight-item.animate-in::before {
-    left: 0;
-}
-
-.highlight-item.animate-in::after {
-    right: 0;
-}
-
-/* 悬停效果增强 */
-.highlight-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
-}
-
-.highlight-item:hover .highlight-icon {
-    transform: scale(1.2) rotate(5deg);
-}
-
-.highlight-icon {
-    font-size: 2rem;
-    line-height: 1;
-    flex-shrink: 0;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter: drop-shadow(0 4px 8px rgba(255,255,255,0.1));
-}
-
-.highlight-content h4 {
-    font-size: 1.3rem;
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: white;
-    transition: color 0.3s ease;
-}
-
-.highlight-content p {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 300;
-    line-height: 1.5;
-    transition: color 0.3s ease;
-}
-
-.highlight-item:hover .highlight-content h4 {
-    color: rgba(255, 255, 255, 0.95);
-}
-
-.highlight-item:hover .highlight-content p {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-/* 添加延迟动画类 */
-.highlight-item[data-index="0"] {
-    transition-delay: 0.1s;
-}
-
-.highlight-item[data-index="1"] {
-    transition-delay: 0.2s;
-}
-
-.highlight-item[data-index="2"] {
-    transition-delay: 0.3s;
-}
-
-.highlight-item[data-index="3"] {
-    transition-delay: 0.4s;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-    .feature-highlights {
-        grid-template-columns: 1fr;
-        gap: 20px;
+@keyframes ringRotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
     }
-    
-    .highlight-item {
-        padding: 20px;
-        transform: translateY(40px) scale(0.9);
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
     }
+}
+
+@keyframes orbitRotation {
+    from {
+        transform: rotateY(0deg);
+    }
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
+/* 暂停动画交互 */
+.orbit-stage:hover .orbit-system {
+    animation-play-state: paused;
+}
+
+.orbit-stage:hover .center-rings .ring {
+    animation-play-state: paused;
 }
 
 /* 响应式设计 */
@@ -1661,6 +1770,41 @@ body {
     .feature-number {
         font-size: 4rem;
     }
+    
+    .orbit-stage {
+        height: 500px;
+        perspective: 1200px;
+    }
+    
+    .orbit-item[data-orbit="0"] {
+        transform: translate(-50%, -50%) rotateY(0deg) translateZ(220px);
+    }
+    
+    .orbit-item[data-orbit="1"] {
+        transform: translate(-50%, -50%) rotateY(90deg) translateZ(220px);
+    }
+    
+    .orbit-item[data-orbit="2"] {
+        transform: translate(-50%, -50%) rotateY(180deg) translateZ(220px);
+    }
+    
+    .orbit-item[data-orbit="3"] {
+        transform: translate(-50%, -50%) rotateY(270deg) translateZ(220px);
+    }
+    
+    .orbit-card {
+        width: 180px;
+        height: 140px;
+        padding: 16px;
+    }
+    
+    .card-content h4 {
+        font-size: 1.1rem;
+    }
+    
+    .card-content p {
+        font-size: 0.8rem;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1677,22 +1821,51 @@ body {
         margin-bottom: 60px;
     }
     
-    /* 响应式调整 */
-    .feature-highlights {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .highlight-item {
-        padding: 20px;
-        transform: translateY(40px) scale(0.9);
-    }
-    
     .feature-main h3 {
         font-size: 1.8rem;
     }
     
     .feature-main p {
         font-size: 1.1rem;
+    }
+    
+    .orbit-stage {
+        height: 400px;
+        perspective: 800px;
+    }
+    
+    .orbit-item {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .orbit-item[data-orbit="0"] {
+        transform: translate(-50%, -50%) rotateY(0deg) translateZ(180px);
+    }
+    
+    .orbit-item[data-orbit="1"] {
+        transform: translate(-50%, -50%) rotateY(90deg) translateZ(180px);
+    }
+    
+    .orbit-item[data-orbit="2"] {
+        transform: translate(-50%, -50%) rotateY(180deg) translateZ(180px);
+    }
+    
+    .orbit-item[data-orbit="3"] {
+        transform: translate(-50%, -50%) rotateY(270deg) translateZ(180px);
+    }
+    
+    .orbit-card {
+        width: 140px;
+        height: 120px;
+        padding: 12px;
+    }
+    
+    .center-text {
+        font-size: 2rem;
+    }
+    
+    .orbit-title h3 {
+        font-size: 2rem;
     }
 }

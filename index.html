@@ -80,35 +80,82 @@
                         </div>
                     </div>
                     
-                    <!-- 特色优势 -->
-                    <div class="feature-highlights" id="featureHighlights">
-                        <div class="highlight-item" data-index="0">
-                            <span class="highlight-icon">⚡</span>
-                            <div class="highlight-content">
-                                <h4>快速处理</h4>
-                                <p>每张头像仅需10-15秒</p>
-                            </div>
+                    <!-- 特色优势 - 3D轨道环绕展示 -->
+                    <div class="features-orbit-container">
+                        <div class="orbit-title">
+                            <h3>核心优势</h3>
+                            <p>四大技术特色，成就完美体验</p>
                         </div>
-                        <div class="highlight-item" data-index="1">
-                            <span class="highlight-icon">🎨</span>
-                            <div class="highlight-content">
-                                <h4>丰富风格选择</h4>
-                                <p>包括且不仅限于动漫头像</p>
+                        
+                        <div class="orbit-stage" id="orbitStage">
+                            <!-- 中心核心 -->
+                            <div class="orbit-center">
+                                <div class="center-glow"></div>
+                                <div class="center-text">AI</div>
+                                <div class="center-rings">
+                                    <div class="ring ring-1"></div>
+                                    <div class="ring ring-2"></div>
+                                    <div class="ring ring-3"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="highlight-item" data-index="2">
-                            <span class="highlight-icon">📱</span>
-                            <div class="highlight-content">
-                                <h4>响应式设计</h4>
-                                <p>支持多种设备</p>
+                            
+                            <!-- 轨道系统 -->
+                            <div class="orbit-system">
+                                <!-- 特色1：快速处理 -->
+                                <div class="orbit-item" data-orbit="0">
+                                    <div class="orbit-card">
+                                        <div class="card-glow"></div>
+                                        <div class="card-content">
+                                            <div class="card-icon">⚡</div>
+                                            <h4>快速处理</h4>
+                                            <p>10-15秒极速生成</p>
+                                        </div>
+                                        <div class="card-trail"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 特色2：丰富风格 -->
+                                <div class="orbit-item" data-orbit="1">
+                                    <div class="orbit-card">
+                                        <div class="card-glow"></div>
+                                        <div class="card-content">
+                                            <div class="card-icon">🎨</div>
+                                            <h4>丰富风格</h4>
+                                            <p>多样化动漫风格</p>
+                                        </div>
+                                        <div class="card-trail"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 特色3：响应式设计 -->
+                                <div class="orbit-item" data-orbit="2">
+                                    <div class="orbit-card">
+                                        <div class="card-glow"></div>
+                                        <div class="card-content">
+                                            <div class="card-icon">📱</div>
+                                            <h4>全平台支持</h4>
+                                            <p>任意设备完美体验</p>
+                                        </div>
+                                        <div class="card-trail"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 特色4：多种输入 -->
+                                <div class="orbit-item" data-orbit="3">
+                                    <div class="orbit-card">
+                                        <div class="card-glow"></div>
+                                        <div class="card-content">
+                                            <div class="card-icon">🔗</div>
+                                            <h4>灵活输入</h4>
+                                            <p>拖拽·链接·多模式</p>
+                                        </div>
+                                        <div class="card-trail"></div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="highlight-item" data-index="3">
-                            <span class="highlight-icon">🔗</span>
-                            <div class="highlight-content">
-                                <h4>多种输入方式</h4>
-                                <p>支持拖拽上传、URL链接等</p>
-                            </div>
+                            
+                            <!-- 粒子系统 -->
+                            <div class="particle-system" id="particleSystem"></div>
                         </div>
                     </div>
                 </div>

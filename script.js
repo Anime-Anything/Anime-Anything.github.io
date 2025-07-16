@@ -107,6 +107,7 @@ function handlePageLoad() {
     initializeConversion();
     initScrollAnimations(); // 初始化流线型滚动效果
     enhanceHighlightInteractions(); // 增强特色卡片交互
+    init3DOrbitSystem(); // 初始化3D轨道系统和粒子效果
 
     // 设置默认输入模式为上传
     switchInputMode('upload');
@@ -991,13 +992,203 @@ function addBreathingAnimation() {
 }
 
 /**
- * 流线型滚动联动效果
+ * 3D轨道系统和粒子效果
  */
-function initScrollAnimations() {
-    // 创建 Intersection Observer
+function init3DOrbitSystem() {
+    const orbitStage = document.getElementById('orbitStage');
+    const particleSystem = document.getElementById('particleSystem');
+    
+    if (!orbitStage || !particleSystem) return;
+
+    // 创建粒子效果
+    createParticles(particleSystem);
+    
+    // 添加轨道交互
+    setupOrbitInteractions(orbitStage);
+    
+    // 启动轨道动画观察器
+    setupOrbitObserver(orbitStage);
+}
+
+/**
+ * 创建粒子系统
+ */
+function createParticles(container) {
+    const particleCount = 50;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // 随机位置
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const size = Math.random() * 3 + 1;
+        const opacity = Math.random() * 0.5 + 0.1;
+        const duration = Math.random() * 20 + 10;
+        
+        particle.style.cssText = `
+            position: absolute;
+            left: ${x}%;
+            top: ${y}%;
+            width: ${size}px;
+            height: ${size}px;
+            background: rgba(255,255,255,${opacity});
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat ${duration}s linear infinite;
+            animation-delay: ${Math.random() * 10}s;
+        `;
+        
+        container.appendChild(particle);
+    }
+    
+    // 添加粒子动画CSS
+    if (!document.getElementById('particle-styles')) {
+        const style = document.createElement('style');
+        style.id = 'particle-styles';
+        style.textContent = `
+            @keyframes particleFloat {
+                0% {
+                    transform: translateY(100vh) rotate(0deg);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-100px) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+/**
+ * 设置轨道交互
+ */
+function setupOrbitInteractions(orbitStage) {
+    let isMouseDown = false;
+    let mouseX = 0;
+    let currentRotation = 0;
+    
+    orbitStage.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        mouseX = e.clientX;
+        orbitStage.style.cursor = 'grabbing';
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        
+        const deltaX = e.clientX - mouseX;
+        currentRotation += deltaX * 0.5;
+        
+        const orbitSystem = orbitStage.querySelector('.orbit-system');
+        if (orbitSystem) {
+            orbitSystem.style.transform = `rotateY(${currentRotation}deg)`;
+        }
+        
+        mouseX = e.clientX;
+    });
+    
+    document.addEventListener('mouseup', () => {
+        isMouseDown = false;
+        orbitStage.style.cursor = 'grab';
+    });
+    
+    // 鼠标离开时恢复自动旋转
+    orbitStage.addEventListener('mouseleave', () => {
+        isMouseDown = false;
+        orbitStage.style.cursor = 'default';
+        
+        const orbitSystem = orbitStage.querySelector('.orbit-system');
+        if (orbitSystem) {
+            orbitSystem.style.transform = '';
+        }
+    });
+}
+
+/**
+ * 设置轨道观察器
+ */
+function setupOrbitObserver(orbitStage) {
     const observerOptions = {
-        threshold: 0.2, // 当20%可见时触发
-        rootMargin: '0px 0px -50px 0px' // 提前50px触发
+        threshold: 0.3,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // 启动轨道动画
+                const orbitCards = entry.target.querySelectorAll('.orbit-card');
+                orbitCards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform += ' scale(1)';
+                    }, index * 200);
+                });
+                
+                // 启动中心脉冲
+                const centerGlow = entry.target.querySelector('.center-glow');
+                if (centerGlow) {
+                    centerGlow.style.animationPlayState = 'running';
+                }
+            }
+        });
+    }, observerOptions);
+    
+    observer.observe(orbitStage);
+}
+
+/**
+ * 增强轨道卡片效果
+ */
+function enhanceOrbitCards() {
+    const orbitCards = document.querySelectorAll('.orbit-card');
+    
+    orbitCards.forEach((card, index) => {
+        // 初始状态
+        card.style.opacity = '0';
+        card.style.transform += ' scale(0.8)';
+        
+        // 悬停时的联动效果
+        card.addEventListener('mouseenter', () => {
+            orbitCards.forEach((otherCard, otherIndex) => {
+                if (otherIndex !== index) {
+                    otherCard.style.opacity = '0.6';
+                    otherCard.style.transform += ' scale(0.95)';
+                } else {
+                    // 当前卡片放大并添加特殊效果
+                    card.style.transform += ' rotateX(10deg)';
+                }
+            });
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            orbitCards.forEach((otherCard, otherIndex) => {
+                otherCard.style.opacity = '';
+                const currentTransform = otherCard.style.transform;
+                otherCard.style.transform = currentTransform
+                    .replace(/scale\([^)]*\)/g, '')
+                    .replace(/rotateX\([^)]*\)/g, '');
+            });
+        });
+    });
+}
+
+// 更新旧的滚动动画函数名称和功能
+function initScrollAnimations() {
+    // 保留原有的主要功能滚动效果
+    const observerOptions = {
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -1005,123 +1196,29 @@ function initScrollAnimations() {
             if (entry.isIntersecting) {
                 const target = entry.target;
                 
-                if (target.classList.contains('highlight-item')) {
-                    // 为特色卡片添加动画
-                    const index = parseInt(target.getAttribute('data-index'));
-                    setTimeout(() => {
-                        target.classList.add('animate-in');
-                    }, index * 150); // 依次延迟150ms出现
-                } else if (target.classList.contains('feature-highlights')) {
-                    // 开始流线动画
-                    target.style.animationPlayState = 'running';
+                // 主要功能动画
+                if (target.classList.contains('feature-main')) {
+                    target.style.opacity = '1';
+                    target.style.transform = 'translateY(0)';
                 }
             }
         });
     }, observerOptions);
 
-    // 观察特色优势区域
-    const featureHighlights = document.getElementById('featureHighlights');
-    if (featureHighlights) {
-        observer.observe(featureHighlights);
-        
-        // 观察每个特色卡片
-        const highlightItems = featureHighlights.querySelectorAll('.highlight-item');
-        highlightItems.forEach(item => {
-            observer.observe(item);
-        });
-    }
-
-    // 添加高级滚动效果
-    addAdvancedScrollEffects();
-}
-
-/**
- * 高级滚动效果
- */
-function addAdvancedScrollEffects() {
-    let ticking = false;
-
-    function updateScrollEffects() {
-        const scrollY = window.scrollY;
-        const windowHeight = window.innerHeight;
-        
-        // 特色卡片的视差效果
-        const highlightItems = document.querySelectorAll('.highlight-item');
-        highlightItems.forEach((item, index) => {
-            const rect = item.getBoundingClientRect();
-            const itemCenter = rect.top + rect.height / 2;
-            const distance = (windowHeight / 2 - itemCenter) / windowHeight;
-            
-            // 微妙的视差移动
-            const moveY = distance * 20;
-            const moveX = Math.sin(distance * Math.PI) * 5;
-            
-            if (item.classList.contains('animate-in')) {
-                item.style.transform = `translateY(${moveY}px) translateX(${moveX}px) scale(1)`;
-            }
-        });
-
-        // 流线效果强度根据滚动位置变化
-        const featureHighlights = document.getElementById('featureHighlights');
-        if (featureHighlights) {
-            const rect = featureHighlights.getBoundingClientRect();
-            if (rect.top < windowHeight && rect.bottom > 0) {
-                const visibility = Math.max(0, Math.min(1, 
-                    (windowHeight - rect.top) / (windowHeight + rect.height)
-                ));
-                featureHighlights.style.setProperty('--flow-intensity', visibility);
-            }
-        }
-
-        ticking = false;
-    }
-
-    function requestUpdate() {
-        if (!ticking) {
-            requestAnimationFrame(updateScrollEffects);
-            ticking = true;
-        }
-    }
-
-    // 监听滚动事件
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    
-    // 初始执行一次
-    updateScrollEffects();
-}
-
-/**
- * 增强特色卡片交互
- */
-function enhanceHighlightInteractions() {
-    const highlightItems = document.querySelectorAll('.highlight-item');
-    
-    highlightItems.forEach((item, index) => {
-        // 鼠标进入时的微妙动画
-        item.addEventListener('mouseenter', () => {
-            // 为相邻卡片添加微妙效果
-            highlightItems.forEach((otherItem, otherIndex) => {
-                if (otherIndex !== index) {
-                    const distance = Math.abs(otherIndex - index);
-                    const scale = 1 - (distance * 0.02);
-                    const opacity = 1 - (distance * 0.1);
-                    
-                    otherItem.style.transform += ` scale(${scale})`;
-                    otherItem.style.opacity = opacity;
-                }
-            });
-        });
-
-        // 鼠标离开时恢复
-        item.addEventListener('mouseleave', () => {
-            highlightItems.forEach(otherItem => {
-                otherItem.style.opacity = '';
-                // 保持原有的transform，只移除scale效果
-                const currentTransform = otherItem.style.transform;
-                otherItem.style.transform = currentTransform.replace(/scale\([^)]*\)/g, '');
-            });
-        });
+    // 观察主要功能区域
+    const featureMain = document.querySelectorAll('.feature-main');
+    featureMain.forEach(item => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(60px)';
+        item.style.transition = 'all 0.8s ease';
+        observer.observe(item);
     });
+}
+
+// 更新增强交互函数
+function enhanceHighlightInteractions() {
+    // 这个函数现在主要处理3D轨道系统
+    enhanceOrbitCards();
 }
 
 /**
@@ -1143,6 +1240,7 @@ document.addEventListener('DOMContentLoaded', () => {
             animateGalleryEntrance();
             initScrollAnimations(); // 初始化流线型滚动效果
             enhanceHighlightInteractions(); // 增强特色卡片交互
+            init3DOrbitSystem(); // 初始化3D轨道系统和粒子效果
         }, 1000); // 页面加载动画后初始化画廊
     } else {
         console.error('GSAP库未加载，3D画廊无法初始化');
