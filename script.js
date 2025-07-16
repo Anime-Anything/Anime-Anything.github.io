@@ -800,8 +800,8 @@ function initGallery() {
                 console.log(`设置图片 ${i}: ${imageUrl}`);
                 return imageUrl;
             },
-            // 移除 backgroundSize: 'cover' 完全匹配原始设计
-            backgroundPosition: (i) => getBgPos(i), // 使用动态计算的位置
+            backgroundSize: 'cover', // 确保填满容器，避免黑色间隙
+            backgroundPosition: (i) => getBgPos(i), // 使用微调的视差位置
             backgroundRepeat: 'no-repeat',
             backfaceVisibility: 'hidden'
         })
@@ -919,15 +919,17 @@ function dragEnd() {
     }, 3000); // 3秒后恢复自动旋转
 }
 
-// 计算背景位置实现视差效果（完全参考原始设计）
+// 计算背景位置实现微妙视差效果（在center基础上微调）
 function getBgPos(i) {
     const ring = document.querySelector('.gallery-ring');
-    if (!ring) return '0px 0px';
+    if (!ring) return 'center'; // 默认居中
     
     const currentRotation = gsap.getProperty(ring, 'rotationY') || 0;
-    // 完全复制原始设计的计算公式：rotationY - 180 - i * 36
-    const offset = gsap.utils.wrap(0, 360, currentRotation - 180 - i * 36) / 360 * 500;
-    return (100 - offset) + 'px 0px';
+    // 减小视差强度：从500改为100，让用户看到图像主要部分
+    const offset = gsap.utils.wrap(0, 360, currentRotation - 180 - i * 36) / 360 * 100;
+    // 在center基础上进行微调：50% ± 偏移量
+    const xPos = 50 + (offset - 50) * 0.3; // 减小偏移量影响
+    return xPos + '% center'; // Y轴保持居中，X轴微调
 }
 
 // 画廊入场动画

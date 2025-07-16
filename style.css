@@ -1333,8 +1333,8 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    /* 移除 background-size: cover; 完全匹配原始设计 */
-    /* 移除 background-position: center; 让JavaScript完全控制 */
+    background-size: cover; /* 填满容器，避免黑色间隙 */
+    background-position: center; /* 以居中为基础，JavaScript会在此基础上微调 */
     background-repeat: no-repeat;
     border-radius: 15px;
     transform-style: preserve-3d;
