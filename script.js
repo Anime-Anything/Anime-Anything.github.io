@@ -15,8 +15,9 @@ const GALLERY_CONFIG = {
         'images/006.png',
         'images/007.png'
     ],
-    rotationStep: 45, // 每张图片45度间隔 (360/8 = 45)
-    radius: 350 // 减小3D圆形半径，让更多图片可见
+    rotationStep: -45, // 每张图片-45度间隔 (360/8 = 45)，负值保持原始设计方向
+    transformOrigin: '50% 50% 500px', // 旋转中心在图片前方500px处
+    zDepth: -500 // 所有图片在相同深度
 };
 
 // 画廊状态
@@ -781,16 +782,16 @@ function initGallery() {
     // 使用GSAP设置初始状态和图片
     gsap.timeline()
         .set('.gallery-ring', { 
-            rotationY: 22.5, // 调整初始角度，让更多图片可见
+            rotationY: 180, // 恢复原始设计的初始角度
             cursor: 'grab' 
         })
         .set('.gallery-img', {
-            rotateY: (i) => i * -GALLERY_CONFIG.rotationStep,
-            transformOrigin: '50% 50% ' + GALLERY_CONFIG.radius + 'px',
-            z: -GALLERY_CONFIG.radius,
+            rotateY: (i) => i * GALLERY_CONFIG.rotationStep,
+            transformOrigin: (i) => GALLERY_CONFIG.transformOrigin,
+            z: (i) => GALLERY_CONFIG.zDepth,
             backgroundImage: (i) => 'url(' + GALLERY_CONFIG.images[i] + ')',
             backgroundSize: 'cover',
-            backgroundPosition: 'center center',
+            backgroundPosition: (i) => getBgPos(i),
             backgroundRepeat: 'no-repeat',
             backfaceVisibility: 'hidden'
         })
@@ -811,7 +812,7 @@ function initGallery() {
                     // 突出当前图片
                     gsap.to(current, { 
                         scale: 1.1, 
-                        z: -GALLERY_CONFIG.radius + 80,
+                        z: GALLERY_CONFIG.zDepth - 80,
                         boxShadow: '0 30px 60px rgba(255, 255, 255, 0.3)',
                         duration: 0.5,
                         ease: 'power3.out'
@@ -831,7 +832,7 @@ function initGallery() {
                     gsap.to('.gallery-img', { 
                         opacity: 1, 
                         scale: 1,
-                        z: -GALLERY_CONFIG.radius,
+                        z: GALLERY_CONFIG.zDepth,
                         boxShadow: '0 20px 40px rgba(255, 255, 255, 0.1)',
                         ease: 'power3.out',
                         duration: 0.5
@@ -879,12 +880,9 @@ function drag(e) {
     const ring = document.querySelector('.gallery-ring');
     if (!ring) return;
     
-    const deltaX = Math.round(e.clientX) - galleryState.xPos;
-    
+    // 参考原始设计的拖拽计算
     gsap.to('.gallery-ring', {
-        rotationY: '+=' + (deltaX * 0.5),
-        duration: 0.1,
-        ease: 'none',
+        rotationY: '-=' + ((Math.round(e.clientX) - galleryState.xPos) % 360),
         onUpdate: () => { 
             // 更新背景位置的视差效果
             gsap.set('.gallery-img', { 
@@ -911,17 +909,15 @@ function dragEnd() {
     }, 3000); // 3秒后恢复自动旋转
 }
 
-// 计算背景位置实现视差效果（修复分裂问题）
+// 计算背景位置实现视差效果（参考原始设计）
 function getBgPos(i) {
     const ring = document.querySelector('.gallery-ring');
     if (!ring) return 'center center';
     
     const currentRotation = gsap.getProperty(ring, 'rotationY') || 0;
-    // 简化背景位置计算，避免图像分裂
-    const normalizedRotation = (currentRotation + i * GALLERY_CONFIG.rotationStep) % 360;
-    const parallaxOffset = Math.sin((normalizedRotation * Math.PI) / 180) * 20; // 减小视差效果
-    
-    return `${50 + parallaxOffset}% center`;
+    // 使用原始设计的视差计算公式
+    const offset = gsap.utils.wrap(0, 360, currentRotation - 180 - i * Math.abs(GALLERY_CONFIG.rotationStep)) / 360 * 500;
+    return (100 - offset) + 'px 0px';
 }
 
 // 画廊入场动画
