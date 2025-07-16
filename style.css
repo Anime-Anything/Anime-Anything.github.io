@@ -144,7 +144,7 @@ body {
 
 /* 新增：logo图片样式 */
 .logo-image {
-    height: 144px; /* 从40px放大4倍到144px */
+    height: 128px; /* 从40px放大3.2倍到128px */
     width: auto;
     margin-right: 10px;
 }
