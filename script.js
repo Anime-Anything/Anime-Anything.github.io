@@ -13,9 +13,11 @@ const GALLERY_CONFIG = {
         'images/004.png',
         'images/005.png',
         'images/006.png',
-        'images/007.png'
+        'images/007.png',
+        'images/008.jpg',
+        'images/009.jpg'
     ],
-    rotationStep: -45, // 每张图片-45度间隔 (360/8 = 45)，负值保持原始设计方向
+    rotationStep: -36, // 每张图片-36度间隔，完全对应原始设计 (360/10 = 36)
     transformOrigin: '50% 50% 500px', // 旋转中心在图片前方500px处
     zDepth: -500 // 所有图片在相同深度
 };
@@ -786,10 +788,17 @@ function initGallery() {
             cursor: 'grab' 
         })
         .set('.gallery-img', {
-            rotateY: (i) => i * GALLERY_CONFIG.rotationStep,
+            rotateY: (i) => {
+                console.log(`设置图片 ${i}: rotateY = ${i * GALLERY_CONFIG.rotationStep}度`);
+                return i * GALLERY_CONFIG.rotationStep;
+            },
             transformOrigin: (i) => GALLERY_CONFIG.transformOrigin,
             z: (i) => GALLERY_CONFIG.zDepth,
-            backgroundImage: (i) => 'url(' + GALLERY_CONFIG.images[i] + ')',
+            backgroundImage: (i) => {
+                const imageUrl = 'url(' + GALLERY_CONFIG.images[i] + ')';
+                console.log(`设置图片 ${i}: ${imageUrl}`);
+                return imageUrl;
+            },
             backgroundSize: 'cover',
             backgroundPosition: (i) => getBgPos(i),
             backgroundRepeat: 'no-repeat',
@@ -915,8 +924,8 @@ function getBgPos(i) {
     if (!ring) return 'center center';
     
     const currentRotation = gsap.getProperty(ring, 'rotationY') || 0;
-    // 使用原始设计的视差计算公式
-    const offset = gsap.utils.wrap(0, 360, currentRotation - 180 - i * Math.abs(GALLERY_CONFIG.rotationStep)) / 360 * 500;
+    // 使用原始设计的视差计算公式，注意rotationStep是负值
+    const offset = gsap.utils.wrap(0, 360, currentRotation - 180 + i * GALLERY_CONFIG.rotationStep) / 360 * 500;
     return (100 - offset) + 'px 0px';
 }
 
