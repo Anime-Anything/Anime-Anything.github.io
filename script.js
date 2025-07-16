@@ -107,7 +107,6 @@ function handlePageLoad() {
     initializeConversion();
     initScrollAnimations(); // 初始化流线型滚动效果
     enhanceHighlightInteractions(); // 增强特色卡片交互
-    initDNAHelixSystem(); // 初始化DNA螺旋系统和粒子效果
 
     // 设置默认输入模式为上传
     switchInputMode('upload');
@@ -992,224 +991,138 @@ function addBreathingAnimation() {
 }
 
 /**
- * DNA螺旋系统和粒子效果
+ * 四象限图系统交互
  */
-function initDNAHelixSystem() {
-    const dnaStage = document.getElementById('dnaStage');
-    const dnaParticles = document.getElementById('dnaParticles');
+function initQuadrantSystem() {
+    const quadrantStage = document.getElementById('quadrantStage');
     
-    if (!dnaStage || !dnaParticles) return;
+    if (!quadrantStage) return;
 
-    // 创建DNA粒子效果
-    createDNAParticles(dnaParticles);
+    // 设置四象限动画观察器
+    setupQuadrantObserver(quadrantStage);
     
-    // 设置节点动画观察器
-    setupDNAObserver(dnaStage);
-    
-    // 增强节点交互
-    enhanceDNANodes();
+    // 增强气泡交互
+    enhanceQuadrantBubbles();
 }
 
 /**
- * 创建DNA粒子系统
+ * 设置四象限观察器
  */
-function createDNAParticles(container) {
-    const particleCount = 30;
-    
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'dna-particle';
-        
-        // 随机属性
-        const startX = Math.random() * 100;
-        const startY = 100 + Math.random() * 20; // 从底部开始
-        const endX = Math.random() * 100;
-        const endY = -20; // 到顶部结束
-        const size = Math.random() * 2 + 1;
-        const opacity = Math.random() * 0.6 + 0.2;
-        const duration = Math.random() * 15 + 10;
-        const delay = Math.random() * 5;
-        
-        particle.style.cssText = `
-            position: absolute;
-            left: ${startX}%;
-            top: ${startY}%;
-            width: ${size}px;
-            height: ${size}px;
-            background: rgba(255,255,255,${opacity});
-            border-radius: 50%;
-            pointer-events: none;
-            animation: dnaParticleMove ${duration}s linear infinite;
-            animation-delay: ${delay}s;
-        `;
-        
-        // 动态设置动画终点
-        particle.style.setProperty('--end-x', endX + '%');
-        particle.style.setProperty('--end-y', endY + '%');
-        
-        container.appendChild(particle);
-    }
-    
-    // 添加DNA粒子动画CSS
-    if (!document.getElementById('dna-particle-styles')) {
-        const style = document.createElement('style');
-        style.id = 'dna-particle-styles';
-        style.textContent = `
-            @keyframes dnaParticleMove {
-                0% {
-                    transform: translateY(0) scale(0.5);
-                    opacity: 0;
-                }
-                10% {
-                    opacity: 1;
-                    transform: translateY(-50px) scale(1);
-                }
-                90% {
-                    opacity: 1;
-                    transform: translateY(-600px) scale(1);
-                }
-                100% {
-                    transform: translateY(-700px) scale(0.5);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
-
-/**
- * 设置DNA观察器
- */
-function setupDNAObserver(dnaStage) {
+function setupQuadrantObserver(quadrantStage) {
     const observerOptions = {
-        threshold: 0.2,
+        threshold: 0.3,
         rootMargin: '0px 0px -100px 0px'
     };
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // 启动节点动画
-                const nodes = entry.target.querySelectorAll('.advantage-node');
-                nodes.forEach((node, index) => {
-                    setTimeout(() => {
-                        node.classList.add('animate-in');
-                    }, index * 300); // 300ms延迟，让效果更明显
-                });
+                // 激活四象限舞台
+                entry.target.classList.add('active');
                 
-                // 启动螺旋动画
-                const helixStrands = entry.target.querySelectorAll('.helix-strand');
-                helixStrands.forEach(strand => {
-                    strand.style.animationPlayState = 'running';
+                // 启动气泡动画
+                const bubbles = entry.target.querySelectorAll('.bubble-card');
+                bubbles.forEach((bubble, index) => {
+                    setTimeout(() => {
+                        bubble.classList.add('animate-in');
+                    }, index * 200);
                 });
             }
         });
     }, observerOptions);
     
-    observer.observe(dnaStage);
+    observer.observe(quadrantStage);
 }
 
 /**
- * 增强DNA节点效果
+ * 增强四象限气泡效果
  */
-function enhanceDNANodes() {
-    const nodes = document.querySelectorAll('.advantage-node');
+function enhanceQuadrantBubbles() {
+    const bubbles = document.querySelectorAll('.bubble-card');
     
-    nodes.forEach((node, index) => {
-        const nodeContent = node.querySelector('.node-content');
+    bubbles.forEach((bubble, index) => {
+        const bubbleContent = bubble.querySelector('.bubble-content');
+        const bubbleGlow = bubble.querySelector('.bubble-glow');
         
-        // 鼠标进入时的连锁反应
-        nodeContent.addEventListener('mouseenter', () => {
-            // 当前节点特效
-            nodeContent.style.transform = 'translateY(-15px) scale(1.05) rotateX(5deg)';
+        // 气泡悬停效果
+        bubbleContent.addEventListener('mouseenter', () => {
+            // 高亮当前气泡
+            bubbleContent.style.transform = 'scale(1.15)';
+            if (bubbleGlow) {
+                bubbleGlow.style.opacity = '1';
+            }
             
-            // 其他节点的联动
-            nodes.forEach((otherNode, otherIndex) => {
+            // 其他气泡变暗
+            bubbles.forEach((otherBubble, otherIndex) => {
                 if (otherIndex !== index) {
-                    const otherContent = otherNode.querySelector('.node-content');
-                    const distance = Math.abs(otherIndex - index);
-                    const intensity = 1 - (distance * 0.15);
-                    
-                    otherContent.style.opacity = intensity;
-                    otherContent.style.filter = `blur(${distance}px)`;
+                    const otherContent = otherBubble.querySelector('.bubble-content');
+                    otherContent.style.opacity = '0.5';
+                    otherContent.style.filter = 'blur(2px)';
                 }
-            });
-            
-            // 激活连接桥动画
-            const bridges = document.querySelectorAll('.dna-bridge');
-            bridges.forEach(bridge => {
-                bridge.style.animationDuration = '2s';
-                bridge.style.opacity = '1';
             });
         });
         
-        // 鼠标离开恢复
-        nodeContent.addEventListener('mouseleave', () => {
-            nodeContent.style.transform = '';
+        // 气泡离开效果
+        bubbleContent.addEventListener('mouseleave', () => {
+            // 恢复当前气泡
+            bubbleContent.style.transform = '';
+            if (bubbleGlow) {
+                bubbleGlow.style.opacity = '';
+            }
             
-            // 恢复其他节点
-            nodes.forEach(otherNode => {
-                const otherContent = otherNode.querySelector('.node-content');
+            // 恢复其他气泡
+            bubbles.forEach((otherBubble) => {
+                const otherContent = otherBubble.querySelector('.bubble-content');
                 otherContent.style.opacity = '';
                 otherContent.style.filter = '';
             });
-            
-            // 恢复连接桥
-            const bridges = document.querySelectorAll('.dna-bridge');
-            bridges.forEach(bridge => {
-                bridge.style.animationDuration = '6s';
-                bridge.style.opacity = '';
-            });
         });
         
-        // 点击时的脉冲效果
-        nodeContent.addEventListener('click', () => {
-            const pulse = node.querySelector('.node-pulse');
-            if (pulse) {
-                pulse.style.animation = 'none';
-                pulse.offsetHeight; // 触发重排
-                pulse.style.animation = 'nodePulse 0.8s ease-out';
-            }
+        // 气泡点击效果
+        bubbleContent.addEventListener('click', () => {
+            // 创建气泡脉冲效果
+            createBubblePulse(bubbleContent);
             
-            // 创建涟漪效果
-            createRippleEffect(nodeContent, event);
+            // 气泡弹跳动画
+            bubbleContent.style.animation = 'none';
+            bubbleContent.offsetHeight; // 触发重排
+            bubbleContent.style.animation = 'iconBounce 0.6s ease-out';
         });
     });
 }
 
 /**
- * 创建涟漪效果
+ * 创建气泡脉冲效果
  */
-function createRippleEffect(element, event) {
-    const ripple = document.createElement('div');
-    const rect = element.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = event.clientX - rect.left - size / 2;
-    const y = event.clientY - rect.top - size / 2;
-    
-    ripple.style.cssText = `
+function createBubblePulse(bubbleContent) {
+    const pulse = document.createElement('div');
+    pulse.style.cssText = `
         position: absolute;
-        width: ${size}px;
-        height: ${size}px;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        border: 3px solid rgba(255,255,255,0.6);
         border-radius: 50%;
-        background: rgba(255,255,255,0.3);
-        transform: translate(${x}px, ${y}px) scale(0);
-        animation: ripple 0.6s ease-out;
+        animation: bubblePulseEffect 1s ease-out;
         pointer-events: none;
         z-index: 1000;
     `;
     
-    element.appendChild(ripple);
+    bubbleContent.appendChild(pulse);
     
-    // 添加涟漪动画
-    if (!document.getElementById('ripple-styles')) {
+    // 添加脉冲动画CSS
+    if (!document.getElementById('bubble-pulse-styles')) {
         const style = document.createElement('style');
-        style.id = 'ripple-styles';
+        style.id = 'bubble-pulse-styles';
         style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: translate(${x}px, ${y}px) scale(2);
+            @keyframes bubblePulseEffect {
+                0% {
+                    transform: scale(0.8);
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(1.5);
                     opacity: 0;
                 }
             }
@@ -1219,21 +1132,23 @@ function createRippleEffect(element, event) {
     
     // 动画结束后移除元素
     setTimeout(() => {
-        if (ripple.parentNode) {
-            ripple.parentNode.removeChild(ripple);
+        if (pulse.parentNode) {
+            pulse.parentNode.removeChild(pulse);
         }
-    }, 600);
+    }, 1000);
 }
 
-// 更新旧的函数名称
-function init3DOrbitSystem() {
-    // 重定向到新的DNA系统
-    initDNAHelixSystem();
+// 保持向后兼容性的函数重定向
+function initAxisSystem() {
+    // 这个函数现在为空，四象限功能已删除
 }
 
-function enhanceOrbitCards() {
-    // 重定向到新的DNA节点系统
-    enhanceDNANodes();
+function setupAxisObserver(axisStage) {
+    // 这个函数现在为空，四象限功能已删除
+}
+
+function enhanceAxisNodes() {
+    // 这个函数现在为空，四象限功能已删除
 }
 
 // 更新旧的滚动动画函数名称和功能
@@ -1270,8 +1185,8 @@ function initScrollAnimations() {
 
 // 更新增强交互函数
 function enhanceHighlightInteractions() {
-    // 这个函数现在主要处理3D轨道系统
-    enhanceOrbitCards();
+    // 这个函数现在只处理主要功能
+    console.log('主要功能交互已加载');
 }
 
 /**
@@ -1293,7 +1208,6 @@ document.addEventListener('DOMContentLoaded', () => {
             animateGalleryEntrance();
             initScrollAnimations(); // 初始化流线型滚动效果
             enhanceHighlightInteractions(); // 增强特色卡片交互
-            initDNAHelixSystem(); // 初始化DNA螺旋系统和粒子效果
         }, 1000); // 页面加载动画后初始化画廊
     } else {
         console.error('GSAP库未加载，3D画廊无法初始化');
