@@ -2208,7 +2208,7 @@ body {
     background: #2c1810;
     border: 10px solid #f4e4c1;
     border-radius: 20px;
-    overflow: hidden;
+    overflow: visible; /* 改为visible以显示风格说明文字 */
     transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-shadow: 
         0 15px 40px rgba(0, 0, 0, 0.6),
@@ -2455,11 +2455,30 @@ body {
     }
     
     .style-description {
-        font-size: 0.9rem;
+        position: absolute;
         bottom: -105px;
-        max-width: 90%;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 300;
+        color: rgba(244, 228, 193, 0.9);
+        letter-spacing: 0.5px;
+        line-height: 1.5;
+        opacity: 1;
+        transition: all 0.4s ease;
+        font-family: 'Times New Roman', serif;
+        font-style: italic;
+        background: rgba(44, 24, 16, 0.6);
         padding: 6px 10px;
-        opacity: 1; /* 确保显示 */
+        border-radius: 15px;
+        border: 1px solid rgba(244, 228, 193, 0.3);
+        backdrop-filter: blur(8px);
+        margin: 0 auto;
+        width: fit-content;
+        max-width: 90%;
+        transform: translateY(0);
+        z-index: 10;
     }
 }
 
@@ -2506,13 +2525,30 @@ body {
     }
     
     .style-description {
-        font-size: 0.85rem;
+        position: absolute;
         bottom: -95px;
-        max-width: 95%;
-        padding: 5px 8px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 300;
+        color: rgba(244, 228, 193, 0.9);
         letter-spacing: 0.3px;
-        opacity: 1; /* 移动端也确保显示 */
+        line-height: 1.5;
+        opacity: 1;
+        transition: all 0.4s ease;
+        font-family: 'Times New Roman', serif;
+        font-style: italic;
+        background: rgba(44, 24, 16, 0.6);
+        padding: 5px 8px;
+        border-radius: 15px;
+        border: 1px solid rgba(244, 228, 193, 0.3);
+        backdrop-filter: blur(8px);
+        margin: 0 auto;
+        width: fit-content;
+        max-width: 95%;
         transform: translateY(0);
+        z-index: 10;
     }
     
     /* 隐藏部分装饰元素以提升移动端性能 */
@@ -2542,10 +2578,30 @@ body {
     }
     
     .style-description {
-        font-size: 0.8rem;
+        position: absolute;
         bottom: -85px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.8rem;
+        font-weight: 300;
+        color: rgba(244, 228, 193, 0.9);
+        letter-spacing: 0.3px;
+        line-height: 1.5;
+        opacity: 1;
+        transition: all 0.4s ease;
+        font-family: 'Times New Roman', serif;
+        font-style: italic;
+        background: rgba(44, 24, 16, 0.6);
         padding: 4px 6px;
-        opacity: 1; /* 小屏幕也确保显示 */
+        border-radius: 15px;
+        border: 1px solid rgba(244, 228, 193, 0.3);
+        backdrop-filter: blur(8px);
+        margin: 0 auto;
+        width: fit-content;
+        max-width: 95%;
+        transform: translateY(0);
+        z-index: 10;
     }
 }
 
@@ -2574,6 +2630,7 @@ body {
     width: fit-content;
     max-width: 85%;
     transform: translateY(0); /* 改为默认位置 */
+    z-index: 10; /* 确保显示在其他元素之上 */
 }
 
 /* 添加装饰性引号 */
