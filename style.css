@@ -2459,6 +2459,7 @@ body {
         bottom: -105px;
         max-width: 90%;
         padding: 6px 10px;
+        opacity: 1; /* 确保显示 */
     }
 }
 
@@ -2510,9 +2511,13 @@ body {
         max-width: 95%;
         padding: 5px 8px;
         letter-spacing: 0.3px;
-        /* 移动端默认显示风格说明 */
-        opacity: 0.8;
+        opacity: 1; /* 移动端也确保显示 */
         transform: translateY(0);
+    }
+    
+    /* 隐藏部分装饰元素以提升移动端性能 */
+    .floating-decoration {
+        display: none;
     }
 }
 
@@ -2540,5 +2545,64 @@ body {
         font-size: 0.8rem;
         bottom: -85px;
         padding: 4px 6px;
+        opacity: 1; /* 小屏幕也确保显示 */
     }
+}
+
+/* 风格说明文字 */
+.style-description {
+    position: absolute;
+    bottom: -115px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: rgba(244, 228, 193, 0.9);
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+    opacity: 1; /* 改为默认显示 */
+    transition: all 0.4s ease;
+    font-family: 'Times New Roman', serif;
+    font-style: italic;
+    background: rgba(44, 24, 16, 0.6);
+    padding: 8px 12px;
+    border-radius: 15px;
+    border: 1px solid rgba(244, 228, 193, 0.3);
+    backdrop-filter: blur(8px);
+    margin: 0 auto;
+    width: fit-content;
+    max-width: 85%;
+    transform: translateY(0); /* 改为默认位置 */
+}
+
+/* 添加装饰性引号 */
+.style-description::before {
+    content: '"';
+    position: absolute;
+    top: -5px;
+    left: 5px;
+    font-size: 1.5rem;
+    color: rgba(244, 228, 193, 0.4);
+    font-family: serif;
+}
+
+.style-description::after {
+    content: '"';
+    position: absolute;
+    bottom: -5px;
+    right: 5px;
+    font-size: 1.5rem;
+    color: rgba(244, 228, 193, 0.4);
+    font-family: serif;
+}
+
+/* 悬停时增强风格说明 */
+.carousel-frame:hover .style-description {
+    opacity: 1;
+    background: rgba(44, 24, 16, 0.8);
+    border-color: rgba(244, 228, 193, 0.5);
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 3px rgba(44, 24, 16, 0.8);
+    transform: translateY(-5px);
 }
