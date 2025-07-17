@@ -1396,7 +1396,279 @@ function addCarouselInteractions() {
 }
 
 /**
- * 画廊入场动画（针对复古画廊）
+ * 艺术性增强功能
+ */
+
+/**
+ * 创建动态粒子效果
+ */
+function createParticleEffect() {
+    const gallerySection = document.querySelector('.vintage-gallery-section');
+    if (!gallerySection) return;
+
+    // 创建粒子
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // 随机位置
+        const startX = Math.random() * window.innerWidth;
+        particle.style.left = startX + 'px';
+        particle.style.animationDelay = Math.random() * 2 + 's';
+        
+        gallerySection.appendChild(particle);
+        
+        // 动画结束后移除粒子
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 10000);
+    }
+
+    // 定期创建粒子
+    const particleInterval = setInterval(() => {
+        if (document.querySelector('.vintage-gallery-section.active-section')) {
+            createParticle();
+        }
+    }, 2000);
+
+    // 页面卸载时清除定时器
+    window.addEventListener('beforeunload', () => {
+        clearInterval(particleInterval);
+    });
+}
+
+/**
+ * 添加鼠标跟随光晕效果
+ */
+function addMouseFollowEffect() {
+    const gallerySection = document.querySelector('.vintage-gallery-section');
+    if (!gallerySection) return;
+
+    // 创建光晕元素
+    const mouseGlow = document.createElement('div');
+    mouseGlow.style.cssText = `
+        position: fixed;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(244, 228, 193, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1000;
+        transition: transform 0.1s ease;
+        opacity: 0;
+    `;
+    document.body.appendChild(mouseGlow);
+
+    // 鼠标移动事件
+    gallerySection.addEventListener('mousemove', (e) => {
+        mouseGlow.style.opacity = '1';
+        mouseGlow.style.left = (e.clientX - 50) + 'px';
+        mouseGlow.style.top = (e.clientY - 50) + 'px';
+    });
+
+    gallerySection.addEventListener('mouseleave', () => {
+        mouseGlow.style.opacity = '0';
+    });
+}
+
+/**
+ * 增强轮播框的艺术性互动
+ */
+function enhanceCarouselArtistry() {
+    const carouselFrames = document.querySelectorAll('.carousel-frame');
+    
+    carouselFrames.forEach(frame => {
+        const images = frame.querySelectorAll('.carousel-image');
+        
+        // 为每个图片添加艺术性过渡效果
+        images.forEach((img, index) => {
+            img.addEventListener('load', () => {
+                // 随机添加复古效果
+                if (Math.random() > 0.5) {
+                    img.style.filter += ' sepia(15%) saturate(1.2)';
+                }
+            });
+        });
+        
+        // 增强悬停效果
+        frame.addEventListener('mouseenter', () => {
+            // 创建临时光效
+            createTemporaryGlow(frame);
+            
+            // 添加轻微的旋转动画
+            gsap.to(frame, {
+                rotation: Math.random() * 2 - 1, // -1到1度的随机旋转
+                duration: 0.5,
+                ease: 'power2.out'
+            });
+        });
+        
+        frame.addEventListener('mouseleave', () => {
+            // 恢复原始状态
+            gsap.to(frame, {
+                rotation: 0,
+                duration: 0.5,
+                ease: 'power2.out'
+            });
+        });
+    });
+}
+
+/**
+ * 创建临时光效
+ */
+function createTemporaryGlow(element) {
+    const glow = document.createElement('div');
+    glow.style.cssText = `
+        position: absolute;
+        top: -20px;
+        left: -20px;
+        right: -20px;
+        bottom: -20px;
+        background: radial-gradient(circle, rgba(244, 228, 193, 0.3) 0%, transparent 60%);
+        border-radius: 30px;
+        pointer-events: none;
+        z-index: -1;
+        animation: glowPulse 1s ease-out;
+    `;
+    
+    element.appendChild(glow);
+    
+    // 添加动画CSS
+    if (!document.getElementById('glow-animation')) {
+        const style = document.createElement('style');
+        style.id = 'glow-animation';
+        style.textContent = `
+            @keyframes glowPulse {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.8);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scale(1.1);
+                }
+                100% {
+                    opacity: 0;
+                    transform: scale(1.3);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // 动画结束后移除
+    setTimeout(() => {
+        if (glow.parentNode) {
+            glow.parentNode.removeChild(glow);
+        }
+    }, 1000);
+}
+
+/**
+ * 添加复古打字效果到标题
+ */
+function addVintageTypewriterEffect() {
+    const title = document.querySelector('.vintage-title');
+    if (!title) return;
+    
+    const originalText = title.textContent.trim();
+    title.innerHTML = '<div class="title-art-deco"></div>';
+    
+    let i = 0;
+    const typeInterval = setInterval(() => {
+        if (i < originalText.length) {
+            title.innerHTML = `<div class="title-art-deco"></div>${originalText.substring(0, i + 1)}<span class="typing-cursor">|</span>`;
+            i++;
+        } else {
+            title.innerHTML = `<div class="title-art-deco"></div>${originalText}`;
+            clearInterval(typeInterval);
+        }
+    }, 150);
+    
+    // 添加打字光标样式
+    if (!document.getElementById('typing-cursor-style')) {
+        const style = document.createElement('style');
+        style.id = 'typing-cursor-style';
+        style.textContent = `
+            .typing-cursor {
+                animation: blink 1s infinite;
+                color: #f4e4c1;
+            }
+            @keyframes blink {
+                0%, 50% { opacity: 1; }
+                51%, 100% { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+/**
+ * 添加随机复古装饰动画
+ */
+function addRandomVintageAnimations() {
+    const decorations = document.querySelectorAll('.floating-decoration');
+    
+    decorations.forEach((decoration, index) => {
+        // 随机延迟开始动画
+        setTimeout(() => {
+            decoration.style.animation = `floatDecoration ${8 + Math.random() * 4}s ease-in-out infinite`;
+            decoration.style.animationDelay = Math.random() * 2 + 's';
+        }, index * 500);
+        
+        // 添加点击交互
+        decoration.addEventListener('click', () => {
+            // 创建爆炸效果
+            createSparkleEffect(decoration);
+        });
+    });
+}
+
+/**
+ * 创建闪烁效果
+ */
+function createSparkleEffect(element) {
+    const rect = element.getBoundingClientRect();
+    
+    for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.style.cssText = `
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: #f4e4c1;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            left: ${rect.left + rect.width / 2}px;
+            top: ${rect.top + rect.height / 2}px;
+        `;
+        
+        document.body.appendChild(sparkle);
+        
+        // 随机方向的动画
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50 + Math.random() * 30;
+        
+        gsap.to(sparkle, {
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance,
+            opacity: 0,
+            scale: 0,
+            duration: 0.8,
+            ease: 'power2.out',
+            onComplete: () => {
+                document.body.removeChild(sparkle);
+            }
+        });
+    }
+}
+
+/**
+ * 增强画廊入场动画（针对复古画廊）
  */
 function animateVintageGalleryEntrance() {
     const gallerySection = document.querySelector('.vintage-gallery-section');
@@ -1404,6 +1676,7 @@ function animateVintageGalleryEntrance() {
     
     const header = gallerySection.querySelector('.gallery-header');
     const frames = gallerySection.querySelectorAll('.carousel-frame');
+    const decorations = gallerySection.querySelectorAll('.floating-decoration');
     
     // 标题入场动画
     if (header) {
@@ -1416,7 +1689,11 @@ function animateVintageGalleryEntrance() {
                 opacity: 1,
                 y: 0,
                 duration: 1,
-                ease: 'power3.out'
+                ease: 'power3.out',
+                onComplete: () => {
+                    // 标题动画完成后开始打字效果
+                    setTimeout(addVintageTypewriterEffect, 500);
+                }
             }
         );
     }
@@ -1427,15 +1704,36 @@ function animateVintageGalleryEntrance() {
             {
                 opacity: 0,
                 y: 80,
-                scale: 0.8
+                scale: 0.8,
+                rotation: Math.random() * 10 - 5 // 随机初始旋转
             },
             {
                 opacity: 1,
                 y: 0,
                 scale: 1,
+                rotation: 0,
                 duration: 0.8,
                 delay: 0.2 + index * 0.15,
                 ease: 'back.out(1.7)'
+            }
+        );
+    });
+    
+    // 装饰元素入场
+    decorations.forEach((decoration, index) => {
+        gsap.fromTo(decoration,
+            {
+                opacity: 0,
+                scale: 0,
+                rotation: Math.random() * 360
+            },
+            {
+                opacity: 0.4,
+                scale: 1,
+                rotation: 0,
+                duration: 1,
+                delay: 1 + index * 0.2,
+                ease: 'elastic.out(1, 0.5)'
             }
         );
     });
@@ -1446,17 +1744,25 @@ function animateVintageGalleryEntrance() {
         gsap.fromTo(hole,
             {
                 opacity: 0,
-                x: index === 0 ? -30 : 30
+                x: index === 0 ? -50 : 50
             },
             {
                 opacity: 1,
                 x: 0,
-                duration: 1,
+                duration: 1.2,
                 delay: 0.5,
                 ease: 'power3.out'
             }
         );
     });
+    
+    // 启动艺术性功能
+    setTimeout(() => {
+        createParticleEffect();
+        addMouseFollowEffect();
+        enhanceCarouselArtistry();
+        addRandomVintageAnimations();
+    }, 2000);
 }
 
 /**
