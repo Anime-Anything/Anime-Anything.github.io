@@ -2456,7 +2456,7 @@ body {
     
     .style-description {
         position: absolute;
-        bottom: -105px;
+        bottom: -125px; /* 从-105px调整到-125px */
         left: 0;
         right: 0;
         text-align: center;
@@ -2526,7 +2526,7 @@ body {
     
     .style-description {
         position: absolute;
-        bottom: -95px;
+        bottom: -110px; /* 从-95px调整到-110px */
         left: 0;
         right: 0;
         text-align: center;
@@ -2579,7 +2579,7 @@ body {
     
     .style-description {
         position: absolute;
-        bottom: -85px;
+        bottom: -100px; /* 从-85px调整到-100px */
         left: 0;
         right: 0;
         text-align: center;
@@ -2608,7 +2608,7 @@ body {
 /* 风格说明文字 */
 .style-description {
     position: absolute;
-    bottom: -115px;
+    bottom: -140px; /* 从-115px调整到-140px，增加25px间距 */
     left: 0;
     right: 0;
     text-align: center;
