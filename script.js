@@ -36,6 +36,9 @@ const CONFIG = {
     SUPPORTED_FORMATS: ['image/jpeg', 'image/png', 'image/webp']
 };
 
+// 新增：文生图API地址
+const TXT2IMG_API_URL = 'https://anime-anything-github-io.vercel.app/api/text2img';
+
 // DOM 元素
 const elements = {
     // 页面加载和导航
@@ -73,6 +76,14 @@ const elements = {
     errorMessage: document.getElementById('errorMessage'),
     downloadBtn: document.getElementById('downloadBtn')
 };
+
+// DOM 元素补充
+Object.assign(elements, {
+    txt2imgModeBtn: document.getElementById('txt2imgModeBtn'),
+    txt2imgMode: document.getElementById('txt2imgMode'),
+    txt2imgPromptInput: document.getElementById('txt2imgPromptInput'),
+    txt2imgButton: document.getElementById('txt2imgButton')
+});
 
 // 全局变量
 let uploadedImageUrl = null;
@@ -319,6 +330,9 @@ function initializeFileUpload() {
     }
     if (elements.urlModeBtn) {
         elements.urlModeBtn.addEventListener('click', () => switchInputMode('url'));
+    }
+    if (elements.txt2imgModeBtn) {
+        elements.txt2imgModeBtn.addEventListener('click', () => switchInputMode('txt2img'));
     }
 
     // 文件上传相关事件
@@ -1763,6 +1777,59 @@ function animateVintageGalleryEntrance() {
         enhanceCarouselArtistry();
         addRandomVintageAnimations();
     }, 2000);
+}
+
+/**
+ * 文生图主流程
+ */
+async function handleTxt2Img() {
+    try {
+        const prompt = elements.txt2imgPromptInput?.value.trim();
+        if (!prompt) {
+            showError('请输入画面描述');
+            return;
+        }
+        setButtonState(true);
+        showState('loading');
+        const result = await txt2imgApi(prompt);
+        if (result.success) {
+            showResult(result.imageUrl);
+        } else {
+            throw new Error(result.error || '生成失败');
+        }
+    } catch (error) {
+        showError(error);
+    } finally {
+        setButtonState(false);
+    }
+}
+
+/**
+ * 文生图API调用
+ */
+async function txt2imgApi(prompt) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000);
+    try {
+        const response = await fetch(TXT2IMG_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+            throw new Error(`网络请求失败: ${response.status} ${response.statusText}`);
+        }
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error('请求超时，请检查网络连接或稍后重试');
+        }
+        throw error;
+    }
 }
 
 /**

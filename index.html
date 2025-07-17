@@ -217,6 +217,7 @@
                         <div class="input-mode-tabs">
                             <button id="uploadModeBtn" class="tab-btn active">📁 上传图片</button>
                             <button id="urlModeBtn" class="tab-btn">🔗 URL链接</button>
+                            <button id="txt2imgModeBtn" class="tab-btn">📝 文生图</button>
                         </div>
 
                         <!-- 图片上传区域 -->
@@ -256,6 +257,20 @@
                                     💡 提示：请确保图片 URL 可以公开访问，支持 HTTPS 链接
                                 </small>
                             </div>
+                        </div>
+
+                        <!-- 文生图输入区域 -->
+                        <div id="txt2imgMode" class="input-mode">
+                            <div class="input-group">
+                                <label for="txt2imgPromptInput">描述词：</label>
+                                <input type="text" id="txt2imgPromptInput" value="" placeholder="请输入你想生成的画面描述，如：一间有着精致窗户的花店，漂亮的木质门，摆放着花朵" class="input-field">
+                                <small class="input-hint">
+                                    💡 例如：可爱的猫咪在阳光下打盹、未来城市夜景、复古少女肖像等
+                                </small>
+                            </div>
+                            <button id="txt2imgButton" class="convert-btn">
+                                <span class="btn-text">🎨 生成图片</span>
+                            </button>
                         </div>
 
                         <!-- 风格描述 -->
