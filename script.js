@@ -7,12 +7,12 @@
 const GALLERY_CONFIG = {
     images: [
         'images/000.jpg',
-        'images/001.jpg',
+        'images/001.png',
         'images/002.jpg',
         'images/003.jpg',
-        'images/004.png',
+        'images/004.jpg',
         'images/005.png',
-        'images/006.png',
+        'images/006.jpg',
         'images/007.png',
         'images/008.jpg',
         'images/009.jpg'
