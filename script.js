@@ -93,6 +93,10 @@ Object.assign(elements, {
 let uploadedImageUrl = null;
 let currentSection = 'home';
 
+// 新增：保存最后成功的转换参数，用于重新创作
+let lastConversionParams = null;
+let lastTxt2ImgParams = null; // 新增：保存文生图参数
+
 /**
  * 页面初始化和加载管理
  */
@@ -844,6 +848,10 @@ async function handleConvert() {
         // 验证输入
         const { imageUrl, prompt } = validateInputs();
 
+        // 清空之前的参数，开始新的转换
+        lastTxt2ImgParams = null;
+        lastConversionParams = null;
+
         // 更新UI状态
         setButtonState(true);
         showState('loading');
@@ -854,6 +862,7 @@ async function handleConvert() {
         // 处理结果
         if (result.success) {
             showResult(result.imageUrl);
+            lastConversionParams = { imageUrl, prompt }; // 保存转换参数
         } else {
             throw new Error(result.error || '转换失败');
         }
@@ -1861,11 +1870,17 @@ async function handleTxt2Img() {
             showError(new Error('请输入画面描述'));
             return;
         }
+
+        // 清空之前的参数，开始新的文生图
+        lastTxt2ImgParams = null;
+        lastConversionParams = null;
+
         setTxt2ImgButtonState(true);
         showState('loading');
         const result = await txt2imgApi(prompt);
         if (result.success) {
             showResult(result.imageUrl);
+            lastTxt2ImgParams = { prompt }; // 保存文生图参数
         } else {
             throw new Error(result.error || '生成失败');
         }
@@ -1912,9 +1927,65 @@ async function txt2imgApi(prompt) {
 }
 
 /**
+ * 重新创作功能
+ */
+function handleRecreate() {
+    // 优先处理文生图重新创作
+    if (lastTxt2ImgParams) {
+        // 文生图重新创作
+        setTxt2ImgButtonState(true);
+        showState('loading');
+        
+        txt2imgApi(lastTxt2ImgParams.prompt)
+            .then(result => {
+                if (result.success) {
+                    showResult(result.imageUrl);
+                    // 保留参数供下次重新创作使用
+                } else {
+                    throw new Error(result.error || '重新生成失败');
+                }
+            })
+            .catch(error => {
+                showError(error);
+            })
+            .finally(() => {
+                setTxt2ImgButtonState(false);
+            });
+        return;
+    }
+    
+    // 风格迁移重新创作
+    if (lastConversionParams) {
+        setButtonState(true);
+        showState('loading');
+
+        convertImage(lastConversionParams.imageUrl, lastConversionParams.prompt)
+            .then(result => {
+                if (result.success) {
+                    showResult(result.imageUrl);
+                    // 保留参数供下次重新创作使用
+                } else {
+                    throw new Error(result.error || '重新创作失败');
+                }
+            })
+            .catch(error => {
+                showError(error);
+            })
+            .finally(() => {
+                setButtonState(false);
+            });
+        return;
+    }
+    
+    // 没有可重新创作的内容
+    showError(new Error('没有可重新创作的内容'));
+}
+
+/**
  * 全局函数 - 供HTML调用
  */
 window.showSection = showSection;
+window.handleRecreate = handleRecreate; // 新增：重新创作功能
 
 /**
  * 页面加载完成后初始化

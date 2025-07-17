@@ -409,7 +409,7 @@
                                 <button id="downloadBtn" class="action-btn download-btn">
                                     <span class="btn-text">保存作品</span>
                                 </button>
-                                <button onclick="location.reload()" class="action-btn new-task-btn">
+                                <button onclick="handleRecreate()" class="action-btn new-task-btn">
                                     <span class="btn-text">重新创作</span>
                                 </button>
                             </div>
@@ -421,7 +421,7 @@
                         <div class="error-frame">
                             <h3 class="error-title">图像生成遇阻</h3>
                             <p id="errorMessage" class="error-message"></p>
-                            <button onclick="location.reload()" class="action-btn retry-btn">
+                            <button onclick="handleRecreate()" class="action-btn retry-btn">
                                 <span class="btn-text">重新尝试</span>
                             </button>
                         </div>
