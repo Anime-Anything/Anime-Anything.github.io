@@ -2,7 +2,7 @@
  * Vercel API 路由 - 文生图（Text-to-Image）代理
  * 
  * 重要安全提醒：
- * 1. 在 Vercel 项目设置中配置环境变量 DASHSCOPE_API_KEY
+ * 1. 在 Vercel 项目设置中配置环境变量 DASHSCOPE_TEXT2IMG_API_KEY = sk-8a2bc45b0ade421e8b20d269f215a9c0
  * 2. 绝对不要在代码中硬编码 API Key
  */
 
@@ -14,9 +14,9 @@ const POLLING_INTERVAL = 3000; // 轮询间隔 (3秒)
  * 创建文生图任务
  */
 async function createText2ImgTask(prompt) {
-    const apiKey = process.env.DASHSCOPE_API_KEY;
+    const apiKey = process.env.DASHSCOPE_TEXT2IMG_API_KEY;
     if (!apiKey) {
-        throw new Error('API Key 未配置，请在 Vercel 环境变量中设置 DASHSCOPE_API_KEY');
+        throw new Error('文生图API Key 未配置，请在 Vercel 环境变量中设置 DASHSCOPE_TEXT2IMG_API_KEY');
     }
     const requestBody = {
         model: "wan2.1-t2i-turbo",
@@ -117,9 +117,9 @@ export default async function handler(req, res) {
                 error: '缺少必需参数：prompt'
             });
         }
-        const API_KEY = process.env.DASHSCOPE_API_KEY;
+        const API_KEY = process.env.DASHSCOPE_TEXT2IMG_API_KEY;
         if (!API_KEY) {
-            throw new Error('DASHSCOPE_API_KEY 环境变量未配置');
+            throw new Error('DASHSCOPE_TEXT2IMG_API_KEY 环境变量未配置');
         }
         // 创建文生图任务
         const taskId = await createText2ImgTask(prompt);

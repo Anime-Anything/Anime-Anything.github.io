@@ -693,7 +693,7 @@ async function convertImage(imageUrl, prompt) {
 }
 
 /**
- * 设置按钮状态
+ * 设置按钮状态（风格迁移）
  */
 function setButtonState(isLoading) {
     if (!elements.convertButton) return;
@@ -706,6 +706,23 @@ function setButtonState(isLoading) {
         elements.convertButton.disabled = false;
         elements.convertButton.innerHTML = '<span class="btn-text">🚀 开始风格迁移</span>';
         elements.convertButton.classList.remove('hidden');
+    }
+}
+
+/**
+ * 设置文生图按钮状态
+ */
+function setTxt2ImgButtonState(isLoading) {
+    if (!elements.txt2imgButton) return;
+
+    if (isLoading) {
+        elements.txt2imgButton.disabled = true;
+        elements.txt2imgButton.innerHTML = '<span class="btn-text">🎨 生成中...</span>';
+        elements.txt2imgButton.style.opacity = '0.6';
+    } else {
+        elements.txt2imgButton.disabled = false;
+        elements.txt2imgButton.innerHTML = '<span class="btn-text">🎨 生成图片</span>';
+        elements.txt2imgButton.style.opacity = '1';
     }
 }
 
@@ -1800,10 +1817,10 @@ async function handleTxt2Img() {
     try {
         const prompt = elements.txt2imgPromptInput?.value.trim();
         if (!prompt) {
-            showError('请输入画面描述');
+            showError(new Error('请输入画面描述'));
             return;
         }
-        setButtonState(true);
+        setTxt2ImgButtonState(true);
         showState('loading');
         const result = await txt2imgApi(prompt);
         if (result.success) {
@@ -1812,9 +1829,10 @@ async function handleTxt2Img() {
             throw new Error(result.error || '生成失败');
         }
     } catch (error) {
+        console.error('文生图错误:', error);
         showError(error);
     } finally {
-        setButtonState(false);
+        setTxt2ImgButtonState(false);
     }
 }
 
@@ -1825,6 +1843,7 @@ async function txt2imgApi(prompt) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 120000);
     try {
+        console.log('调用文生图API:', { prompt, url: TXT2IMG_API_URL });
         const response = await fetch(TXT2IMG_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1832,13 +1851,18 @@ async function txt2imgApi(prompt) {
             signal: controller.signal
         });
         clearTimeout(timeoutId);
+        console.log('文生图API响应状态:', response.status);
         if (!response.ok) {
-            throw new Error(`网络请求失败: ${response.status} ${response.statusText}`);
+            const errorText = await response.text();
+            console.error('文生图API错误响应:', errorText);
+            throw new Error(`网络请求失败: ${response.status} ${response.statusText} - ${errorText}`);
         }
         const result = await response.json();
+        console.log('文生图API响应数据:', result);
         return result;
     } catch (error) {
         clearTimeout(timeoutId);
+        console.error('文生图API调用失败:', error);
         if (error.name === 'AbortError') {
             throw new Error('请求超时，请检查网络连接或稍后重试');
         }
