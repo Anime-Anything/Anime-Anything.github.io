@@ -1878,3 +1878,394 @@ body {
         font-size: 1.1rem;
     }
 }
+
+/* 作品画廊区域 - 复古胶卷风格 */
+.vintage-gallery-section {
+    padding: 120px 0;
+    background: #2c1810;
+    color: #f4e4c1;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+/* 添加细微的噪点纹理 */
+.vintage-gallery-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 1px 1px, rgba(244, 228, 193, 0.15) 1px, transparent 0);
+    background-size: 20px 20px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* 添加划痕纹理 */
+.vintage-gallery-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(244, 228, 193, 0.05) 2%, 
+        transparent 3%,
+        transparent 48%,
+        rgba(244, 228, 193, 0.03) 50%,
+        transparent 52%,
+        transparent 78%,
+        rgba(244, 228, 193, 0.06) 80%,
+        transparent 82%,
+        transparent 100%);
+    pointer-events: none;
+}
+
+.filmstrip-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 60px;
+    position: relative;
+    z-index: 2;
+}
+
+/* 胶片齿孔装饰 */
+.filmstrip-holes {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    z-index: 1;
+}
+
+.filmstrip-holes::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(to bottom,
+        #f4e4c1 0%,
+        #f4e4c1 8%,
+        transparent 8%,
+        transparent 12%,
+        #f4e4c1 12%,
+        #f4e4c1 20%,
+        transparent 20%,
+        transparent 24%,
+        #f4e4c1 24%,
+        #f4e4c1 32%,
+        transparent 32%,
+        transparent 36%,
+        #f4e4c1 36%,
+        #f4e4c1 44%,
+        transparent 44%,
+        transparent 48%,
+        #f4e4c1 48%,
+        #f4e4c1 56%,
+        transparent 56%,
+        transparent 60%,
+        #f4e4c1 60%,
+        #f4e4c1 68%,
+        transparent 68%,
+        transparent 72%,
+        #f4e4c1 72%,
+        #f4e4c1 80%,
+        transparent 80%,
+        transparent 84%,
+        #f4e4c1 84%,
+        #f4e4c1 92%,
+        transparent 92%,
+        transparent 96%,
+        #f4e4c1 96%,
+        #f4e4c1 100%
+    );
+    background-size: 20px 40px;
+    opacity: 0.6;
+}
+
+.left-holes {
+    left: 0;
+}
+
+.right-holes {
+    right: 0;
+}
+
+/* 画廊标题 */
+.gallery-header {
+    text-align: center;
+    margin-bottom: 80px;
+    position: relative;
+    z-index: 3;
+}
+
+.vintage-title {
+    font-size: 4rem;
+    font-weight: 300;
+    color: #f4e4c1;
+    margin-bottom: 20px;
+    letter-spacing: 3px;
+    text-shadow: 
+        0 2px 4px rgba(44, 24, 16, 0.8),
+        0 0 20px rgba(244, 228, 193, 0.3);
+    position: relative;
+}
+
+.vintage-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #f4e4c1, transparent);
+    opacity: 0.7;
+}
+
+.vintage-subtitle {
+    font-size: 1.4rem;
+    color: rgba(244, 228, 193, 0.8);
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+/* 2x2 网格布局 */
+.gallery-grid-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 60px;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 3;
+}
+
+/* 轮播画框 */
+.carousel-frame {
+    position: relative;
+    aspect-ratio: 1;
+    background: #2c1810;
+    border: 8px solid #f4e4c1;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 4px rgba(244, 228, 193, 0.2);
+}
+
+/* 悬停光晕效果 */
+.carousel-frame::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: radial-gradient(circle, rgba(244, 228, 193, 0.3) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: -1;
+    border-radius: 25px;
+}
+
+.carousel-frame:hover::before {
+    opacity: 1;
+}
+
+.carousel-frame:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(244, 228, 193, 0.4),
+        inset 0 0 0 4px rgba(244, 228, 193, 0.4);
+    border-color: rgba(244, 228, 193, 0.9);
+}
+
+/* 轮播容器 */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 轮播图片容器 */
+.carousel-images {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* 轮播图片 */
+.carousel-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    border-radius: 8px;
+}
+
+.carousel-image.active {
+    opacity: 1;
+}
+
+/* 轮播按钮 */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(244, 228, 193, 0.2);
+    border: 2px solid rgba(244, 228, 193, 0.6);
+    border-radius: 50%;
+    color: #f4e4c1;
+    font-size: 1.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.carousel-frame:hover .carousel-btn {
+    opacity: 1;
+}
+
+.prev-btn {
+    left: 15px;
+}
+
+.next-btn {
+    right: 15px;
+}
+
+.carousel-btn:hover {
+    background: rgba(244, 228, 193, 0.4);
+    border-color: #f4e4c1;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 
+        0 5px 15px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(244, 228, 193, 0.4);
+}
+
+.carousel-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* 风格标签 */
+.style-label {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: #f4e4c1;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(44, 24, 16, 0.8);
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.carousel-frame:hover .style-label {
+    opacity: 1;
+    transform: translateY(-5px);
+    text-shadow: 
+        0 2px 4px rgba(44, 24, 16, 0.8),
+        0 0 15px rgba(244, 228, 193, 0.4);
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .filmstrip-container {
+        padding: 0 40px;
+    }
+    
+    .gallery-grid-2x2 {
+        gap: 40px;
+        max-width: 700px;
+    }
+    
+    .vintage-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .vintage-gallery-section {
+        padding: 80px 0;
+    }
+    
+    .filmstrip-container {
+        padding: 0 20px;
+    }
+    
+    .gallery-grid-2x2 {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 50px;
+        max-width: 400px;
+    }
+    
+    .vintage-title {
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+    
+    .vintage-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .filmstrip-holes {
+        width: 30px;
+    }
+    
+    .style-label {
+        font-size: 1.1rem;
+        bottom: -40px;
+    }
+    
+    .carousel-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-grid-2x2 {
+        max-width: 300px;
+        gap: 40px;
+    }
+    
+    .vintage-title {
+        font-size: 2rem;
+    }
+    
+    .filmstrip-holes {
+        width: 25px;
+    }
+}

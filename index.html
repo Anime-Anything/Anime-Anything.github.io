@@ -83,37 +83,87 @@
             </div>
         </section>
 
-        <!-- 作品画廊区域 -->
-        <section id="gallery" class="gallery-section">
-            <div class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">精选作品画廊</h2>
-                    <p class="section-subtitle">欣赏AI风格迁移的神奇效果</p>
+        <!-- 作品画廊区域 - 复古胶卷风格 -->
+        <section id="gallery" class="vintage-gallery-section">
+            <div class="filmstrip-container">
+                <!-- 胶片齿孔装饰 -->
+                <div class="filmstrip-holes left-holes"></div>
+                <div class="filmstrip-holes right-holes"></div>
+                
+                <!-- 画廊标题 -->
+                <div class="gallery-header">
+                    <h2 class="vintage-title">风格画廊展示</h2>
+                    <p class="vintage-subtitle">精选AI艺术作品集</p>
                 </div>
-                <div class="gallery-grid">
-                    <div class="gallery-item">
-                        <div class="gallery-image demo-before"></div>
-                        <div class="gallery-overlay">
-                            <div class="gallery-label">原图</div>
+                
+                <!-- 2x2 网格画廊 -->
+                <div class="gallery-grid-2x2">
+                    <!-- 左上：法国绘本风格 -->
+                    <div class="carousel-frame" data-style="french">
+                        <div class="carousel-container">
+                            <button class="carousel-btn prev-btn" data-direction="prev">‹</button>
+                            <div class="carousel-images">
+                                <img src="photos/1/000.png" alt="法国绘本风格" class="carousel-image active">
+                                <img src="photos/1/001.png" alt="法国绘本风格" class="carousel-image">
+                                <img src="photos/1/002.png" alt="法国绘本风格" class="carousel-image">
+                                <img src="photos/1/003.png" alt="法国绘本风格" class="carousel-image">
+                                <img src="photos/1/004.png" alt="法国绘本风格" class="carousel-image">
+                                <img src="photos/1/005.png" alt="法国绘本风格" class="carousel-image">
+                            </div>
+                            <button class="carousel-btn next-btn" data-direction="next">›</button>
                         </div>
+                        <div class="style-label">1. 法国绘本风格</div>
                     </div>
-                    <div class="gallery-item">
-                        <div class="gallery-image demo-after-1"></div>
-                        <div class="gallery-overlay">
-                            <div class="gallery-label">日式动漫风格</div>
+                    
+                    <!-- 右上：日式动漫风格 -->
+                    <div class="carousel-frame" data-style="anime">
+                        <div class="carousel-container">
+                            <button class="carousel-btn prev-btn" data-direction="prev">‹</button>
+                            <div class="carousel-images">
+                                <img src="photos/2/000.png" alt="日式动漫风格" class="carousel-image active">
+                                <img src="photos/2/001.png" alt="日式动漫风格" class="carousel-image">
+                                <img src="photos/2/002.png" alt="日式动漫风格" class="carousel-image">
+                                <img src="photos/2/003.png" alt="日式动漫风格" class="carousel-image">
+                                <img src="photos/2/004.png" alt="日式动漫风格" class="carousel-image">
+                                <img src="photos/2/005.png" alt="日式动漫风格" class="carousel-image">
+                            </div>
+                            <button class="carousel-btn next-btn" data-direction="next">›</button>
                         </div>
+                        <div class="style-label">2. 日式动漫风格</div>
                     </div>
-                    <div class="gallery-item">
-                        <div class="gallery-image demo-after-2"></div>
-                        <div class="gallery-overlay">
-                            <div class="gallery-label">法国绘本风格</div>
+                    
+                    <!-- 左下：水彩画风格 -->
+                    <div class="carousel-frame" data-style="watercolor">
+                        <div class="carousel-container">
+                            <button class="carousel-btn prev-btn" data-direction="prev">‹</button>
+                            <div class="carousel-images">
+                                <img src="photos/3/000.png" alt="水彩画风格" class="carousel-image active">
+                                <img src="photos/3/001.png" alt="水彩画风格" class="carousel-image">
+                                <img src="photos/3/002.png" alt="水彩画风格" class="carousel-image">
+                                <img src="photos/3/003.png" alt="水彩画风格" class="carousel-image">
+                                <img src="photos/3/004.png" alt="水彩画风格" class="carousel-image">
+                                <img src="photos/3/005.png" alt="水彩画风格" class="carousel-image">
+                            </div>
+                            <button class="carousel-btn next-btn" data-direction="next">›</button>
                         </div>
+                        <div class="style-label">3. 水彩画风格</div>
                     </div>
-                    <div class="gallery-item">
-                        <div class="gallery-image demo-after-3"></div>
-                        <div class="gallery-overlay">
-                            <div class="gallery-label">水彩画风格</div>
+                    
+                    <!-- 右下：卡通风格 -->
+                    <div class="carousel-frame" data-style="cartoon">
+                        <div class="carousel-container">
+                            <button class="carousel-btn prev-btn" data-direction="prev">‹</button>
+                            <div class="carousel-images">
+                                <img src="photos/4/000.png" alt="卡通风格" class="carousel-image active">
+                                <img src="photos/4/001.png" alt="卡通风格" class="carousel-image">
+                                <img src="photos/4/002.png" alt="卡通风格" class="carousel-image">
+                                <img src="photos/4/003.png" alt="卡通风格" class="carousel-image">
+                                <img src="photos/4/004.png" alt="卡通风格" class="carousel-image">
+                                <img src="photos/4/005.jpg" alt="卡通风格" class="carousel-image">
+                            </div>
+                            <button class="carousel-btn next-btn" data-direction="next">›</button>
                         </div>
+                        <div class="style-label">4. 卡通风格</div>
                     </div>
                 </div>
             </div>

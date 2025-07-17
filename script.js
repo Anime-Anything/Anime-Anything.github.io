@@ -157,26 +157,51 @@ function initializeNavigation() {
 }
 
 /**
- * 显示指定区域
+ * 显示指定区域并更新导航
  */
-function showSection(sectionName) {
+function showSection(targetSection) {
+    console.log('切换到区域:', targetSection);
+
     // 隐藏所有区域
-    const sections = document.querySelectorAll('.main-content section');
-    sections.forEach(section => {
+    document.querySelectorAll('.main-content section').forEach(section => {
         section.classList.remove('active-section');
     });
 
-    // 显示指定区域
-    const targetSection = document.getElementById(sectionName);
-    if (targetSection) {
-        targetSection.classList.add('active-section');
-        currentSection = sectionName;
+    // 显示目标区域
+    const target = document.getElementById(targetSection);
+    if (target) {
+        target.classList.add('active-section');
+        addSectionAnimation(target);
+    }
 
-        // 滚动到顶部
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 更新导航链接状态
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-section') === targetSection) {
+            link.classList.add('active');
+        }
+    });
 
-        // 添加进入动画
-        addSectionAnimation(targetSection);
+    // 特殊处理：如果是画廊页面，确保轮播器已初始化
+    if (targetSection === 'gallery') {
+        // 延迟初始化，确保DOM元素已经显示
+        setTimeout(() => {
+            const carouselFrames = document.querySelectorAll('.carousel-frame');
+            if (carouselFrames.length > 0 && carouselState.size === 0) {
+                console.log('延迟初始化复古画廊轮播器...');
+                initCarousels();
+                addCarouselInteractions();
+                animateVintageGalleryEntrance();
+            }
+        }, 100);
+    }
+
+    // 更新当前区域状态
+    currentSection = targetSection;
+
+    // 移动端导航菜单自动关闭
+    if (elements.navMenu) {
+        elements.navMenu.classList.remove('active');
     }
 }
 
@@ -1190,6 +1215,251 @@ function enhanceHighlightInteractions() {
 }
 
 /**
+ * 复古胶卷画廊轮播功能
+ */
+
+// 轮播器配置
+const CAROUSEL_CONFIG = {
+    autoPlay: false, // 禁用自动播放，用户手动控制
+    transitionDuration: 600 // 过渡动画时长（毫秒）
+};
+
+// 轮播器状态管理
+const carouselState = new Map();
+
+/**
+ * 初始化所有轮播器
+ */
+function initCarousels() {
+    const carouselFrames = document.querySelectorAll('.carousel-frame');
+    
+    carouselFrames.forEach((frame, index) => {
+        const style = frame.getAttribute('data-style');
+        const images = frame.querySelectorAll('.carousel-image');
+        const prevBtn = frame.querySelector('.prev-btn');
+        const nextBtn = frame.querySelector('.next-btn');
+        
+        // 初始化轮播器状态
+        carouselState.set(style, {
+            currentIndex: 0,
+            totalImages: images.length,
+            isTransitioning: false
+        });
+        
+        // 确保第一张图片显示
+        if (images.length > 0) {
+            images[0].classList.add('active');
+        }
+        
+        // 绑定按钮事件
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                changeImage(style, -1);
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                changeImage(style, 1);
+            });
+        }
+        
+        // 添加键盘支持（当画框获得焦点时）
+        frame.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                changeImage(style, -1);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                changeImage(style, 1);
+            }
+        });
+        
+        // 使画框可获得焦点
+        frame.setAttribute('tabindex', '0');
+        
+        console.log(`初始化轮播器: ${style}, 图片数量: ${images.length}`);
+    });
+}
+
+/**
+ * 切换图片
+ */
+function changeImage(style, direction) {
+    const state = carouselState.get(style);
+    
+    if (!state || state.isTransitioning) {
+        return;
+    }
+    
+    const frame = document.querySelector(`[data-style="${style}"]`);
+    const images = frame.querySelectorAll('.carousel-image');
+    
+    if (images.length <= 1) {
+        return;
+    }
+    
+    // 设置过渡状态
+    state.isTransitioning = true;
+    
+    // 计算新的索引
+    const newIndex = (state.currentIndex + direction + state.totalImages) % state.totalImages;
+    
+    // 获取当前和下一张图片
+    const currentImage = images[state.currentIndex];
+    const nextImage = images[newIndex];
+    
+    // 执行平滑过渡动画
+    performImageTransition(currentImage, nextImage, direction, () => {
+        // 更新状态
+        state.currentIndex = newIndex;
+        state.isTransitioning = false;
+        carouselState.set(style, state);
+        
+        console.log(`${style} 轮播器切换到图片 ${newIndex + 1}/${state.totalImages}`);
+    });
+}
+
+/**
+ * 执行图片过渡动画
+ */
+function performImageTransition(currentImage, nextImage, direction, callback) {
+    // 准备下一张图片
+    nextImage.style.opacity = '0';
+    nextImage.style.transform = direction > 0 ? 'translateX(30px)' : 'translateX(-30px)';
+    nextImage.style.transition = 'none';
+    
+    // 短暂延迟后开始过渡
+    requestAnimationFrame(() => {
+        // 设置过渡效果
+        currentImage.style.transition = `opacity ${CAROUSEL_CONFIG.transitionDuration}ms ease-in-out, transform ${CAROUSEL_CONFIG.transitionDuration}ms ease-in-out`;
+        nextImage.style.transition = `opacity ${CAROUSEL_CONFIG.transitionDuration}ms ease-in-out, transform ${CAROUSEL_CONFIG.transitionDuration}ms ease-in-out`;
+        
+        // 执行过渡
+        currentImage.style.opacity = '0';
+        currentImage.style.transform = direction > 0 ? 'translateX(-30px)' : 'translateX(30px)';
+        
+        nextImage.style.opacity = '1';
+        nextImage.style.transform = 'translateX(0)';
+        
+        // 更新active类
+        currentImage.classList.remove('active');
+        nextImage.classList.add('active');
+        
+        // 过渡完成后的清理
+        setTimeout(() => {
+            currentImage.style.transition = '';
+            currentImage.style.transform = '';
+            nextImage.style.transition = '';
+            nextImage.style.transform = '';
+            
+            if (callback) {
+                callback();
+            }
+        }, CAROUSEL_CONFIG.transitionDuration);
+    });
+}
+
+/**
+ * 添加轮播器增强交互效果
+ */
+function addCarouselInteractions() {
+    const carouselFrames = document.querySelectorAll('.carousel-frame');
+    
+    carouselFrames.forEach(frame => {
+        // 鼠标进入时的光晕效果增强
+        frame.addEventListener('mouseenter', () => {
+            const styleLabel = frame.querySelector('.style-label');
+            if (styleLabel) {
+                styleLabel.style.transform = 'translateY(-5px)';
+                styleLabel.style.textShadow = '0 2px 4px rgba(44, 24, 16, 0.8), 0 0 15px rgba(244, 228, 193, 0.4)';
+            }
+        });
+        
+        frame.addEventListener('mouseleave', () => {
+            const styleLabel = frame.querySelector('.style-label');
+            if (styleLabel) {
+                styleLabel.style.transform = '';
+                styleLabel.style.textShadow = '0 2px 4px rgba(44, 24, 16, 0.8)';
+            }
+        });
+        
+        // 点击画框时聚焦（用于键盘导航）
+        frame.addEventListener('click', () => {
+            frame.focus();
+        });
+    });
+}
+
+/**
+ * 画廊入场动画（针对复古画廊）
+ */
+function animateVintageGalleryEntrance() {
+    const gallerySection = document.querySelector('.vintage-gallery-section');
+    if (!gallerySection) return;
+    
+    const header = gallerySection.querySelector('.gallery-header');
+    const frames = gallerySection.querySelectorAll('.carousel-frame');
+    
+    // 标题入场动画
+    if (header) {
+        gsap.fromTo(header,
+            {
+                opacity: 0,
+                y: 50
+            },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power3.out'
+            }
+        );
+    }
+    
+    // 轮播框依次入场
+    frames.forEach((frame, index) => {
+        gsap.fromTo(frame,
+            {
+                opacity: 0,
+                y: 80,
+                scale: 0.8
+            },
+            {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.8,
+                delay: 0.2 + index * 0.15,
+                ease: 'back.out(1.7)'
+            }
+        );
+    });
+    
+    // 胶片齿孔动画
+    const holes = gallerySection.querySelectorAll('.filmstrip-holes');
+    holes.forEach((hole, index) => {
+        gsap.fromTo(hole,
+            {
+                opacity: 0,
+                x: index === 0 ? -30 : 30
+            },
+            {
+                opacity: 1,
+                x: 0,
+                duration: 1,
+                delay: 0.5,
+                ease: 'power3.out'
+            }
+        );
+    });
+}
+
+/**
  * 全局函数 - 供HTML调用
  */
 window.showSection = showSection;
@@ -1208,6 +1478,9 @@ document.addEventListener('DOMContentLoaded', () => {
             animateGalleryEntrance();
             initScrollAnimations(); // 初始化流线型滚动效果
             enhanceHighlightInteractions(); // 增强特色卡片交互
+            initCarousels(); // 初始化复古胶卷画廊
+            addCarouselInteractions(); // 增强复古胶卷画廊交互
+            animateVintageGalleryEntrance(); // 启动复古画廊入场动画
         }, 1000); // 页面加载动画后初始化画廊
     } else {
         console.error('GSAP库未加载，3D画廊无法初始化');
