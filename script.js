@@ -48,6 +48,10 @@ const elements = {
     navMenu: document.getElementById('navMenu'),
     navLinks: document.querySelectorAll('.nav-link'),
 
+    // 洛可可风格徽章按钮（新增）
+    uploadBadge: document.getElementById('uploadBadge'),
+    urlBadge: document.getElementById('urlBadge'),
+
     // 输入模式切换
     uploadModeBtn: document.getElementById('uploadModeBtn'),
     urlModeBtn: document.getElementById('urlModeBtn'),
@@ -119,7 +123,9 @@ function handlePageLoad() {
     initScrollAnimations(); // 初始化流线型滚动效果
     enhanceHighlightInteractions(); // 增强特色卡片交互
 
-    // 设置默认输入模式为上传
+    // 设置默认输入模式为上传（洛可可风格）
+    switchToRococoMode('upload');
+    // 保持兼容性
     switchInputMode('upload');
 
     console.log('✅ AI动漫风格迁移工具已加载完成！');
@@ -317,6 +323,42 @@ function initializeScrollEffects() {
 }
 
 /**
+ * 洛可可风格徽章切换功能（新增）
+ */
+function initRococoBadges() {
+    // 徽章点击事件
+    if (elements.uploadBadge) {
+        elements.uploadBadge.addEventListener('click', () => switchToRococoMode('upload'));
+    }
+    if (elements.urlBadge) {
+        elements.urlBadge.addEventListener('click', () => switchToRococoMode('url'));
+    }
+}
+
+/**
+ * 洛可可风格模式切换
+ */
+function switchToRococoMode(mode) {
+    // 更新徽章状态
+    if (elements.uploadBadge && elements.urlBadge) {
+        elements.uploadBadge.classList.toggle('active', mode === 'upload');
+        elements.urlBadge.classList.toggle('active', mode === 'url');
+    }
+    
+    // 切换显示的输入区域
+    if (elements.uploadMode && elements.urlMode) {
+        elements.uploadMode.classList.toggle('active', mode === 'upload');
+        elements.urlMode.classList.toggle('active', mode === 'url');
+    }
+    
+    // 清除之前的状态
+    clearUploadState();
+    clearMessages();
+    
+    console.log('洛可可模式切换至:', mode);
+}
+
+/**
  * 文件上传功能
  */
 
@@ -324,7 +366,10 @@ function initializeScrollEffects() {
  * 初始化文件上传功能
  */
 function initializeFileUpload() {
-    // 输入模式切换
+    // 洛可可风格徽章切换（新增）
+    initRococoBadges();
+    
+    // 输入模式切换（保留兼容性）
     if (elements.uploadModeBtn) {
         elements.uploadModeBtn.addEventListener('click', () => switchInputMode('upload'));
     }

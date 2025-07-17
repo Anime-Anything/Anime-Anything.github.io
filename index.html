@@ -203,115 +203,244 @@
             </div>
         </section>
 
-        <!-- 功能应用区域 -->
-        <section id="app" class="app-section">
-            <div class="section-container">
-                <div class="section-header">
-                    <h2 class="section-title">开始您的AI创作之旅</h2>
-                    <p class="section-subtitle">上传图片，选择风格，见证AI魔法</p>
-                </div>
-                <!-- 这里将包含原有的功能界面 -->
-                <div class="app-container">
-                    <div class="input-section">
-                        <!-- 图片输入方式选择 -->
-                        <div class="input-mode-tabs">
-                            <button id="uploadModeBtn" class="tab-btn active">📁 上传图片</button>
-                            <button id="urlModeBtn" class="tab-btn">🔗 URL链接</button>
-                            <button id="txt2imgModeBtn" class="tab-btn">📝 文生图</button>
-                        </div>
+        <!-- 功能应用区域 - 洛可可风格双画板 -->
+        <section id="app" class="app-section rococo-atelier">
+            <!-- 浮动装饰粒子 -->
+            <div class="floating-particles">
+                <div class="particle particle-1">✿</div>
+                <div class="particle particle-2">❀</div>
+                <div class="particle particle-3">✾</div>
+                <div class="particle particle-4">✦</div>
+                <div class="particle particle-5">❋</div>
+                <div class="particle particle-6">✻</div>
+            </div>
 
-                        <!-- 图片上传区域 -->
-                        <div id="uploadMode" class="input-mode active">
-                            <div id="dropZone" class="drop-zone">
-                                <div class="drop-content">
-                                    <div class="upload-icon">📤</div>
-                                    <h3>拖拽图片到此处</h3>
-                                    <p>或者 <button id="fileSelectBtn" class="file-select-btn">点击选择文件</button></p>
-                                    <small>支持 JPG、PNG、WEBP 格式，建议大小 &lt; 5MB</small>
-                                </div>
-                                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            <!-- 华丽背景装饰 -->
+            <div class="rococo-bg-ornaments">
+                <div class="ornament ornament-tl"></div>
+                <div class="ornament ornament-tr"></div>
+                <div class="ornament ornament-bl"></div>
+                <div class="ornament ornament-br"></div>
+            </div>
+
+            <div class="atelier-container">
+                <!-- 艺术工坊标题 -->
+                <div class="atelier-header">
+                    <h1 class="atelier-title">艺术创作工坊</h1>
+                    <p class="atelier-subtitle">让想象在此绽放，用AI之笔描绘梦境</p>
+                    <div class="title-decoration">
+                        <span class="deco-left">❦</span>
+                        <span class="deco-center">◊</span>
+                        <span class="deco-right">❦</span>
+                    </div>
+                </div>
+
+                <!-- 双画板布局 -->
+                <div class="dual-canvas-layout">
+                    <!-- 左侧画板：妙语生图 -->
+                    <div class="creation-canvas canvas-left">
+                        <div class="canvas-frame">
+                            <div class="frame-ornaments">
+                                <div class="corner-ornament top-left"></div>
+                                <div class="corner-ornament top-right"></div>
+                                <div class="corner-ornament bottom-left"></div>
+                                <div class="corner-ornament bottom-right"></div>
+                            </div>
+                            
+                            <div class="canvas-header">
+                                <h2 class="canvas-title">🖋️ 妙语生图</h2>
+                                <p class="canvas-subtitle">文字化想象为画境</p>
                             </div>
 
-                            <!-- 图片预览 -->
-                            <div id="imagePreview" class="image-preview hidden">
-                                <div class="preview-header">
-                                    <h4>📷 图片预览</h4>
-                                    <button id="changeImageBtn" class="change-btn">更换图片</button>
-                                </div>
-                                <div class="preview-content">
-                                    <img id="previewImage" alt="预览图片">
-                                    <div class="image-info">
-                                        <span id="imageInfo"></span>
+                            <div class="canvas-content">
+                                <!-- 文字描述区域 -->
+                                <div class="enchanted-input-group">
+                                    <label class="magical-label">
+                                        <span class="label-text">请输入您的想象</span>
+                                        <span class="label-icon">✨</span>
+                                    </label>
+                                    <div class="textarea-container">
+                                        <textarea 
+                                            id="txt2imgPromptInput" 
+                                            class="enchanted-textarea"
+                                            placeholder="描述您心中的画面...如：午后阳光下的法式咖啡馆，女孩在读书，温暖而宁静..."
+                                            rows="4"
+                                        ></textarea>
+                                        <div class="magical-border"></div>
+                                        <div class="vine-decoration vine-left"></div>
+                                        <div class="vine-decoration vine-right"></div>
                                     </div>
                                 </div>
+
+                                <!-- 魔法按钮 -->
+                                <button id="txt2imgButton" class="magical-btn btn-primary">
+                                    <span class="btn-icon">🎨</span>
+                                    <span class="btn-text">施展创作魔法</span>
+                                    <div class="btn-shimmer"></div>
+                                </button>
                             </div>
                         </div>
-
-                        <!-- URL输入区域 -->
-                        <div id="urlMode" class="input-mode">
-                            <div class="input-group">
-                                <label for="imageUrlInput">图片 URL：</label>
-                                <input type="text" id="imageUrlInput"
-                                    placeholder="请输入公网可访问的图片URL，例如：https://example.com/image.jpg" class="input-field">
-                                <small class="input-hint">
-                                    💡 提示：请确保图片 URL 可以公开访问，支持 HTTPS 链接
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- 文生图输入区域 -->
-                        <div id="txt2imgMode" class="input-mode">
-                            <div class="input-group">
-                                <label for="txt2imgPromptInput">描述词：</label>
-                                <input type="text" id="txt2imgPromptInput" value="" placeholder="请输入你想生成的画面描述，如：一间有着精致窗户的花店，漂亮的木质门，摆放着花朵" class="input-field">
-                                <small class="input-hint">
-                                    💡 例如：可爱的猫咪在阳光下打盹、未来城市夜景、复古少女肖像等
-                                </small>
-                            </div>
-                            <button id="txt2imgButton" class="convert-btn">
-                                <span class="btn-text">🎨 生成图片</span>
-                            </button>
-                        </div>
-
-                        <!-- 风格描述 -->
-                        <div class="input-group">
-                            <label for="promptInput">目标风格：</label>
-                            <input type="text" id="promptInput" value="" placeholder="输入目标风格，如'转换成法国绘本风格'"
-                                class="input-field">
-                            <small class="input-hint">
-                                💡 例如：转换成日式动漫风格、转换成法国绘本风格、转换成卡通风格等
-                            </small>
-                        </div>
-
-                        <button id="convertButton" class="convert-btn">
-                            <span class="btn-text">🚀 开始风格迁移</span>
-                        </button>
                     </div>
 
-                    <div class="result-section">
-                        <div id="loadingDiv" class="loading hidden">
-                            <div class="loading-spinner-container">
-                                <div class="spinner-ring"></div>
-                                <div class="robot-center">🤖</div>
+                    <!-- 右侧画板：风格迁移 -->
+                    <div class="creation-canvas canvas-right">
+                        <div class="canvas-frame">
+                            <div class="frame-ornaments">
+                                <div class="corner-ornament top-left"></div>
+                                <div class="corner-ornament top-right"></div>
+                                <div class="corner-ornament bottom-left"></div>
+                                <div class="corner-ornament bottom-right"></div>
                             </div>
-                            <div class="loading-text">AI正在努力转换中...</div>
-                        </div>
+                            
+                            <div class="canvas-header">
+                                <h2 class="canvas-title">🎨 风格迁移</h2>
+                                <p class="canvas-subtitle">重塑艺术之美</p>
+                            </div>
 
-                        <div id="resultDiv" class="result hidden">
-                            <h3>✨ 风格迁移结果</h3>
-                            <div class="image-container">
-                                <img id="resultImage" alt="风格迁移后的图片" class="result-image">
+                            <div class="canvas-content">
+                                <!-- 图片输入方式选择：华丽徽章 -->
+                                <div class="input-badges">
+                                    <div class="badge-container">
+                                        <button id="uploadBadge" class="input-badge active" data-type="upload">
+                                            <div class="badge-icon">🖼️</div>
+                                            <div class="badge-text">上传</div>
+                                            <div class="badge-glow"></div>
+                                        </button>
+                                        <button id="urlBadge" class="input-badge" data-type="url">
+                                            <div class="badge-icon">🔗</div>
+                                            <div class="badge-text">链接</div>
+                                            <div class="badge-glow"></div>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 图片上传区域 -->
+                                <div id="uploadMode" class="input-mode active">
+                                    <div id="dropZone" class="enchanted-drop-zone">
+                                        <div class="drop-content">
+                                            <div class="upload-icon">📸</div>
+                                            <h3>将您的图片拖拽至此</h3>
+                                            <p>或 <button id="fileSelectBtn" class="select-btn">选择文件</button></p>
+                                            <small>支持 JPG、PNG、WEBP，建议 &lt; 5MB</small>
+                                        </div>
+                                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                                        <div class="drop-vine-border"></div>
+                                    </div>
+
+                                    <!-- 图片预览 -->
+                                    <div id="imagePreview" class="enchanted-preview hidden">
+                                        <div class="preview-header">
+                                            <h4>✨ 预览</h4>
+                                            <button id="changeImageBtn" class="change-btn">更换</button>
+                                        </div>
+                                        <div class="preview-content">
+                                            <img id="previewImage" alt="预览图片">
+                                            <div class="image-info">
+                                                <span id="imageInfo"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- URL输入区域 -->
+                                <div id="urlMode" class="input-mode">
+                                    <div class="enchanted-input-group">
+                                        <label class="magical-label">
+                                            <span class="label-text">图片链接</span>
+                                            <span class="label-icon">🔗</span>
+                                        </label>
+                                        <div class="input-container">
+                                            <input 
+                                                type="text" 
+                                                id="imageUrlInput"
+                                                class="enchanted-input"
+                                                placeholder="请输入图片URL地址..."
+                                            >
+                                            <div class="magical-border"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 风格描述区域 -->
+                                <div class="enchanted-input-group">
+                                    <label class="magical-label">
+                                        <span class="label-text">期望的艺术风格</span>
+                                        <span class="label-icon">🎭</span>
+                                    </label>
+                                    <div class="textarea-container">
+                                        <textarea 
+                                            id="promptInput" 
+                                            class="enchanted-textarea"
+                                            placeholder="描述您希望的风格...如：转换成法国绘本风格，柔和色彩，梦幻氛围..."
+                                            rows="3"
+                                        ></textarea>
+                                        <div class="magical-border"></div>
+                                        <div class="vine-decoration vine-left"></div>
+                                        <div class="vine-decoration vine-right"></div>
+                                    </div>
+                                </div>
+
+                                <!-- 魔法按钮 -->
+                                <button id="convertButton" class="magical-btn btn-secondary">
+                                    <span class="btn-icon">✨</span>
+                                    <span class="btn-text">开始风格变换</span>
+                                    <div class="btn-shimmer"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 魔法结果展示区域 -->
+                <div class="magical-result-area">
+                    <!-- 加载动画 -->
+                    <div id="loadingDiv" class="magical-loading hidden">
+                        <div class="loading-ornament">
+                            <div class="magic-circle">
+                                <div class="circle-ring ring-1"></div>
+                                <div class="circle-ring ring-2"></div>
+                                <div class="circle-ring ring-3"></div>
+                                <div class="magic-center">🎨</div>
+                            </div>
+                            <div class="loading-text">魔法正在施展中...</div>
+                            <div class="magic-sparkles">
+                                <span class="sparkle">✦</span>
+                                <span class="sparkle">✧</span>
+                                <span class="sparkle">✦</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 结果展示 -->
+                    <div id="resultDiv" class="magical-result hidden">
+                        <div class="result-frame">
+                            <h3 class="result-title">✨ 艺术杰作诞生</h3>
+                            <div class="result-image-container">
+                                <img id="resultImage" alt="转换结果" class="result-image">
+                                <div class="image-frame-decoration"></div>
                             </div>
                             <div class="result-actions">
-                                <button id="downloadBtn" class="download-btn">💾 下载图片</button>
-                                <button onclick="location.reload()" class="new-task-btn">🎯 重新转换</button>
+                                <button id="downloadBtn" class="action-btn download-btn">
+                                    <span class="btn-icon">💾</span>
+                                    <span class="btn-text">保存作品</span>
+                                </button>
+                                <button onclick="location.reload()" class="action-btn new-task-btn">
+                                    <span class="btn-icon">🎯</span>
+                                    <span class="btn-text">重新创作</span>
+                                </button>
                             </div>
                         </div>
+                    </div>
 
-                        <div id="errorDiv" class="error hidden">
-                            <h3>⚠️ 风格迁移失败</h3>
-                            <p id="errorMessage"></p>
-                            <button onclick="location.reload()" class="retry-btn">🔄 重试</button>
+                    <!-- 错误提示 -->
+                    <div id="errorDiv" class="magical-error hidden">
+                        <div class="error-frame">
+                            <h3 class="error-title">⚠️ 魔法施展遇阻</h3>
+                            <p id="errorMessage" class="error-message"></p>
+                            <button onclick="location.reload()" class="action-btn retry-btn">
+                                <span class="btn-icon">🔄</span>
+                                <span class="btn-text">重新尝试</span>
+                            </button>
                         </div>
                     </div>
                 </div>

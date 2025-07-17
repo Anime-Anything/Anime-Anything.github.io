@@ -1,3 +1,6 @@
+/* 导入洛可可风格字体 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Great+Vibes&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
 /**
  * AI动漫风格迁移工具 - 现代化样式表
  * 包含加载动画、导航、多页面布局和丰富的视觉效果
@@ -22,10 +25,31 @@
     --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5f7fa 100%);
     --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
 
+    /* 洛可可风格色彩 */
+    --rococo-cream: #FFF8F0;
+    --rococo-gold: #D4AF37;
+    --rococo-rose: #F4C2C2;
+    --rococo-blue: #B8D4F1;
+    --rococo-lavender: #E6D9F1;
+    --rococo-pearl: #F5F5DC;
+    --rococo-sage: #E8F4E6;
+    
+    /* 洛可可渐变 */
+    --rococo-bg-gradient: linear-gradient(135deg, #FFF8F0 0%, #F5F5DC 25%, #E6D9F1 50%, #B8D4F1 75%, #F4C2C2 100%);
+    --rococo-card-gradient: linear-gradient(145deg, rgba(255, 248, 240, 0.95) 0%, rgba(245, 245, 220, 0.90) 100%);
+    --rococo-border-gradient: linear-gradient(45deg, #D4AF37 0%, #F4C2C2 25%, #B8D4F1 50%, #E6D9F1 75%, #D4AF37 100%);
+    
+    /* 洛可可字体 */
+    --rococo-title-font: 'Playfair Display', serif;
+    --rococo-script-font: 'Great Vibes', cursive;
+    --rococo-body-font: 'Crimson Text', serif;
+
     /* 阴影 */
     --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.1);
     --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
     --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.2);
+    --rococo-shadow: 0 8px 32px rgba(212, 175, 55, 0.25);
+    --rococo-glow: 0 0 20px rgba(212, 175, 55, 0.4);
 
     /* 字体 */
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
@@ -34,6 +58,7 @@
     --transition-fast: 0.3s ease;
     --transition-medium: 0.5s ease;
     --transition-slow: 0.8s ease;
+    --rococo-transition: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 html {
@@ -2663,3 +2688,858 @@ body {
     text-shadow: 0 1px 3px rgba(44, 24, 16, 0.8);
     transform: translateY(-5px);
 }
+
+/* =================== 洛可可风格艺术工坊样式 =================== */
+
+/* 洛可可艺术工坊主容器 */
+.rococo-atelier {
+    min-height: 100vh;
+    background: var(--rococo-bg-gradient);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
+    color: #444;
+}
+
+/* 浮动装饰粒子 */
+.floating-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    font-size: 1.5rem;
+    color: var(--rococo-gold);
+    opacity: 0.6;
+    animation: floatParticle 8s ease-in-out infinite;
+}
+
+.particle-1 { top: 15%; left: 10%; animation-delay: 0s; }
+.particle-2 { top: 25%; right: 15%; animation-delay: 1.5s; }
+.particle-3 { top: 50%; left: 5%; animation-delay: 3s; }
+.particle-4 { top: 65%; right: 10%; animation-delay: 4.5s; }
+.particle-5 { top: 80%; left: 20%; animation-delay: 6s; }
+.particle-6 { top: 35%; right: 25%; animation-delay: 7.5s; }
+
+@keyframes floatParticle {
+    0%, 100% { 
+        transform: translateY(0) rotate(0deg); 
+        opacity: 0.6; 
+    }
+    50% { 
+        transform: translateY(-30px) rotate(180deg); 
+        opacity: 0.9; 
+    }
+}
+
+/* 华丽背景装饰 */
+.rococo-bg-ornaments {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.ornament {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, var(--rococo-gold) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: ornamentGlow 6s ease-in-out infinite;
+}
+
+.ornament-tl { top: 10%; left: 10%; }
+.ornament-tr { top: 10%; right: 10%; animation-delay: 2s; }
+.ornament-bl { bottom: 10%; left: 10%; animation-delay: 4s; }
+.ornament-br { bottom: 10%; right: 10%; animation-delay: 6s; }
+
+@keyframes ornamentGlow {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.2); }
+}
+
+/* 艺术工坊主容器 */
+.atelier-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    position: relative;
+    z-index: 2;
+}
+
+/* 艺术工坊标题 */
+.atelier-header {
+    text-align: center;
+    margin-bottom: 80px;
+    position: relative;
+}
+
+.atelier-title {
+    font-family: var(--rococo-title-font);
+    font-size: 4rem;
+    font-weight: 600;
+    color: var(--rococo-gold);
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    letter-spacing: 2px;
+}
+
+.atelier-subtitle {
+    font-family: var(--rococo-body-font);
+    font-size: 1.4rem;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.title-decoration {
+    font-size: 2rem;
+    color: var(--rococo-rose);
+    letter-spacing: 20px;
+    animation: titleDecoBreathe 3s ease-in-out infinite;
+}
+
+@keyframes titleDecoBreathe {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* 双画板布局 */
+.dual-canvas-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+/* 创作画板基础样式 */
+.creation-canvas {
+    position: relative;
+    animation: canvasEntrance 1s ease-out forwards;
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+.canvas-left { animation-delay: 0.2s; }
+.canvas-right { animation-delay: 0.4s; }
+
+@keyframes canvasEntrance {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 画板框架 */
+.canvas-frame {
+    background: var(--rococo-card-gradient);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-radius: 25px;
+    padding: 40px 35px;
+    position: relative;
+    box-shadow: var(--rococo-shadow);
+    transition: var(--rococo-transition);
+    backdrop-filter: blur(10px);
+}
+
+.canvas-frame::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: -3px; right: -3px; bottom: -3px;
+    background: var(--rococo-border-gradient);
+    border-radius: 25px;
+    z-index: -1;
+    opacity: 0.7;
+}
+
+.canvas-frame:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 45px rgba(212, 175, 55, 0.35);
+}
+
+.canvas-frame:hover::before {
+    opacity: 1;
+    animation: borderGlow 2s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* 画板装饰角花 */
+.frame-ornaments {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+}
+
+.corner-ornament {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--rococo-gold);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    opacity: 0.4;
+    transition: var(--rococo-transition);
+}
+
+.corner-ornament.top-left { top: 15px; left: 15px; transform: rotate(45deg); }
+.corner-ornament.top-right { top: 15px; right: 15px; transform: rotate(135deg); }
+.corner-ornament.bottom-left { bottom: 15px; left: 15px; transform: rotate(-45deg); }
+.corner-ornament.bottom-right { bottom: 15px; right: 15px; transform: rotate(-135deg); }
+
+.canvas-frame:hover .corner-ornament {
+    opacity: 0.8;
+    animation: ornamentSpin 2s ease-in-out infinite;
+}
+
+@keyframes ornamentSpin {
+    0%, 100% { transform: rotate(var(--initial-rotation)) scale(1); }
+    50% { transform: rotate(calc(var(--initial-rotation) + 90deg)) scale(1.2); }
+}
+
+/* 画板标题 */
+.canvas-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.canvas-title {
+    font-family: var(--rococo-title-font);
+    font-size: 2.2rem;
+    color: var(--rococo-gold);
+    margin-bottom: 12px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.canvas-subtitle {
+    font-family: var(--rococo-script-font);
+    font-size: 1.3rem;
+    color: var(--rococo-rose);
+    opacity: 0.9;
+}
+
+/* 魅惑输入组 */
+.enchanted-input-group {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.magical-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--rococo-body-font);
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.label-icon {
+    font-size: 1.3rem;
+    color: var(--rococo-gold);
+}
+
+/* 文本域容器 */
+.textarea-container, .input-container {
+    position: relative;
+}
+
+.enchanted-textarea, .enchanted-input {
+    width: 100%;
+    padding: 18px 20px;
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    font-family: var(--rococo-body-font);
+    font-size: 1rem;
+    color: #444;
+    resize: vertical;
+    transition: var(--rococo-transition);
+    backdrop-filter: blur(5px);
+}
+
+.enchanted-textarea:focus, .enchanted-input:focus {
+    outline: none;
+    border-color: var(--rococo-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2), var(--rococo-glow);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* 魔法边框效果 */
+.magical-border {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border: 2px solid transparent;
+    border-radius: 15px;
+    background: var(--rococo-border-gradient);
+    background-clip: border-box;
+    opacity: 0;
+    transition: var(--rococo-transition);
+    pointer-events: none;
+}
+
+.enchanted-textarea:focus + .magical-border,
+.enchanted-input:focus + .magical-border {
+    opacity: 0.6;
+    animation: magicalFlow 3s ease-in-out infinite;
+}
+
+@keyframes magicalFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 藤蔓装饰 */
+.vine-decoration {
+    position: absolute;
+    top: 50%;
+    width: 15px;
+    height: 15px;
+    background: var(--rococo-sage);
+    border-radius: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: var(--rococo-transition);
+}
+
+.vine-left { left: -25px; }
+.vine-right { right: -25px; }
+
+.enchanted-textarea:focus ~ .vine-decoration,
+.enchanted-input:focus ~ .vine-decoration {
+    opacity: 0.7;
+    animation: vineGrow 2s ease-in-out infinite;
+}
+
+@keyframes vineGrow {
+    0%, 100% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.3); }
+}
+
+/* 输入徽章 */
+.input-badges {
+    margin-bottom: 25px;
+}
+
+.badge-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.input-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 25px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--rococo-transition);
+    position: relative;
+    min-width: 80px;
+    min-height: 80px;
+    backdrop-filter: blur(5px);
+}
+
+.input-badge:hover {
+    transform: translateY(-5px);
+    border-color: var(--rococo-gold);
+}
+
+.input-badge.active {
+    background: var(--rococo-card-gradient);
+    border-color: var(--rococo-gold);
+    box-shadow: var(--rococo-glow);
+}
+
+.badge-icon {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.badge-text {
+    font-family: var(--rococo-body-font);
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 600;
+}
+
+.badge-glow {
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: var(--rococo-border-gradient);
+    border-radius: 50%;
+    opacity: 0;
+    transition: var(--rococo-transition);
+    z-index: -1;
+}
+
+.input-badge.active .badge-glow {
+    opacity: 0.4;
+    animation: badgeGlow 3s ease-in-out infinite;
+}
+
+@keyframes badgeGlow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+}
+
+/* 魅惑拖拽区域 */
+.enchanted-drop-zone {
+    border: 3px dashed rgba(212, 175, 55, 0.4);
+    border-radius: 20px;
+    padding: 50px 30px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.6);
+    transition: var(--rococo-transition);
+    position: relative;
+    margin-bottom: 25px;
+    backdrop-filter: blur(5px);
+}
+
+.enchanted-drop-zone:hover,
+.enchanted-drop-zone.dragover {
+    border-color: var(--rococo-gold);
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(-3px);
+    box-shadow: var(--rococo-shadow);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--rococo-gold);
+}
+
+.drop-content h3 {
+    font-family: var(--rococo-title-font);
+    font-size: 1.3rem;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.select-btn {
+    background: var(--rococo-gold);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: var(--rococo-body-font);
+    font-weight: 600;
+    transition: var(--rococo-transition);
+}
+
+.select-btn:hover {
+    background: #B8860B;
+    transform: scale(1.05);
+}
+
+/* 魅惑预览 */
+.enchanted-preview {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: var(--rococo-shadow);
+    backdrop-filter: blur(5px);
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.preview-header h4 {
+    font-family: var(--rococo-title-font);
+    color: var(--rococo-gold);
+    font-size: 1.2rem;
+}
+
+.change-btn {
+    background: var(--rococo-rose);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-family: var(--rococo-body-font);
+    font-size: 0.9rem;
+    transition: var(--rococo-transition);
+}
+
+.change-btn:hover {
+    background: #E6A8A8;
+    transform: scale(1.05);
+}
+
+.preview-content img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* 魔法按钮 */
+.magical-btn {
+    width: 100%;
+    padding: 20px 30px;
+    border: none;
+    border-radius: 25px;
+    font-family: var(--rococo-title-font);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--rococo-transition);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--rococo-gold) 0%, #B8860B 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--rococo-rose) 0%, #E6A8A8 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(244, 194, 194, 0.4);
+}
+
+.magical-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.5);
+}
+
+.btn-icon {
+    font-size: 1.3rem;
+}
+
+.btn-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s ease;
+}
+
+.magical-btn:hover .btn-shimmer {
+    left: 100%;
+}
+
+/* 魔法结果区域 */
+.magical-result-area {
+    margin-top: 60px;
+}
+
+/* 魔法加载动画 */
+.magical-loading {
+    text-align: center;
+    padding: 80px 40px;
+    background: var(--rococo-card-gradient);
+    border-radius: 25px;
+    box-shadow: var(--rococo-shadow);
+    backdrop-filter: blur(10px);
+}
+
+.loading-ornament {
+    position: relative;
+}
+
+.magic-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+}
+
+.circle-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    animation: magicSpin 3s linear infinite;
+}
+
+.ring-1 {
+    border-top-color: var(--rococo-gold);
+    animation-duration: 2s;
+}
+
+.ring-2 {
+    border-right-color: var(--rococo-rose);
+    animation-duration: 3s;
+    animation-direction: reverse;
+}
+
+.ring-3 {
+    border-bottom-color: var(--rococo-blue);
+    animation-duration: 4s;
+}
+
+@keyframes magicSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.magic-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    animation: centerPulse 2s ease-in-out infinite;
+}
+
+@keyframes centerPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.2); }
+}
+
+.loading-text {
+    font-family: var(--rococo-title-font);
+    font-size: 1.3rem;
+    color: var(--rococo-gold);
+    margin-bottom: 20px;
+}
+
+.magic-sparkles {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.sparkle {
+    font-size: 1.2rem;
+    color: var(--rococo-rose);
+    animation: sparkleFlash 1.5s ease-in-out infinite;
+}
+
+.sparkle:nth-child(2) { animation-delay: 0.5s; }
+.sparkle:nth-child(3) { animation-delay: 1s; }
+
+@keyframes sparkleFlash {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* 魔法结果 */
+.magical-result {
+    background: var(--rococo-card-gradient);
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: var(--rococo-shadow);
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.result-frame {
+    position: relative;
+}
+
+.result-title {
+    font-family: var(--rococo-title-font);
+    font-size: 2rem;
+    color: var(--rococo-gold);
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.result-image-container {
+    position: relative;
+    margin-bottom: 30px;
+    display: inline-block;
+}
+
+.result-image {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.image-frame-decoration {
+    position: absolute;
+    top: -10px; left: -10px; right: -10px; bottom: -10px;
+    border: 3px solid var(--rococo-gold);
+    border-radius: 20px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.result-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 20px;
+    font-family: var(--rococo-body-font);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--rococo-transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(5px);
+}
+
+.download-btn {
+    background: linear-gradient(135deg, var(--rococo-gold) 0%, #B8860B 100%);
+    color: white;
+}
+
+.new-task-btn, .retry-btn {
+    background: linear-gradient(135deg, var(--rococo-lavender) 0%, #D4C4E8 100%);
+    color: #555;
+}
+
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* 魔法错误 */
+.magical-error {
+    background: linear-gradient(135deg, rgba(255, 200, 200, 0.9) 0%, rgba(255, 220, 220, 0.8) 100%);
+    border: 2px solid rgba(255, 100, 100, 0.3);
+    border-radius: 25px;
+    padding: 40px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.error-title {
+    font-family: var(--rococo-title-font);
+    font-size: 1.8rem;
+    color: #D32F2F;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    font-family: var(--rococo-body-font);
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .dual-canvas-layout {
+        gap: 40px;
+    }
+    
+    .atelier-title {
+        font-size: 3.2rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .dual-canvas-layout {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+    
+    .atelier-container {
+        padding: 0 20px;
+    }
+    
+    .atelier-title {
+        font-size: 2.8rem;
+    }
+    
+    .canvas-frame {
+        padding: 30px 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .atelier-title {
+        font-size: 2.4rem;
+    }
+    
+    .atelier-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .canvas-title {
+        font-size: 1.8rem;
+    }
+    
+    .badge-container {
+        gap: 15px;
+    }
+    
+    .input-badge {
+        min-width: 70px;
+        min-height: 70px;
+        padding: 15px 20px;
+    }
+    
+    .result-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-btn {
+        width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rococo-atelier {
+        padding: 60px 0;
+    }
+    
+    .atelier-header {
+        margin-bottom: 50px;
+    }
+    
+    .atelier-title {
+        font-size: 2rem;
+    }
+    
+    .canvas-frame {
+        padding: 25px 20px;
+    }
+    
+    .magical-btn {
+        font-size: 1.1rem;
+        padding: 18px 25px;
+    }
+}
+
+/* 功能应用区域 - 黑白极简风格 */
