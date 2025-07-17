@@ -362,17 +362,24 @@ function initializeFileUpload() {
  */
 function switchInputMode(mode) {
     // 更新按钮状态
-    if (elements.uploadModeBtn && elements.urlModeBtn) {
+    if (elements.uploadModeBtn && elements.urlModeBtn && elements.txt2imgModeBtn) {
         elements.uploadModeBtn.classList.toggle('active', mode === 'upload');
         elements.urlModeBtn.classList.toggle('active', mode === 'url');
+        elements.txt2imgModeBtn.classList.toggle('active', mode === 'txt2img');
     }
-
     // 切换显示的输入区域
-    if (elements.uploadMode && elements.urlMode) {
+    if (elements.uploadMode && elements.urlMode && elements.txt2imgMode) {
         elements.uploadMode.classList.toggle('active', mode === 'upload');
         elements.urlMode.classList.toggle('active', mode === 'url');
+        elements.txt2imgMode.classList.toggle('active', mode === 'txt2img');
     }
-
+    // 切换按钮显示
+    if (elements.convertButton) {
+        elements.convertButton.style.display = (mode === 'upload' || mode === 'url') ? '' : 'none';
+    }
+    if (elements.txt2imgButton) {
+        elements.txt2imgButton.style.display = (mode === 'txt2img') ? '' : 'none';
+    }
     // 清除之前的状态
     clearUploadState();
     clearMessages();
