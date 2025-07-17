@@ -44,7 +44,7 @@ body {
     font-family: var(--font-family);
     line-height: 1.6;
     color: #333;
-    background: var(--gradient-main);
+    background: #000; /* 改为黑色背景，与画廊保持一致 */
     min-height: 100vh;
     overflow-x: hidden;
 }
@@ -315,6 +315,7 @@ body {
 /* 首页英雄区域 */
 .hero-section {
     min-height: 100vh;
+    height: 100vh; /* 强制固定高度 */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1326,6 +1327,9 @@ body {
     left: 50%;
     top: 45%; /* 稍微向上一点，为标题留出空间 */
     transform: translate(-50%, -50%);
+    /* 阻止拖拽时的意外滚动 */
+    touch-action: none;
+    user-select: none;
 }
 
 /* 画廊信息 - 位于容器下方 */
