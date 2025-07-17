@@ -6,7 +6,7 @@
  * 2. 绝对不要在代码中硬编码 API Key
  */
 
-const DASHSCOPE_BASE_URL = 'https://dashscope-intl.aliyuncs.com/api/v1';
+const DASHSCOPE_BASE_URL = 'https://dashscope.aliyuncs.com/api/v1';
 const MAX_POLLING_ATTEMPTS = 20; // 最大轮询次数 (约60秒)
 const POLLING_INTERVAL = 3000; // 轮询间隔 (3秒)
 
@@ -18,8 +18,12 @@ async function createText2ImgTask(prompt) {
     if (!apiKey) {
         throw new Error('文生图API Key 未配置，请在 Vercel 环境变量中设置 DASHSCOPE_TEXT2IMG_API_KEY');
     }
+    
+    console.log('创建文生图任务，使用API Key:', apiKey.substring(0, 8) + '...');
+    console.log('API Endpoint:', `${DASHSCOPE_BASE_URL}/services/aigc/text2image/image-synthesis`);
+    
     const requestBody = {
-        model: "wan2.1-t2i-turbo",
+        model: "wanx-v1",
         input: {
             prompt: prompt
         },
@@ -28,20 +32,32 @@ async function createText2ImgTask(prompt) {
             n: 1
         }
     };
+    
+    console.log('请求体:', JSON.stringify(requestBody, null, 2));
+    
+    const headers = {
+        'X-DashScope-Async': 'enable',
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+    };
+    
+    console.log('请求头:', JSON.stringify(headers, null, 2));
+    
     const response = await fetch(`${DASHSCOPE_BASE_URL}/services/aigc/text2image/image-synthesis`, {
         method: 'POST',
-        headers: {
-            'X-DashScope-Async': 'enable',
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
-        },
+        headers: headers,
         body: JSON.stringify(requestBody)
     });
+    
     const result = await response.json();
+    console.log('阿里云API响应状态:', response.status);
+    console.log('阿里云API响应内容:', JSON.stringify(result, null, 2));
+    
     if (!response.ok) {
-        throw new Error(`创建任务失败: ${result.message || '未知错误'}`);
+        throw new Error(`创建任务失败: ${result.message || result.code || '未知错误'} (状态码: ${response.status})`);
     }
     if (result.output && result.output.task_id) {
+        console.log('任务创建成功，task_id:', result.output.task_id);
         return result.output.task_id;
     }
     throw new Error('API 响应格式异常，未找到 task_id');
