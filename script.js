@@ -597,10 +597,17 @@ function initializeConversion() {
     if (elements.convertButton) {
         elements.convertButton.addEventListener('click', handleConvert);
     }
-
+    // 文生图按钮事件监听
+    if (elements.txt2imgButton) {
+        elements.txt2imgButton.addEventListener('click', handleTxt2Img);
+    }
     // 下载按钮事件监听
     if (elements.downloadBtn) {
         elements.downloadBtn.addEventListener('click', downloadImage);
+    }
+    // 默认只显示风格迁移按钮，隐藏文生图按钮
+    if (elements.txt2imgButton) {
+        elements.txt2imgButton.style.display = 'none';
     }
 }
 
