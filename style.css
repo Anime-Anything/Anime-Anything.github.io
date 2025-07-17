@@ -315,14 +315,14 @@ body {
 /* 首页英雄区域 */
 .hero-section {
     min-height: 100vh;
-    height: 100vh; /* 强制固定高度 */
+    /* 移除固定高度限制，让内容自然展开 */
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start; /* 改为从顶部开始 */
     position: relative;
     background: #000;
     color: white;
-    overflow: hidden;
+    overflow: visible; /* 改为可见，让功能介绍区域显示 */
 }
 
 .hero-section::before {
@@ -1313,10 +1313,12 @@ body {
 /* 3D 画廊舞台 */
 .gallery-stage {
     width: 100%;
-    height: 100vh;
+    height: 100vh; /* 保持全屏高度 */
     overflow: hidden;
     background: #000;
     position: relative;
+    /* 确保画廊占据首屏 */
+    flex-shrink: 0;
 }
 
 .gallery-container {
