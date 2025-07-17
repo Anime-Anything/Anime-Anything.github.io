@@ -249,7 +249,7 @@
                             
                             <div class="canvas-header">
                                 <h2 class="canvas-title">妙语生图</h2>
-                                <p class="canvas-subtitle"></p>
+                                <p class="canvas-subtitle">文字化想象为画境</p>
                             </div>
 
                             <div class="canvas-content">
@@ -257,7 +257,6 @@
                                 <div class="enchanted-input-group">
                                     <label class="magical-label">
                                         <span class="label-text">请输入您的想象</span>
-                                        <span class="label-icon">✨</span>
                                     </label>
                                     <div class="textarea-container">
                                         <textarea 
@@ -274,8 +273,7 @@
 
                                 <!-- 魔法按钮 -->
                                 <button id="txt2imgButton" class="magical-btn btn-primary">
-                                    <span class="btn-icon">🎨</span>
-                                    <span class="btn-text">开始生成头像</span>
+                                    <span class="btn-text">施展创作魔法</span>
                                     <div class="btn-shimmer"></div>
                                 </button>
                             </div>
@@ -294,7 +292,7 @@
                             
                             <div class="canvas-header">
                                 <h2 class="canvas-title">风格迁移</h2>
-                                <p class="canvas-subtitle"></p>
+                                <p class="canvas-subtitle">重塑艺术之美</p>
                             </div>
 
                             <div class="canvas-content">
@@ -302,12 +300,10 @@
                                 <div class="input-badges">
                                     <div class="badge-container">
                                         <button id="uploadBadge" class="input-badge active" data-type="upload">
-                                            <div class="badge-icon">🖼️</div>
                                             <div class="badge-text">上传</div>
                                             <div class="badge-glow"></div>
                                         </button>
                                         <button id="urlBadge" class="input-badge" data-type="url">
-                                            <div class="badge-icon">🔗</div>
                                             <div class="badge-text">链接</div>
                                             <div class="badge-glow"></div>
                                         </button>
@@ -318,7 +314,6 @@
                                 <div id="uploadMode" class="input-mode active">
                                     <div id="dropZone" class="enchanted-drop-zone">
                                         <div class="drop-content">
-                                            <div class="upload-icon">📸</div>
                                             <h3>将您的图片拖拽至此</h3>
                                             <p>或 <button id="fileSelectBtn" class="select-btn">选择文件</button></p>
                                             <small>支持 JPG、PNG、WEBP，建议 &lt; 5MB</small>
@@ -330,7 +325,7 @@
                                     <!-- 图片预览 -->
                                     <div id="imagePreview" class="enchanted-preview hidden">
                                         <div class="preview-header">
-                                            <h4>✨ 预览</h4>
+                                            <h4>预览</h4>
                                             <button id="changeImageBtn" class="change-btn">更换</button>
                                         </div>
                                         <div class="preview-content">
@@ -347,7 +342,6 @@
                                     <div class="enchanted-input-group">
                                         <label class="magical-label">
                                             <span class="label-text">图片链接</span>
-                                            <span class="label-icon">🔗</span>
                                         </label>
                                         <div class="input-container">
                                             <input 
@@ -365,7 +359,6 @@
                                 <div class="enchanted-input-group">
                                     <label class="magical-label">
                                         <span class="label-text">期望的艺术风格</span>
-                                        <span class="label-icon">🎭</span>
                                     </label>
                                     <div class="textarea-container">
                                         <textarea 
@@ -382,7 +375,6 @@
 
                                 <!-- 魔法按钮 -->
                                 <button id="convertButton" class="magical-btn btn-secondary">
-                                    <span class="btn-icon">✨</span>
                                     <span class="btn-text">开始风格变换</span>
                                     <div class="btn-shimmer"></div>
                                 </button>
@@ -400,32 +392,24 @@
                                 <div class="circle-ring ring-1"></div>
                                 <div class="circle-ring ring-2"></div>
                                 <div class="circle-ring ring-3"></div>
-                                <div class="magic-center">🎨</div>
                             </div>
-                            <div class="loading-text">头像生成中...</div>
-                            <div class="magic-sparkles">
-                                <span class="sparkle">✦</span>
-                                <span class="sparkle">✧</span>
-                                <span class="sparkle">✦</span>
-                            </div>
+                            <div class="loading-text">魔法正在施展中...</div>
                         </div>
                     </div>
 
                     <!-- 结果展示 -->
                     <div id="resultDiv" class="magical-result hidden">
                         <div class="result-frame">
-                            <h3 class="result-title">✨ 头像生成成功 ✨</h3>
+                            <h3 class="result-title">艺术杰作诞生</h3>
                             <div class="result-image-container">
                                 <img id="resultImage" alt="转换结果" class="result-image">
                                 <div class="image-frame-decoration"></div>
                             </div>
                             <div class="result-actions">
                                 <button id="downloadBtn" class="action-btn download-btn">
-                                    <span class="btn-icon">💾</span>
                                     <span class="btn-text">保存作品</span>
                                 </button>
                                 <button onclick="location.reload()" class="action-btn new-task-btn">
-                                    <span class="btn-icon">🎯</span>
                                     <span class="btn-text">重新创作</span>
                                 </button>
                             </div>
@@ -435,10 +419,9 @@
                     <!-- 错误提示 -->
                     <div id="errorDiv" class="magical-error hidden">
                         <div class="error-frame">
-                            <h3 class="error-title">⚠️ 魔法施展遇阻</h3>
+                            <h3 class="error-title">魔法施展遇阻</h3>
                             <p id="errorMessage" class="error-message"></p>
                             <button onclick="location.reload()" class="action-btn retry-btn">
-                                <span class="btn-icon">🔄</span>
                                 <span class="btn-text">重新尝试</span>
                             </button>
                         </div>

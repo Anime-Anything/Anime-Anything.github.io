@@ -758,11 +758,11 @@ function setTxt2ImgButtonState(isLoading) {
 
     if (isLoading) {
         elements.txt2imgButton.disabled = true;
-        elements.txt2imgButton.innerHTML = '<span class="btn-text">🎨 生成中...</span>';
+        elements.txt2imgButton.innerHTML = '<span class="btn-text">魔法施展中...</span>';
         elements.txt2imgButton.style.opacity = '0.6';
     } else {
         elements.txt2imgButton.disabled = false;
-        elements.txt2imgButton.innerHTML = '<span class="btn-text">🎨 生成图片</span>';
+        elements.txt2imgButton.innerHTML = '<span class="btn-text">施展创作魔法</span>';
         elements.txt2imgButton.style.opacity = '1';
     }
 }
