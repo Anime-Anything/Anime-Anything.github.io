@@ -418,13 +418,9 @@ function switchInputMode(mode) {
         elements.urlMode.classList.toggle('active', mode === 'url');
         elements.txt2imgMode.classList.toggle('active', mode === 'txt2img');
     }
-    // 切换按钮显示
-    if (elements.convertButton) {
-        elements.convertButton.style.display = (mode === 'upload' || mode === 'url') ? '' : 'none';
-    }
-    if (elements.txt2imgButton) {
-        elements.txt2imgButton.style.display = (mode === 'txt2img') ? '' : 'none';
-    }
+    // 在洛可可双画板布局中，两个按钮都应该显示
+    // 不再根据模式隐藏按钮
+    
     // 清除之前的状态
     clearUploadState();
     clearMessages();
@@ -650,9 +646,9 @@ function initializeConversion() {
     if (elements.downloadBtn) {
         elements.downloadBtn.addEventListener('click', downloadImage);
     }
-    // 默认只显示风格迁移按钮，隐藏文生图按钮
+    // 双画板布局中，妙语生图按钮应该显示
     if (elements.txt2imgButton) {
-        elements.txt2imgButton.style.display = 'none';
+        elements.txt2imgButton.style.display = '';
     }
 }
 
