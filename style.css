@@ -2198,7 +2198,7 @@ body {
     margin: 0 auto;
     position: relative;
     z-index: 3;
-    padding-bottom: 80px; /* 为标签留出空间 */
+    padding-bottom: 130px; /* 增加底部边距为风格说明留出更多空间 */
 }
 
 /* 轮播画框 - 增强复古效果 */
@@ -2442,6 +2442,7 @@ body {
     .gallery-grid-2x2 {
         gap: 60px;
         max-width: 700px;
+        padding-bottom: 120px;
     }
     
     .vintage-title {
@@ -2451,6 +2452,13 @@ body {
     .style-label {
         font-size: 1.2rem;
         bottom: -55px;
+    }
+    
+    .style-description {
+        font-size: 0.9rem;
+        bottom: -105px;
+        max-width: 90%;
+        padding: 6px 10px;
     }
 }
 
@@ -2468,7 +2476,7 @@ body {
         grid-template-rows: repeat(4, 1fr);
         gap: 70px;
         max-width: 400px;
-        padding-bottom: 60px;
+        padding-bottom: 110px;
     }
     
     .vintage-title {
@@ -2495,12 +2503,24 @@ body {
         height: 40px;
         font-size: 1.6rem;
     }
+    
+    .style-description {
+        font-size: 0.85rem;
+        bottom: -95px;
+        max-width: 95%;
+        padding: 5px 8px;
+        letter-spacing: 0.3px;
+        /* 移动端默认显示风格说明 */
+        opacity: 0.8;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 480px) {
     .gallery-grid-2x2 {
         max-width: 300px;
         gap: 50px;
+        padding-bottom: 100px;
     }
     
     .vintage-title {
@@ -2515,306 +2535,10 @@ body {
         font-size: 1rem;
         bottom: -40px;
     }
-}
-
-/* 添加浮动的复古装饰元素 */
-.vintage-gallery-section .floating-decoration {
-    position: absolute;
-    color: rgba(244, 228, 193, 0.2);
-    pointer-events: none;
-    z-index: 1;
-    animation: floatDecoration 8s ease-in-out infinite;
-}
-
-.vintage-gallery-section .floating-decoration:nth-child(1) {
-    top: 10%;
-    left: 5%;
-    font-size: 2rem;
-    animation-delay: 0s;
-}
-
-.vintage-gallery-section .floating-decoration:nth-child(2) {
-    top: 20%;
-    right: 8%;
-    font-size: 1.5rem;
-    animation-delay: 2s;
-}
-
-.vintage-gallery-section .floating-decoration:nth-child(3) {
-    bottom: 15%;
-    left: 3%;
-    font-size: 1.8rem;
-    animation-delay: 4s;
-}
-
-.vintage-gallery-section .floating-decoration:nth-child(4) {
-    bottom: 25%;
-    right: 5%;
-    font-size: 1.6rem;
-    animation-delay: 6s;
-}
-
-@keyframes floatDecoration {
-    0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-        opacity: 0.2;
-    }
-    50% {
-        transform: translateY(-20px) rotate(5deg);
-        opacity: 0.4;
-    }
-}
-
-/* 添加动态光束效果 */
-.vintage-gallery-section .light-beam {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, 
-        transparent 0%, 
-        rgba(244, 228, 193, 0.03) 25%, 
-        transparent 50%, 
-        rgba(244, 228, 193, 0.05) 75%, 
-        transparent 100%);
-    opacity: 0;
-    animation: lightSweep 12s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 0;
-}
-
-@keyframes lightSweep {
-    0%, 90%, 100% {
-        opacity: 0;
-        transform: translateX(-100%) skewX(-15deg);
-    }
-    5%, 85% {
-        opacity: 1;
-        transform: translateX(100%) skewX(-15deg);
-    }
-}
-
-/* 添加复古纸张纹理效果 */
-.vintage-gallery-section .paper-texture {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(circle at 20% 30%, rgba(244, 228, 193, 0.1) 1px, transparent 1px),
-        radial-gradient(circle at 80% 70%, rgba(244, 228, 193, 0.08) 1px, transparent 1px),
-        radial-gradient(circle at 40% 80%, rgba(244, 228, 193, 0.06) 1px, transparent 1px);
-    background-size: 50px 50px, 80px 80px, 120px 120px;
-    opacity: 0.4;
-    pointer-events: none;
-    animation: paperShift 20s linear infinite;
-}
-
-@keyframes paperShift {
-    0% { transform: translateX(0) translateY(0); }
-    100% { transform: translateX(50px) translateY(50px); }
-}
-
-/* 增强轮播框的艺术性边框 */
-.carousel-frame .artistic-border {
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    right: -15px;
-    bottom: -15px;
-    border: 3px solid transparent;
-    border-radius: 30px;
-    background: linear-gradient(45deg, 
-        rgba(244, 228, 193, 0.4) 0%, 
-        transparent 25%, 
-        rgba(244, 228, 193, 0.2) 50%, 
-        transparent 75%, 
-        rgba(244, 228, 193, 0.4) 100%);
-    background-clip: padding-box;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-    pointer-events: none;
-    animation: artisticPulse 4s ease-in-out infinite;
-}
-
-.carousel-frame:hover .artistic-border {
-    opacity: 1;
-}
-
-@keyframes artisticPulse {
-    0%, 100% {
-        box-shadow: 0 0 20px rgba(244, 228, 193, 0.2);
-    }
-    50% {
-        box-shadow: 0 0 40px rgba(244, 228, 193, 0.4);
-    }
-}
-
-/* 添加互动性粒子效果 */
-.vintage-gallery-section .particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: #f4e4c1;
-    border-radius: 50%;
-    pointer-events: none;
-    opacity: 0;
-    animation: particleFloat 6s linear infinite;
-}
-
-.vintage-gallery-section .particle:nth-child(odd) {
-    animation-duration: 8s;
-}
-
-.vintage-gallery-section .particle:nth-child(even) {
-    animation-duration: 10s;
-}
-
-@keyframes particleFloat {
-    0% {
-        opacity: 0;
-        transform: translateY(100vh) translateX(0);
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-100px) translateX(50px);
-    }
-}
-
-/* 增强标题的艺术性 */
-.vintage-title .title-art-deco {
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    background: linear-gradient(45deg, 
-        transparent 0%, 
-        rgba(244, 228, 193, 0.1) 25%, 
-        transparent 50%, 
-        rgba(244, 228, 193, 0.1) 75%, 
-        transparent 100%);
-    z-index: -1;
-    border-radius: 10px;
-    opacity: 0;
-    animation: artDecoShimmer 5s ease-in-out infinite;
-}
-
-@keyframes artDecoShimmer {
-    0%, 100% {
-        opacity: 0;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.6;
-        transform: scale(1.02);
-    }
-}
-
-/* 添加复古拍立得效果 */
-.carousel-image.polaroid-effect {
-    border-bottom: 40px solid #f4e4c1;
-    box-shadow: 
-        0 2px 8px rgba(0, 0, 0, 0.3),
-        inset 0 -40px 0 rgba(244, 228, 193, 0.9);
-}
-
-.carousel-image.polaroid-effect::after {
-    content: attr(alt);
-    position: absolute;
-    bottom: -35px;
-    left: 10px;
-    right: 10px;
-    color: #2c1810;
-    font-size: 0.9rem;
-    font-family: 'Comic Sans MS', cursive;
-    text-align: center;
-    font-weight: bold;
-}
-
-/* 添加胶卷条纹动画 */
-.filmstrip-container .film-stripes {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        90deg,
-        transparent 0px,
-        transparent 10px,
-        rgba(244, 228, 193, 0.05) 10px,
-        rgba(244, 228, 193, 0.05) 12px
-    );
-    opacity: 0.3;
-    animation: filmRoll 15s linear infinite;
-    pointer-events: none;
-}
-
-@keyframes filmRoll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(24px); }
-}
-
-/* 添加复古印章效果 */
-.vintage-gallery-section .vintage-stamp {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    border: 3px dashed rgba(244, 228, 193, 0.4);
-    border-radius: 8px;
-    background: rgba(244, 228, 193, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: rgba(244, 228, 193, 0.6);
-    transform: rotate(-15deg);
-    opacity: 0.7;
-    pointer-events: none;
-    animation: stampFade 8s ease-in-out infinite;
-}
-
-.vintage-stamp:nth-child(1) {
-    top: 15%;
-    right: 10%;
-    animation-delay: 0s;
-}
-
-.vintage-stamp:nth-child(2) {
-    bottom: 20%;
-    left: 8%;
-    animation-delay: 4s;
-}
-
-@keyframes stampFade {
-    0%, 80%, 100% {
-        opacity: 0;
-        transform: rotate(-15deg) scale(0.8);
-    }
-    10%, 70% {
-        opacity: 0.7;
-        transform: rotate(-15deg) scale(1);
-    }
-}
-
-/* 响应式优化艺术效果 */
-@media (max-width: 768px) {
-    .floating-decoration,
-    .vintage-stamp {
-        display: none; /* 移动端隐藏装饰元素以提升性能 */
-    }
     
-    .light-beam,
-    .paper-texture {
-        animation-duration: 20s; /* 延长动画时间以降低CPU使用 */
+    .style-description {
+        font-size: 0.8rem;
+        bottom: -85px;
+        padding: 4px 6px;
     }
 }
