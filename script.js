@@ -749,7 +749,7 @@ function setButtonState(isLoading) {
     } else {
         // 恢复按钮到初始状态
         elements.convertButton.disabled = false;
-        elements.convertButton.innerHTML = '<span class="btn-text">🚀 开始风格迁移</span>';
+        elements.convertButton.innerHTML = '<span class="btn-text">开始风格迁移</span>';
         elements.convertButton.classList.remove('hidden');
     }
 }
